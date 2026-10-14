@@ -1,0 +1,58 @@
+name: npm maintenance
+
+# Manual only: Actions → npm maintenance → Run workflow. Marks one published version deprecated (npm warns on install,
+# the version stays installable), with the NPM_TOKEN secret the Release workflow uses. An empty message un-deprecates.
+# Guards: an exact version that exists on npm, never the version `latest` points at. Nothing else runs here.
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Package
+        type: choice
+        options: [harakah-fixer, "@harakah/remotion-arabic"]
+        default: harakah-fixer
+      version:
+        description: Exact version (e.g. 0.0.0-stage)
+        required: true
+        type: string
+      message:
+        description: What npm shows on install (empty = un-deprecate)
+        required: false
+        type: string
+        default: "Placeholder from staged publishing, not a release. Use the latest version."
+
+permissions:
+  contents: read
+
+concurrency:
+  group: npm-maintenance
+  cancel-in-progress: false
+
+jobs:
+  deprecate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Deprecate
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PKG: ${{ inputs.package }}
+          VERSION: ${{ inputs.version }}
+          MESSAGE: ${{ inputs.message }}
+        run: |
+          [ -n "$NODE_AUTH_TOKEN" ] || { echo "::error::NPM_TOKEN secret is not set"; exit 1; }
+          echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$' || { echo "::error::'$VERSION' is not an exact version"; exit 1; }
+          [ "$(npm view "$PKG@$VERSION" version)" = "$VERSION" ] || { echo "::error::$PKG@$VERSION is not on npm"; exit 1; }
+          latest=$(npm view "$PKG" dist-tags.latest)
+          [ "$VERSION" != "$latest" ] || { echo "::error::$VERSION is what 'latest' points at; release a newer version first"; exit 1; }
+          npm deprecate "$PKG@$VERSION" "$MESSAGE"
+          now=$(npm view "$PKG@$VERSION" deprecated)
+          echo "deprecated: ${now:-<not deprecated>}"
+          [ "$now" = "$MESSAGE" ] || { [ -z "$MESSAGE" ] && [ -z "$now" ]; } || { echo "::error::npm doesn't show the new state yet"; exit 1; }
+          echo "### $PKG@$VERSION · deprecated: ${now:-no}" >> "$GITHUB_STEP_SUMMARY"

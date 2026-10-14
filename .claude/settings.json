@@ -1,0 +1,40 @@
+{
+  "enableAllProjectMcpServers": true,
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ \"$CLAUDE_CODE_REMOTE\" = true ] && ! command -v harakah-fix >/dev/null && npm i -g harakah-fixer >/dev/null 2>&1; true",
+            "timeout": 120
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/integrations/claude-code/plugin/scripts/harakah.cjs\" hook post-edit",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/integrations/claude-code/plugin/scripts/harakah.cjs\" hook pre-render",
+            "timeout": 90
+          }
+        ]
+      }
+    ]
+  }
+}

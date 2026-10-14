@@ -1,0 +1,9 @@
+{
+  "name": "harakah",
+  "displayName": "Harakah · حركة",
+  "version": "0.3.1",
+  "description": "Check, fix and verify Arabic text in motion-graphics code (Remotion, HyperFrames, GSAP, HTML). Checks every Arabic composition Claude writes and refuses to render broken Arabic.",
+  "author": { "name": "Harakah" },
+  "license": "MIT",
+  "keywords": ["arabic", "rtl", "remotion", "hyperframes", "gsap", "motion-graphics", "typography"]
+}

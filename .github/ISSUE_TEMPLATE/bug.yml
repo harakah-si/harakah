@@ -1,0 +1,31 @@
+name: Bug · خلل
+description: A crash, a wrong exit code, or the web tool, Studio panel, Claude Code plugin or CLI misbehaving.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened · ماذا حدث
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce · خطوات إعادة المشكلة
+      placeholder: |
+        1. npx harakah-fix …
+        2. …
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Output or logs
+      render: shell
+  - type: input
+    id: version
+    attributes:
+      label: Versions
+      placeholder: harakah-fixer 0.3.0, Node 22.12, OS, Chrome
+    validations:
+      required: true

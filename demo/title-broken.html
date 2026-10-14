@@ -1,0 +1,61 @@
+<!doctype html>
+<!-- Demo composition: a typical "Latin template ported to Arabic" title card.
+     Deliberately broken the way real projects are: GSAP SplitText per-letter stagger,
+     tracked + uppercased kicker, an LTR stats line with a Latin-only font and Western digits. -->
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280, height=720">
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<script src="../node_modules/gsap/dist/SplitText.min.js"></script>
+<style>
+@font-face{font-family:'Alexandria';src:url('../assets/fonts/Alexandria.ttf');font-weight:100 900}
+@font-face{font-family:'IBM Plex Sans Arabic';src:url('../assets/fonts/IBMPlexSansArabic-Regular.ttf');font-weight:400}
+@font-face{font-family:'IBM Plex Sans Arabic';src:url('../assets/fonts/IBMPlexSansArabic-Medium.ttf');font-weight:500}
+@font-face{font-family:'IBM Plex Sans Arabic';src:url('../assets/fonts/IBMPlexSansArabic-SemiBold.ttf');font-weight:600}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1280px;height:720px;overflow:hidden;background:#0b0b0d}
+#root{position:relative;width:1280px;height:720px;overflow:hidden;color:#f3efe7;font-family:'IBM Plex Sans Arabic',sans-serif}
+.glow{position:absolute;inset:-20%;background:radial-gradient(40% 50% at 78% 40%,rgba(255,90,54,.20),transparent 70%),radial-gradient(35% 40% at 20% 80%,rgba(120,140,255,.10),transparent 70%)}
+.grain{position:absolute;inset:0;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.frame{position:absolute;inset:0;padding:110px 120px;display:flex;flex-direction:column;justify-content:center;gap:22px}
+.kicker{display:flex;align-items:center;gap:16px;font-size:22px;font-weight:600;color:#ff7a5c;letter-spacing:.28em;text-transform:uppercase}
+.bar{width:56px;height:3px;background:#ff5a36;transform-origin:right center}
+.title{font-family:'Alexandria',sans-serif;font-weight:800;font-size:112px;line-height:1.25}
+.sub{font-family:'Alexandria',sans-serif;font-weight:300;font-size:56px;line-height:1.35;color:#d9d3c8}
+.meta{margin-top:26px;display:flex;align-items:center;gap:18px;font-family:'Inter',sans-serif;font-size:26px;color:#a7a196;direction:ltr;text-align:left}
+.rule{height:1px;width:100%;background:linear-gradient(to left,rgba(243,239,231,.35),rgba(243,239,231,0));transform-origin:right center;margin-top:8px}
+</style>
+</head>
+<body>
+<div id="root" dir="rtl" data-composition-id="main" data-start="0" data-duration="12.5" data-width="1280" data-height="720">
+  <div class="glow"></div>
+  <div class="grain"></div>
+  <div class="frame">
+    <div class="kicker"><span class="bar"></span><span class="k">بودكاست مساحة · الحلقة 42</span></div>
+    <h1 class="title" id="title">صناعة المحتوى العربي</h1>
+    <h2 class="sub" id="sub">في زمن الذكاء الاصطناعي</h2>
+    <div class="rule"></div>
+    <div class="meta" id="meta">أكثر من 1.2 مليون مشاهدة على YouTube خلال 30 يوماً</div>
+  </div>
+</div>
+<script>
+gsap.registerPlugin(SplitText);
+const title = SplitText.create("#title", { type: "words,chars" });
+const sub = SplitText.create("#sub", { type: "words" });
+const tl = gsap.timeline({ paused: true, defaults: { ease: "expo.out" } });
+tl.fromTo(".glow", { scale: 1.08, opacity: 0 }, { scale: 1, opacity: 1, duration: 2.4, ease: "power2.out" }, 0)
+  .from(".bar", { scaleX: 0, duration: 0.9 }, 0.2)
+  .from(".k", { opacity: 0, x: 24, duration: 0.8 }, 0.45)
+  .from(title.chars, { yPercent: 70, opacity: 0, duration: 1.1, stagger: 0.045 }, 0.9)
+  .from(sub.words, { y: 28, opacity: 0, duration: 1, stagger: 0.09 }, 2.1)
+  .from(".rule", { scaleX: 0, duration: 1.4, ease: "power3.inOut" }, 2.8)
+  .from("#meta", { opacity: 0, y: 14, duration: 0.9 }, 3.3)
+  .to(".glow", { xPercent: -4, yPercent: 3, duration: 7, ease: "sine.inOut" }, 3)
+  .to(title.chars, { yPercent: -60, opacity: 0, duration: 0.6, stagger: 0.025, ease: "power2.in" }, 10.4)
+  .to([".k", ".bar", sub.words, ".rule", "#meta"], { opacity: 0, duration: 0.6, stagger: 0.04, ease: "power2.in" }, 10.7);
+window.__timelines = window.__timelines || {};
+window.__timelines["main"] = tl;
+</script>
+</body>
+</html>

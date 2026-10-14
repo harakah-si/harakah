@@ -1,0 +1,1211 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-lang="ar">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{OG_TITLE}}</title>
+<meta name="description" content="{{OG_DESC}}">
+<link rel="canonical" href="{{URL}}">
+<link rel="alternate" hreflang="ar" href="{{ORIGIN}}/landing">
+<link rel="alternate" hreflang="en" href="{{ORIGIN}}/landing?lang=en">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0a1411" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f3efe6" media="(prefers-color-scheme: light)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="حركة · Harakah">
+<meta property="og:title" content="{{OG_TITLE}}">
+<meta property="og:description" content="{{OG_DESC}}">
+<meta property="og:url" content="{{URL}}">
+<meta property="og:image" content="{{OG_IMAGE}}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{OG_ALT}}">
+<meta property="og:locale" content="{{OG_LOCALE}}">
+<meta property="og:locale:alternate" content="{{OG_LOCALE_ALT}}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{OG_TITLE}}">
+<meta name="twitter:description" content="{{OG_DESC}}">
+<meta name="twitter:image" content="{{OG_IMAGE}}">
+<meta name="twitter:image:alt" content="{{OG_ALT}}">
+
+<link rel="preload" href="/fonts/Alexandria.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="/fonts/IBMPlexSansArabic-Regular.ttf" as="font" type="font/ttf" crossorigin>
+<script>
+(function () {
+  var d = document.documentElement, q = new URLSearchParams(location.search);
+  var qt = q.get("theme"); if (qt === "light" || qt === "dark") localStorage.setItem("hz-theme", qt);
+  var t = localStorage.getItem("hz-theme");
+  d.dataset.theme = t === "light" || t === "dark" ? t : (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  d.dataset.themePref = t || "system";
+  var ql = q.get("lang");
+  if (ql === "en" || ql === "ar") localStorage.setItem("hz-lang", ql);
+  var l = localStorage.getItem("hz-lang") === "en" ? "en" : "ar";
+  d.dataset.lang = l; d.lang = l; d.dir = l === "en" ? "ltr" : "rtl";
+  // palette: Mosaic (chosen); ?palette=blue|inkpetra previews the alternates
+  var P = ["mosaic", "blue", "inkpetra"], qp = q.get("palette");
+  d.dataset.palette = P.indexOf(qp) >= 0 ? qp : "mosaic"; // Mosaic is the chosen design; ?palette= previews the others (not remembered)
+  // digits in Arabic: eastern ١٢٣ (default) or western 123
+  var qd = q.get("digits"); if (qd === "eastern" || qd === "western") localStorage.setItem("hz-digits", qd);
+  d.dataset.digits = localStorage.getItem("hz-digits") === "western" ? "western" : "eastern";
+  if (q.has("shot")) d.classList.add("shot");
+})();
+</script>
+<style>
+/* Arabic inside code: monospace fonts (DejaVu Sans Mono, Consolas…) don't join Arabic → Plex for Arabic code points only */
+@font-face{font-family:"HZ Mono Arabic";src:url("/fonts/IBMPlexSansArabic-Regular.ttf");font-weight:100 550;font-display:swap;unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F}@font-face{font-family:"HZ Mono Arabic";src:url("/fonts/IBMPlexSansArabic-Bold.ttf");font-weight:551 900;font-display:swap;unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F}
+@font-face{font-family:"Alexandria";src:url("/fonts/Alexandria.ttf");font-weight:100 900;font-display:swap}
+@font-face{font-family:"IBM Plex Sans Arabic";src:url("/fonts/IBMPlexSansArabic-Light.ttf");font-weight:300;font-display:swap}
+@font-face{font-family:"IBM Plex Sans Arabic";src:url("/fonts/IBMPlexSansArabic-Regular.ttf");font-weight:400;font-display:swap}
+@font-face{font-family:"IBM Plex Sans Arabic";src:url("/fonts/IBMPlexSansArabic-Medium.ttf");font-weight:500;font-display:swap}
+@font-face{font-family:"IBM Plex Sans Arabic";src:url("/fonts/IBMPlexSansArabic-SemiBold.ttf");font-weight:600;font-display:swap}
+@font-face{font-family:"IBM Plex Sans Arabic";src:url("/fonts/IBMPlexSansArabic-Bold.ttf");font-weight:700;font-display:swap}
+:root{--display:"Alexandria","IBM Plex Sans Arabic",sans-serif;--text:"IBM Plex Sans Arabic",system-ui,sans-serif;--mono:"HZ Mono Arabic",ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;--ease:cubic-bezier(.16,1,.3,1)}
+:root[data-palette=mosaic][data-theme=dark]{--bg:#0a1411;--bg2:#0d1915;--card:#10201b;--line:#1f342c;--ink:#f2ecde;--mute:#9daa9f;--acc:#e3b24c;--on-acc:#0a1411;--acc2:#3fb6a7;--acc3:#1f5e57;--ok:#5acb9b;--err:#ff7563;--faint:#7d8980;--acc-t:#e3b24c}
+:root[data-palette=mosaic][data-theme=light]{--bg:#f3efe6;--bg2:#ece6da;--card:#e8e1d3;--line:#d8d0bf;--ink:#0e1d18;--mute:#53615a;--acc:#8a6312;--on-acc:#ffffff;--acc2:#1d7a6c;--acc3:#c9962e;--ok:#0f6b3f;--err:#a6311f;--faint:#56645d;--acc-t:#8a6312}
+:root[data-palette=blue][data-theme=dark]{--bg:#070d1a;--bg2:#0a1222;--card:#0d1629;--line:#1b2944;--ink:#eef3f8;--mute:#97a6bd;--acc:#5fd6cf;--on-acc:#04121a;--acc2:#3b6ef0;--acc3:#e9e1cc;--ok:#5fd39d;--err:#ff7a7a;--faint:#778499;--acc-t:#5fd6cf}
+:root[data-palette=blue][data-theme=light]{--bg:#eef2f6;--bg2:#e5ebf2;--card:#dfe6ee;--line:#ccd6e2;--ink:#0a1630;--mute:#4a5b75;--acc:#0b6670;--on-acc:#ffffff;--acc2:#1f45b5;--acc3:#a77a22;--ok:#0f6b3f;--err:#b42a36;--faint:#54647d;--acc-t:#0b6670}
+:root[data-palette=inkpetra][data-theme=dark]{--bg:#0b0b0d;--bg2:#0f0f12;--card:#121214;--line:#24211f;--ink:#f3efe7;--mute:#958c82;--acc:#ff5a36;--on-acc:#0b0b0d;--acc2:#d9a066;--acc3:#8e6a7a;--ok:#3ccf8e;--err:#ff6157;--faint:#847d74;--acc-t:#ff5a36}
+:root[data-palette=inkpetra][data-theme=light]{--bg:#f3efe7;--bg2:#ece6dc;--card:#ebe4d8;--line:#dcd3c5;--ink:#141310;--mute:#5f5850;--acc:#b83616;--on-acc:#ffffff;--acc2:#b0703f;--acc3:#7d5a6b;--ok:#0f6b3f;--err:#a6311f;--faint:#6b645c;--acc-t:#b83616}
+:root[data-palette=mosaic][data-theme=light]{--acc-t:#755310}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--text);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{transition:background .3s var(--ease),color .3s var(--ease)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.06;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+a{color:inherit;text-decoration:none}
+[data-lang=ar] [lang=en]:not(.keep),[data-lang=en] [lang=ar]:not(.keep){display:none!important}
+.mono{font-family:var(--mono)}
+bdi,.ltr{unicode-bidi:isolate}
+pre,code,kbd,.mono,.cmd,.code,.term-out,.vt-code{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+.wrap{max-width:1320px;margin:0 auto;padding:0 clamp(20px,4vw,56px)}
+
+/* nav */
+nav{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:76px;gap:24px}
+.logo{font:800 28px/1 var(--display);display:flex;align-items:center;gap:10px}
+.logo i{width:10px;height:10px;border-radius:50%;background:var(--acc);display:inline-block;transform:translateY(-6px)}
+.links{display:flex;gap:30px;font-size:15px;color:var(--mute)}
+.links a{position:relative}.links a:hover{color:var(--ink)}
+.ctrls{display:flex;gap:8px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{all:unset;cursor:pointer;font:500 12px/1 var(--mono);padding:8px 11px;border-radius:999px;color:var(--mute);transition:all .2s var(--ease)}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.seg button:focus-visible,.btn:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.btn{display:inline-flex;align-items:center;gap:10px;font:600 16px/1 var(--text);padding:16px 24px;border-radius:999px;border:1px solid var(--ink);color:var(--ink);transition:transform .3s var(--ease),background .2s,color .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:var(--on-acc)}
+.btn.sm{padding:11px 16px;font-size:14px}
+.btn .arr{display:inline-block;transition:transform .3s var(--ease)}.btn:hover .arr{transform:translateX(-4px)}[dir=ltr] .btn .arr{transform:scaleX(-1)}[dir=ltr] .btn:hover .arr{transform:scaleX(-1) translateX(-4px)}
+
+/* hero */
+.hero{padding:clamp(56px,8vw,104px) 0 36px;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,.8fr);gap:48px;align-items:end}
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--acc-t);margin-bottom:30px;display:flex;gap:14px;align-items:center}
+.eyebrow:before{content:"";width:40px;height:1px;background:currentColor}
+h1{font:800 clamp(54px,7.4vw,124px)/1.04 var(--display);margin:0;letter-spacing:-.005em}
+[data-lang=en] h1{font-size:clamp(48px,6.4vw,104px);line-height:1.02;letter-spacing:-.025em}
+.kin{display:inline-grid;vertical-align:baseline}
+.kin>*{grid-area:1/1}
+.kin .joined{color:var(--acc)}
+.kin .broken{display:inline-flex;direction:rtl;color:transparent;-webkit-text-stroke:1.5px var(--mute);justify-content:flex-end}
+.kin .broken span{display:inline-block}
+.kin.play .broken span{animation:gather 1.6s var(--ease) both}
+.kin.play .broken{animation:fadeout .5s 1.25s ease both}
+.kin.play .joined{animation:fadein .6s 1.2s ease both}
+@keyframes gather{0%{transform:translateX(calc(var(--i) * .22em - .44em))}70%,100%{transform:translateX(0)}}
+@keyframes fadeout{to{opacity:0}}
+@keyframes fadein{from{opacity:0;filter:blur(6px)}to{opacity:1;filter:none}}
+.side p{font-size:clamp(17px,1.4vw,20px);line-height:1.8;color:var(--mute);margin:0 0 30px}
+.side p b{color:var(--ink);font-weight:600}
+.cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.cmd{font:500 13.5px/1 var(--mono);direction:ltr;padding:15px 18px;border:1px dashed var(--line);border-radius:999px;color:var(--mute);white-space:nowrap}
+.cmd b{color:var(--ink);font-weight:500}
+
+/* reel */
+.reel{margin-top:40px}
+.reel-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px}
+.reel-top .cap{font:500 12px/1.4 var(--mono);color:var(--mute)}
+.frame{border-radius:24px;overflow:hidden;border:1px solid var(--line);background:#000;position:relative;box-shadow:0 60px 120px -60px rgba(0,0,0,.55)}
+.frame video{display:block;width:100%;aspect-ratio:1920/604;object-fit:cover}
+.frame .tag{position:absolute;bottom:16px;inset-inline-end:16px;font:500 12px/1 var(--mono);background:rgba(10,10,12,.66);color:#f3efe7;padding:9px 12px;border-radius:99px;backdrop-filter:blur(8px)}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:88px 0 0}
+.stats>div{padding:34px 0;border-inline-start:1px solid var(--line);padding-inline-start:28px}
+.stats>div:first-child{border-inline-start:0;padding-inline-start:0}
+.stats b{display:block;font:700 clamp(44px,4.6vw,68px)/1 var(--display);margin-bottom:10px}
+.stats>div>span{color:var(--mute);font-size:15px;line-height:1.6}
+
+/* sections */
+section.s{padding:120px 0 0}
+.s-head{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:56px;align-items:end;margin-bottom:48px}
+.kicker{font:500 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--acc-t);margin-bottom:18px}
+h2{font:700 clamp(36px,4vw,60px)/1.12 var(--display);margin:0}
+[data-lang=en] h2{letter-spacing:-.02em}
+.s-head p{color:var(--mute);font-size:18px;line-height:1.8;margin:0;max-width:52ch}
+
+/* specimen */
+.spec{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:24px;overflow:hidden}
+.spec>div{padding:44px 40px 36px;display:flex;flex-direction:column;gap:28px;min-height:400px;justify-content:space-between}
+.spec>div+div{border-inline-start:1px solid var(--line)}
+.spec .lbl{display:flex;gap:10px;align-items:center;font:500 13px/1 var(--mono);color:var(--mute)}
+.spec .lbl i{width:8px;height:8px;border-radius:50%}
+.word{font:800 clamp(64px,7vw,112px)/1.1 var(--display);text-align:center}
+.word.bad{display:flex;direction:ltr;justify-content:center;gap:.04em}
+.word.bad span{display:inline-block}
+.code{font:13px/1.85 var(--mono);direction:ltr;text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;white-space:pre;overflow:auto;color:var(--mute)}
+.code .k{color:var(--acc-t)}.code .d{color:var(--err)}.code .a{color:var(--ok)}.code .c{color:var(--faint)}
+
+/* rows */
+.rows{border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:24px;padding:30px 0;border-bottom:1px solid var(--line);align-items:baseline;transition:padding .4s var(--ease)}
+.row:hover{padding-inline-start:12px}
+.row .n{font:500 13px/1 var(--mono);color:var(--acc-t)}
+.row h3{margin:0 0 8px;font:600 clamp(22px,2vw,28px)/1.3 var(--display)}
+.row p{margin:0;color:var(--mute);font-size:16px;line-height:1.75;max-width:60ch}
+.row code{font:500 13px/1 var(--mono);color:var(--mute);direction:ltr;border:1px solid var(--line);padding:8px 10px;border-radius:8px;white-space:nowrap}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.step{border:1px solid var(--line);border-radius:22px;padding:28px;background:var(--card);display:flex;flex-direction:column;gap:14px;min-height:340px}
+.step .k{font:500 11px/1 var(--mono);letter-spacing:.12em;color:var(--acc-t)}
+.step h3{font:600 24px/1.3 var(--display);margin:0}
+.step p{margin:0;color:var(--mute);line-height:1.75}
+.step .code{margin-top:auto}
+.meter{margin-top:auto;display:flex;gap:28px;align-items:end;direction:ltr;justify-content:flex-start}
+[dir=rtl] .meter{justify-content:flex-end}
+.meter div{display:flex;flex-direction:column;gap:6px}
+.meter small{font:500 11px/1 var(--mono);color:var(--mute);letter-spacing:.08em;text-transform:uppercase}
+.meter b{font:700 48px/1 var(--display)}
+
+/* remotion */
+.rem{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:stretch}
+.rem img{width:100%;height:100%;object-fit:cover;border-radius:22px;border:1px solid var(--line);display:block}
+.rem .code{border-radius:22px;padding:24px;font-size:13.5px;margin:0}
+
+/* duo */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.duo>div{border:1px solid var(--line);border-radius:22px;padding:36px}
+.duo h3{font:600 28px/1.3 var(--display);margin:0 0 12px}
+.duo p{color:var(--mute);line-height:1.8;margin:0}
+.fonts{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.fonts span{border:1px solid var(--line);border-radius:99px;padding:9px 14px;font-size:15px}
+.fonts .x{color:var(--faint);text-decoration:line-through}
+
+/* final */
+.final{padding:160px 0 120px;text-align:center}
+.final h2{font-size:clamp(48px,7vw,112px);line-height:1.2;margin-bottom:36px}
+.final .cta{justify-content:center}
+footer{border-top:1px solid var(--line);padding:28px 0;color:var(--mute);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* never track Arabic: mono + letter-spacing labels apply to Latin only */
+.eyebrow [lang=ar],.kicker [lang=ar],.cap [lang=ar],.spec .lbl [lang=ar],.tag [lang=ar]{font-family:var(--text);letter-spacing:0;text-transform:none;font-size:1.12em;font-weight:500}
+[data-reveal]{opacity:0;transform:translateY(28px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+[data-reveal].in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){[data-reveal]{opacity:1;transform:none;transition:none}.kin .broken{display:none}.kin.play *{animation:none!important}html{scroll-behavior:auto}}
+@media (max-width:960px){.hero,.s-head,.spec,.rem,.duo{grid-template-columns:1fr}.steps{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.stats>div:nth-child(3){border-inline-start:0;padding-inline-start:0}.links{display:none}.spec>div+div{border-inline-start:0;border-top:1px solid var(--line)}.row{grid-template-columns:48px 1fr}.row code{display:none}}
+
+/* video controls */
+.skip{position:absolute;inset-inline-start:12px;top:-60px;z-index:60;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px}.skip:focus{top:12px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.pp{all:unset;cursor:pointer;position:absolute;top:14px;inset-inline-start:14px;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:rgba(10,10,12,.62);color:#f3efe7;font-size:12px;backdrop-filter:blur(8px);opacity:.75;transition:opacity .2s}
+.pp:hover,.pp:focus-visible{opacity:1}.pp:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.pp .i-play,.pp[aria-pressed=true] .i-pause{display:none}.pp[aria-pressed=true] .i-play{display:inline}
+.pan{display:none}
+.frame video{transition:object-position .7s var(--ease)}
+
+/* phones */
+@media (max-width:640px){
+  nav .wrap{height:62px;gap:10px}
+  .logo{font-size:24px}
+  .ctrls{gap:6px}
+  .ctrls>.btn{display:none}
+  .seg button{padding:7px 9px}
+  .hero{padding:40px 0 24px;gap:28px}
+  h1{font-size:clamp(40px,11.6vw,56px);line-height:1.12}
+  [data-lang=en] h1{font-size:clamp(38px,10.6vw,50px);line-height:1.04}
+  .eyebrow{margin-bottom:20px}
+  .side p{font-size:16.5px;margin-bottom:22px}
+  .cmd{font-size:12px;padding:13px 14px;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .reel{margin-top:28px}
+  .reel-top{flex-wrap:wrap}
+  .reel-top .cap{display:none}
+  .pan{display:inline-flex}
+  .frame{border-radius:18px}
+  /* one panel at a time: after (left half) or before (right half) */
+  .frame video{aspect-ratio:1.6;object-fit:cover;object-position:var(--pan,0%) 50%}
+  .frame .tag{bottom:10px;inset-inline-end:10px;font-size:11px;padding:7px 10px}
+  .stats{margin-top:56px}
+  .stats>div{padding:24px 0;padding-inline-start:16px}
+  .stats b{font-size:40px}
+  .stats>div>span{font-size:14px}
+  section.s{padding-top:80px}
+  .s-head{gap:18px;margin-bottom:28px}
+  h2{font-size:clamp(30px,8.6vw,40px);line-height:1.22}
+  .s-head p{font-size:16px}
+  .spec{border-radius:18px}
+  .spec>div{padding:24px 18px;min-height:0;gap:20px}
+  .word{font-size:clamp(46px,15vw,64px)}
+  .code{font-size:11.5px;padding:12px}
+  .row{grid-template-columns:36px minmax(0,1fr);gap:12px;padding:22px 0}
+  .row h3{font-size:20px}
+  .row p{font-size:15px}
+  .step{min-height:0;padding:22px}
+  .meter b{font-size:40px}
+  .rem .code{padding:16px;font-size:11.5px}
+  .duo>div{padding:24px}
+  .duo h3{font-size:23px}
+  .final{padding:96px 0 72px}
+  .final h2{font-size:clamp(40px,12vw,56px)}
+  .final .cta{flex-direction:column}
+}
+.hero>*,.spec>*,.s-head>*,.rem>*,.duo>*,.steps>*{min-width:0}
+
+/* ===================== landing v3 ===================== */
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.code .c{color:var(--faint)}
+
+/* palette picker (nav on desktop, footer everywhere) */
+.pal button{padding:6px 7px}
+.pal .sw{display:block;width:16px;height:16px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.pal [data-v=mosaic] .sw{background:conic-gradient(#e3b24c 0 33%,#1f5e57 0 66%,#3fb6a7 0)}
+.pal [data-v=blue] .sw{background:conic-gradient(#5fd6cf 0 33%,#1d4590 0 66%,#e9e1cc 0)}
+.pal [data-v=inkpetra] .sw{background:conic-gradient(#ff5a36 0 33%,#d9a066 0 66%,#8e6a7a 0)}
+.pal button[aria-pressed=true]{background:transparent;box-shadow:inset 0 0 0 1.5px var(--ink)}
+.logo i{transition:background .3s}
+[data-palette=mosaic] .logo i,[data-palette=blue] .logo i{border-radius:1.5px;width:11px;height:11px;transform:translateY(-6px) rotate(9deg)}
+[data-palette=inkpetra] .logo i{width:15px;height:11px;border-radius:2px;background:linear-gradient(var(--acc2) 0 33%,var(--acc) 0 66%,var(--acc3) 0)}
+
+/* section rail (Edolus-style paced bands) */
+.rail{position:fixed;inset-inline-end:22px;top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:6px}
+.rail a{display:flex;align-items:center;gap:10px;justify-content:flex-end;font:500 11px/1 var(--mono);color:var(--mute);padding:4px 0;flex-direction:row-reverse}
+.rail a i{display:block;width:14px;height:2px;background:var(--line);transition:width .3s var(--ease),background .3s}
+.rail a span{opacity:0;transform:translateX(6px);transition:opacity .2s,transform .3s var(--ease);white-space:nowrap}
+.rail a [lang=ar]{font-family:var(--text);font-size:12px}
+.rail:hover a span,.rail a[aria-current=true] span,.rail a:focus-visible span{opacity:1;transform:none}
+.rail a[aria-current=true]{color:var(--ink)}.rail a[aria-current=true] i{width:28px;background:var(--acc)}
+.rail a:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+@media (max-width:1519px){.rail{display:none}}
+
+/* hero: mosaic / blue = text + tesserae panel; inkpetra = editorial + strata band */
+.art{display:none;position:relative;margin:0;border-radius:28px;overflow:hidden;border:1px solid var(--line);background:var(--bg2);box-shadow:0 50px 100px -60px rgba(0,0,0,.6)}
+.art canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.art figcaption{position:absolute;bottom:14px;inset-inline-start:16px;font:500 11px/1 var(--mono);color:#f3efe7;background:rgba(8,12,14,.6);padding:8px 11px;border-radius:99px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.art figcaption [lang=ar]{font-family:var(--text);font-size:12px}
+.art .cap-blue{display:none}[data-palette=blue] .art .cap-blue{display:inline}[data-palette=blue] .art .cap-mosaic{display:none}
+[data-palette=mosaic] .hero,[data-palette=blue] .hero{grid-template-columns:minmax(0,1.18fr) minmax(0,.82fr);grid-template-areas:"h art" "s art";align-items:start;row-gap:40px;column-gap:56px}
+[data-palette=mosaic] .hero>.hero-h,[data-palette=blue] .hero>.hero-h{grid-area:h;align-self:end}
+[data-palette=mosaic] .hero>.side,[data-palette=blue] .hero>.side{grid-area:s}
+[data-palette=mosaic] .art,[data-palette=blue] .art{display:block;grid-area:art;aspect-ratio:4/5}
+[data-palette=mosaic] h1,[data-palette=blue] h1{font-size:clamp(50px,6.4vw,112px)}
+[data-palette=mosaic] .kicker:before,[data-palette=blue] .kicker:before{content:"";display:inline-block;width:7px;height:7px;background:var(--acc);transform:rotate(9deg);margin-inline-end:10px;vertical-align:1px}
+[data-palette=mosaic] .eyebrow:before,[data-palette=blue] .eyebrow:before{width:28px;height:7px;background:repeating-linear-gradient(90deg,var(--acc) 0 6px,transparent 6px 9px)}
+[data-palette=mosaic] .stats,[data-palette=blue] .stats{position:relative}
+[data-palette=mosaic] .stats:before,[data-palette=blue] .stats:before{content:"";position:absolute;top:-1px;inset-inline:0;height:6px;background:repeating-linear-gradient(90deg,var(--acc3) 0 5px,transparent 5px 7px,var(--acc2) 7px 12px,transparent 12px 14px,var(--acc) 14px 19px,transparent 19px 21px);opacity:.55}
+
+.strata{display:none;position:relative;height:clamp(200px,24vw,320px);margin-top:20px;margin-bottom:calc(-1 * clamp(12px,2vw,28px));overflow:hidden;z-index:0;pointer-events:none;
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 26%,#000 50%,transparent 97%);mask-image:linear-gradient(180deg,transparent,#000 26%,#000 50%,transparent 97%)}
+[data-palette=inkpetra] .strata{display:block}
+.bleed{margin-inline:calc(50% - 50vw)}
+.strata .band{position:absolute;inset:0;will-change:transform}
+.strata svg{position:absolute;left:0;top:0;width:200%;height:100%;display:block;animation:drift var(--t,90s) linear infinite alternate}
+.strata.paused svg{animation-play-state:paused}
+@keyframes drift{to{transform:translateX(-25%)}}
+[data-palette=inkpetra] h1.siq-in{animation:siq 1.9s .15s cubic-bezier(.7,0,.2,1) both}
+@keyframes siq{0%{clip-path:polygon(50% -30%,50% -30%,50% 130%,50% 130%)}60%{clip-path:polygon(38% -30%,62% -30%,62% 130%,38% 130%)}100%{clip-path:polygon(-6% -30%,106% -30%,106% 130%,-6% 130%)}}
+[data-palette=inkpetra] .reel{position:relative;z-index:1}
+[data-palette=inkpetra] .step-rule{background:linear-gradient(90deg,var(--acc2),var(--acc),var(--acc3))}[data-palette=inkpetra] .hstep:before{background:linear-gradient(180deg,var(--acc2),var(--acc),var(--acc3))}
+
+/* Siq reel: the demo opens from a narrow cleft as it scrolls into view */
+.siq-wrap{position:relative;border-radius:24px}
+.siq-wrap:before{content:"";position:absolute;inset:0;border-radius:inherit;opacity:calc(1 - var(--o,1));pointer-events:none;
+  background:linear-gradient(90deg,var(--acc3),var(--acc2) 18%,var(--acc) 34%,color-mix(in srgb,var(--acc) 30%,var(--bg)) 50%,var(--acc) 66%,var(--acc2) 82%,var(--acc3));
+  -webkit-mask-image:repeating-linear-gradient(180deg,#000 0 14px,rgba(0,0,0,.7) 14px 22px,#000 22px 31px,rgba(0,0,0,.85) 31px 38px);mask-image:repeating-linear-gradient(180deg,#000 0 14px,rgba(0,0,0,.7) 14px 22px,#000 22px 31px,rgba(0,0,0,.85) 31px 38px)}
+.siq-wrap .frame{--o:1;clip-path:polygon(calc(48% - var(--o)*50%) 0,calc(53% + var(--o)*49%) 0,calc(51% + var(--o)*51%) 100%,calc(46% - var(--o)*48%) 100%)}
+
+/* stats numbers */
+.stats b{font-variant-numeric:tabular-nums}
+
+/* rejoin scroll moment */
+.rj{position:relative;height:250vh;margin-top:8px}
+.rj-stage{position:sticky;top:0;height:100vh;display:flex;align-items:center;padding-top:76px;overflow:hidden;
+  background:radial-gradient(60% 50% at 50% 55%,color-mix(in srgb,var(--acc) 7%,transparent),transparent 70%)}
+.rj-in{display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:20px;height:min(700px,calc(100vh - 120px));width:100%}
+.rj-head{display:flex;justify-content:space-between;align-items:end;gap:24px}
+.rj-head h3{font:600 clamp(22px,2.2vw,30px)/1.3 var(--display);margin:0;max-width:30ch}
+.rj-meter{display:flex;gap:28px;direction:ltr}
+.rj-meter div{display:flex;flex-direction:column;gap:6px}
+.rj-meter small{font:500 11px/1 var(--mono);color:var(--mute);letter-spacing:.08em;text-transform:uppercase}
+.rj-meter b{font:700 clamp(40px,4vw,60px)/1 var(--display);font-variant-numeric:tabular-nums}
+.rj-box{position:relative;display:grid;place-items:center;--rjf:800 clamp(64px,12vw,184px)/1.3 var(--display)}
+.rj-m{position:absolute;visibility:hidden;font:var(--rjf);white-space:nowrap}
+.rj-m span{display:inline-block}
+.rj-mb{direction:ltr;display:flex;gap:.08em}
+.rj-pcs{position:absolute;inset:0}
+.rj-pc{position:absolute;top:0;left:0;font:var(--rjf);white-space:nowrap;will-change:transform}
+.rj-pc i{font-style:normal;position:absolute;top:0;left:0;transform:translateX(-50%)}
+.rj-pc .iso{color:transparent;-webkit-text-stroke:1.5px color-mix(in srgb,var(--mute) 85%,transparent)}
+.rj-pc .ctx{color:var(--acc)}
+.rj-final{font:var(--rjf);opacity:0;color:var(--acc);background:linear-gradient(100deg,var(--acc) 40%,color-mix(in srgb,var(--acc) 35%,#fff) 50%,var(--acc) 60%) 200% 0/300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.rj-final.on{opacity:1;animation:rjGlint 1.6s .1s cubic-bezier(.3,0,.2,1) both}
+@keyframes rjGlint{to{background-position:-100% 0}}
+.rj-pcs.off{opacity:0}
+.rj-code{direction:ltr;text-align:left;justify-self:start;font:13px/1.7 var(--mono);color:var(--mute);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.rj-code .d{color:var(--err)}.rj-code .a{color:var(--ok)}
+.rj-bar{position:absolute;bottom:0;inset-inline:0;height:2px;background:var(--line)}.rj-bar i{display:block;height:100%;width:0;background:var(--acc)}
+.rj-static{display:none}
+
+/* how it works: steps scroll past a sticky terminal */
+.how{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(24px,5vw,72px)}
+.hsteps{padding:6vh 0 22vh}
+.hstep{position:relative;min-height:72vh;display:flex;flex-direction:column;justify-content:center;gap:12px;padding-inline-start:22px}
+.hstep:before{content:"";position:absolute;inset-inline-start:0;top:50%;height:0;width:2px;background:var(--acc);transform:translateY(-50%);transition:height .5s var(--ease)}
+.hstep.on:before{height:min(70%,220px)}
+/* dimmed (not active) steps stay AA: colour shifts to --faint (≥4.6:1), never opacity */
+.hstep .k{font:500 11px/1 var(--mono);letter-spacing:.12em;color:var(--faint);transition:color .4s}
+.hstep h3{font:600 clamp(26px,2.6vw,36px)/1.25 var(--display);margin:0;color:var(--faint);transition:color .4s}
+.hstep p{margin:0;color:var(--faint);font-size:17px;line-height:1.8;max-width:46ch;transition:color .4s}
+.hstep.on .k{color:var(--acc-t)}.hstep.on h3{color:var(--ink)}.hstep.on p{color:var(--mute)}
+.hstick{position:sticky;top:96px;height:calc(100vh - 128px);max-height:780px;display:flex;flex-direction:column;gap:14px;align-self:start;margin-top:6vh}
+.term{flex:1;min-height:0;background:#0e0e10;border:1px solid var(--line);border-radius:18px;overflow:hidden;direction:ltr;display:flex;flex-direction:column;box-shadow:0 30px 80px -40px rgba(0,0,0,.6);color:#d9d4c9}
+.term-bar{display:flex;gap:7px;align-items:center;padding:12px 14px;border-bottom:1px solid #222}
+.term-bar i{width:11px;height:11px;border-radius:50%;background:#2c2a28}.term-bar span{margin-inline-start:10px;font:500 12px/1 var(--mono);color:#a29c92}
+.term-out{flex:1;margin:0;padding:14px 18px;font:12.5px/1.65 var(--mono);white-space:pre-wrap;overflow:hidden;text-align:left}
+.term-out .p{color:#ff8a66}.term-out .m{color:#a29c92}.term-out .e{color:#ff7a70}.term-out .w{color:#e9c46a}.term-out .o{color:#5fd39d}.term-out .del{color:#ff8f86}.term-out .add{color:#6fdca6}
+.caret{display:inline-block;width:.55em;height:1.1em;vertical-align:-.2em;background:#d9d4c9;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.pv{display:grid;grid-template-columns:minmax(0,1fr);align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 24px;min-height:150px}
+.pv-word{font:800 clamp(28px,3vw,46px)/1.3 var(--display);white-space:nowrap;overflow:hidden;padding-block:2px}
+.pv-word span{display:inline-block}
+.pv-word.broken{display:flex;direction:ltr;justify-content:flex-end;gap:.04em;color:var(--mute)}
+.pv-word.fixed{color:var(--acc)}
+.pv-word.fixed span{animation:rise .6s var(--ease) both;animation-delay:calc(var(--i)*40ms)}
+@keyframes rise{from{opacity:0;transform:translateY(.3em)}}
+.pv-meter{display:flex;gap:28px;direction:ltr;border-top:1px solid var(--line);padding-top:12px}
+.pv-meter div{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.pv-meter small{font:500 10.5px/1 var(--mono);color:var(--mute);letter-spacing:.08em;text-transform:uppercase}
+.pv-meter b{font:700 34px/1 var(--display);font-variant-numeric:tabular-nums}
+.pv-meter em{font:500 11px/1 var(--mono);font-style:normal;color:var(--mute)}
+.pv-meter .bad{color:var(--err)}.pv-meter .good{color:var(--ok)}
+
+/* remotion: view-transition tabs */
+.vt-top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.tabs{display:flex;gap:4px;padding:4px;border:1px solid var(--line);border-radius:999px;background:var(--bg2);direction:ltr}
+.tabs button{all:unset;cursor:pointer;padding:10px 16px;border-radius:999px;font:500 13px/1 var(--mono);color:var(--mute);position:relative;isolation:isolate}
+.tabs button[aria-selected=true]{color:var(--bg)}
+.tabs button[aria-selected=true]::before{content:"";position:absolute;inset:0;border-radius:999px;background:var(--ink);z-index:-1;view-transition-name:vt-pill}
+.tabs button:focus-visible,.vt-flip:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.vt-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border:1px solid var(--line);border-radius:24px;overflow:hidden;background:var(--card);min-height:440px;view-transition-name:vt-card}
+.vt-stage{position:relative;display:grid;place-items:center;padding:56px 28px 28px;border-inline-end:1px solid var(--line);min-height:300px}
+.vt-word{font:800 clamp(56px,6.4vw,104px)/1.25 var(--display);white-space:nowrap;view-transition-name:vt-word}
+.vt-word span{display:inline-block}
+.vt-word.broken{display:flex;direction:ltr;gap:.05em;color:var(--mute)}
+.vt-word.fixed{color:var(--acc)}
+.vt-img{width:100%;height:auto;border-radius:14px;border:1px solid var(--line);display:block;view-transition-name:vt-word}
+.vt-state{position:absolute;top:18px;inset-inline-start:20px;direction:ltr;font:500 12px/1 var(--mono);padding:7px 10px;border-radius:99px;border:1px solid currentColor;view-transition-name:vt-state}
+.vt-state.bad{color:var(--err)}.vt-state.ok{color:var(--ok)}
+.vt-code{margin:0;border:0;border-radius:0;background:var(--bg2);padding:26px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere;view-transition-name:vt-code}
+.vt-flip{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:999px;background:var(--acc);color:var(--on-acc);font:600 15px/1 var(--text)}
+.vt-note{color:var(--mute);font-size:14px;margin:14px 0 0}
+::view-transition-group(*){animation-duration:.5s;animation-timing-function:cubic-bezier(.16,1,.3,1)}
+::view-transition-old(vt-code){animation:.22s ease both vtout}::view-transition-new(vt-code){animation:.4s .08s cubic-bezier(.16,1,.3,1) both vtin}
+@keyframes vtout{to{opacity:0;transform:translateY(-6px)}}@keyframes vtin{from{opacity:0;transform:translateY(8px)}}
+
+/* footer settings */
+footer .wrap{align-items:center}
+.settings{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.settings .lbl{font:500 11px/1 var(--mono);color:var(--mute);letter-spacing:.06em}
+.settings .lbl[lang=ar]{font-family:var(--text);font-size:13px;letter-spacing:0}
+
+/* ---------- responsive ---------- */
+@media (max-width:1100px){.nav-pal{display:none}}
+@media (max-width:960px){
+  [data-palette=mosaic] .hero,[data-palette=blue] .hero{grid-template-columns:1fr;grid-template-areas:"h" "art" "s";row-gap:28px}
+  [data-palette=mosaic] .art,[data-palette=blue] .art{aspect-ratio:16/10}
+  .how{grid-template-columns:minmax(0,1fr);gap:0}
+  .hstick{order:-1;top:0;height:auto;max-height:none;padding:72px 0 12px;margin-top:0;z-index:3;background:var(--bg)}
+  .term{flex:none;height:min(300px,40vh)}
+  .hsteps{padding:2vh 0 12vh;position:relative;z-index:1}
+  .hstep{min-height:46vh}
+  .vt-card{grid-template-columns:minmax(0,1fr)}.vt-stage{border-inline-end:0;border-bottom:1px solid var(--line)}
+}
+@media (max-width:640px){
+  [data-palette=mosaic] .art,[data-palette=blue] .art{aspect-ratio:16/9;border-radius:18px}
+  .art figcaption{bottom:8px;inset-inline-start:8px;font-size:10px;padding:6px 9px}
+  .rj{height:200vh}
+  .rj-stage{padding-top:62px}
+  .rj-head{flex-direction:column-reverse;align-items:flex-start;gap:12px}
+  .rj-head h3{font-size:20px}
+  .rj-meter b{font-size:34px}
+  .rj-box{--rjf:800 clamp(50px,15vw,96px)/1.3 var(--display)}
+  .rj-code{font-size:11px;padding:10px 12px}
+  .hstick{padding-top:66px}
+  .term{height:min(260px,36vh)}
+  .term-out{font-size:10.5px;padding:10px 12px}
+  .pv{padding:12px 14px;min-height:0;gap:10px}
+  .pv-word{font-size:26px}
+  .pv-meter{gap:12px}.pv-meter b{font-size:24px}
+  .hstep h3{font-size:24px}.hstep p{font-size:16px}
+  .tabs{width:100%;justify-content:space-between}.tabs button{padding:9px 10px;font-size:11.5px}
+  .vt-word{font-size:clamp(40px,12vw,64px)}
+  .vt-code{font-size:11.5px;padding:18px}
+  .vt-card{min-height:0}
+  .strata{height:150px;margin-bottom:-10px}
+  footer .wrap{flex-direction:column;align-items:flex-start}
+}
+
+/* ---------- finished states: reduced motion + capture mode ---------- */
+@media (prefers-reduced-motion:reduce){
+  .rj{height:auto}.rj-stage{position:relative;height:auto;padding:24px 0 8px}.rj-in{height:auto;grid-template-rows:auto auto auto}
+  .rj-pcs,.rj-m,.rj-bar{display:none}.rj-static{display:grid}.rj-box>.rj-final{display:none}
+  .caret,.strata svg{animation:none}
+  .pv-word.fixed span,.rj-final.on{animation:none}
+  [data-palette=inkpetra] h1.siq-in{animation:none}
+  .siq-wrap .frame{clip-path:none}.siq-wrap:before{display:none}
+}
+:root.shot .rj{height:auto}:root.shot .rj-stage{position:relative;height:auto;padding:24px 0 8px}:root.shot .rj-in{height:auto;grid-template-rows:auto auto auto}
+:root.shot .rj-pcs,:root.shot .rj-m,:root.shot .rj-bar{display:none}:root.shot .rj-static{display:grid}:root.shot .rj-box>.rj-final{display:none}
+:root.shot .caret,:root.shot .strata svg{animation:none}:root.shot [data-reveal]{opacity:1;transform:none;transition:none}
+:root.shot .siq-wrap .frame{clip-path:none}:root.shot .siq-wrap:before{display:none}:root.shot h1.siq-in{animation:none}
+:root.shot .kin .broken{display:none}:root.shot .kin *{animation:none!important}
+:root.shot .how .hstick{position:relative;top:0}:root.shot .hstep{min-height:0;padding-block:28px}:root.shot .hsteps{padding:0}
+:root.shot .rail{display:none}
+.rj-static{grid-template-columns:1fr auto 1fr;align-items:center;gap:24px;justify-items:center;width:100%}
+.rj-static .b{display:flex;direction:ltr;gap:.06em;font:800 clamp(44px,6vw,96px)/1.3 var(--display);color:transparent;-webkit-text-stroke:1.5px var(--mute)}
+.rj-static .b span{display:inline-block}
+.rj-static .j{font:800 clamp(48px,6.4vw,104px)/1.3 var(--display);color:var(--acc)}
+.rj-static .arr{font:500 28px/1 var(--mono);color:var(--mute)}
+@media (max-width:640px){.rj-static{grid-template-columns:1fr;gap:6px}.rj-static .arr{transform:rotate(-90deg)}}
+[dir=ltr] .rj-static .arr{transform:scaleX(-1)}@media (max-width:640px){[dir=ltr] .rj-static .arr{transform:rotate(-90deg)}}
+
+.rj-head .st{display:none}.rj-meter small [lang=ar]{font-family:var(--text);letter-spacing:0;text-transform:none;font-size:12px}
+@media (prefers-reduced-motion:reduce){.rj-head .mv{display:none}.rj-head .st{display:inline}}
+:root.shot .rj-head .mv{display:none}:root.shot .rj-head .st{display:inline}
+/* kinetic word: the isolated-letter layer floats over the joined word so it never widens the line (no reflow on phones) */
+.kin{position:relative;display:inline-block}
+.kin .broken{position:absolute;top:0;left:50%;transform:translateX(-50%);white-space:nowrap;pointer-events:none}
+
+.hero-h{overflow-x:clip}
+
+/* Pro waitlist: one email field and the button, inline; the note under it becomes the status line */
+.vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.wl{margin-top:22px}
+.wl-row{display:flex;flex-wrap:wrap;gap:8px}
+.wl input[type=email]{flex:1 1 220px;min-width:0;font:400 15px/1.2 var(--text);color:var(--ink);background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:11px 18px;transition:border-color .2s}
+.wl input[type=email]::placeholder{color:var(--faint)}
+.wl input[type=email]:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-color:var(--acc)}
+.wl input[aria-invalid=true]{border-color:var(--err)}
+.wl input[type=email]{scroll-margin:110px 0 140px}
+.wl .btn{flex:0 0 auto;justify-content:center;cursor:pointer}
+.wl .btn[aria-disabled=true]{opacity:.6;cursor:progress}
+.duo .wl-msg{margin-top:10px;font-size:14px;line-height:1.6;color:var(--faint)}
+.duo .wl-msg.err{color:var(--err)}.duo .wl-msg.ok{color:var(--ok);font-size:16px}
+.wl-msg a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.wl-msg button{all:unset;cursor:pointer;text-decoration:underline;text-underline-offset:3px;direction:ltr;unicode-bidi:isolate}
+.wl-msg button:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:4px}
+.wl.done .wl-row{display:none}
+@media (max-width:480px){.wl .btn{flex:1 1 100%}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main"><span lang="ar">تخطَّ إلى المحتوى</span><span lang="en">Skip to content</span></a>
+<nav aria-label="الرئيسية · Main"><div class="wrap">
+  <a class="logo" href="/landing">حركة<i></i></a>
+  <div class="links">
+    <a href="#problem"><span lang="ar">المشكلة</span><span lang="en">Problem</span></a>
+    <a href="#fixes"><span lang="ar">ما يصلحه</span><span lang="en">Fixes</span></a>
+    <a href="#how"><span lang="ar">كيف تعمل</span><span lang="en">How it works</span></a>
+    <a href="#remotion">Remotion</a>
+  </div>
+  <div class="ctrls">
+    <div class="seg" id="lang" role="group" aria-label="Language"><button data-v="ar" aria-label="العربية" lang="ar" class="keep">ع</button><button data-v="en" aria-label="English" lang="en" class="keep">EN</button></div>
+    <div class="seg" id="theme" role="group" aria-label="Theme"><button data-v="system" title="تلقائي · Auto" aria-label="تلقائي · Auto">◐</button><button data-v="light" title="فاتح · Light" aria-label="فاتح · Light">☀</button><button data-v="dark" title="داكن · Dark" aria-label="داكن · Dark">☾</button></div>
+    <a class="btn sm p" href="/"><span lang="ar">افتح الأداة</span><span lang="en">Open the tool</span></a>
+  </div>
+</div></nav>
+
+<nav class="rail" aria-label="أقسام الصفحة · Sections">
+  <a href="#top" data-band="top"><i></i><b class="mono" data-n="1" data-pad="2"></b><span><span lang="ar">البداية</span><span lang="en">Start</span></span></a>
+  <a href="#demo" data-band="demo"><i></i><b class="mono" data-n="2" data-pad="2"></b><span><span lang="ar">العرض</span><span lang="en">Demo</span></span></a>
+  <a href="#problem" data-band="problem"><i></i><b class="mono" data-n="3" data-pad="2"></b><span><span lang="ar">المشكلة</span><span lang="en">Problem</span></span></a>
+  <a href="#fixes" data-band="fixes"><i></i><b class="mono" data-n="4" data-pad="2"></b><span><span lang="ar">الإصلاحات</span><span lang="en">Fixes</span></span></a>
+  <a href="#how" data-band="how"><i></i><b class="mono" data-n="5" data-pad="2"></b><span><span lang="ar">الطريقة</span><span lang="en">How</span></span></a>
+  <a href="#remotion" data-band="remotion"><i></i><b class="mono" data-n="6" data-pad="2"></b><span>Remotion</span></a>
+</nav>
+
+<main class="wrap" id="main">
+  <header class="hero" id="top">
+    <div class="hero-h">
+      <div class="eyebrow"><span lang="ar">أداة مجانية · موشن عربي</span><span lang="en">Free tool · Arabic motion</span></div>
+      <h1 id="h1">
+        <span lang="ar">حرّك العنوان،<br>والحروف تبقى</span><span lang="en">Animate Arabic titles.<br>Keep the letters</span>
+        <span class="kin keep" id="kin" lang="ar" dir="rtl"><span class="broken" aria-hidden="true"></span><span class="joined">متصلة.</span></span>
+      </h1>
+    </div>
+    <div class="side">
+      <p lang="ar">كود الموشن اللي يكتبه الذكاء الاصطناعي يقسّم الكلمة حرفاً حرفاً، فتتفكك العربية. <b>حركة</b> تكشف المشكلة وتصلحها قبل الرندر، في <bdi dir="ltr">HTML</bdi> و<bdi dir="ltr">GSAP</bdi> و<bdi dir="ltr">HyperFrames</bdi> و<bdi dir="ltr">Remotion</bdi>، ثم تثبت النتيجة برندر حقيقي.</p>
+      <p lang="en">AI-written motion code splits words letter by letter, and Arabic falls apart. <b>Harakah</b> finds and fixes it before you render — HTML, GSAP, HyperFrames and Remotion — then proves it with a real render.</p>
+      <div class="cta"><a class="btn p" href="/"><span lang="ar">افتح الأداة</span><span lang="en">Open the tool</span><span class="arr">←</span></a><span class="cmd">harakah-fix fix <b>./video</b> --write</span></div>
+    </div>
+    <figure class="art" aria-hidden="true"><canvas></canvas><figcaption><span class="cap-mosaic"><span lang="ar">فسيفساء · دمشق <span data-n="715"></span>م</span><span lang="en">Tesserae · Damascus, 715 CE</span></span><span class="cap-blue"><span lang="ar">قيشاني · دمشق</span><span lang="en">Qishani tiles · Damascus</span></span></figcaption></figure>
+  </header>
+  <div class="strata bleed" aria-hidden="true"></div>
+
+  <section class="reel" id="demo" aria-label="عرض قبل وبعد · Before and after demo">
+    <div class="reel-top">
+      <div class="seg" id="reel" role="group" aria-label="Demo"><button data-v="html">HTML · GSAP</button><button data-v="remotion">Remotion</button></div>
+      <span class="cap"><span lang="ar">بعد الإصلاح على اليسار · قبل على اليمين</span><span lang="en">After on the left · before on the right</span></span>
+      <div class="seg pan" id="pan" role="group" aria-label="Panel · اللقطة"><button data-v="after"><span lang="ar">بعد</span><span lang="en">After</span></button><button data-v="before"><span lang="ar">قبل</span><span lang="en">Before</span></button></div>
+    </div>
+    <div class="siq-wrap" id="siq">
+    <figure class="frame" style="margin:0"><video id="vid" src="/demo/harakah-demo.mp4" poster="/demo/harakah-demo.png" muted loop playsinline preload="metadata" aria-label="Before and after render of an Arabic title · قبل وبعد"></video>
+      <button class="pp" id="pp" type="button" aria-pressed="false"><span class="i-pause" aria-hidden="true">❚❚</span><span class="i-play" aria-hidden="true">▶</span><span class="sr"><span lang="ar">إيقاف أو تشغيل الفيديو</span><span lang="en">Pause or play video</span></span></button><span class="tag"><span lang="ar">رندر حقيقي، بدون مونتاج</span><span lang="en">Real render, no editing</span></span></figure>
+    </div>
+  </section>
+
+  <div class="stats" data-reveal>
+    <div><b data-n="27">27</b><span lang="ar">قاعدة فحص للنص العربي</span><span lang="en">Arabic text checks</span></div>
+    <div><b data-n="3">3</b><span lang="ar">أنظمة تشغيل يُختبر عليها كل تعديل: لينكس وماك وويندوز</span><span lang="en">operating systems every change is tested on: Linux, macOS, Windows</span></div>
+    <div><b data-n="0">0</b><span lang="ar">ملفات تُرفع، كل شيء محلي</span><span lang="en">uploads — it all runs locally</span></div>
+    <div><b data-n="4">4</b><span lang="ar">أُطر: <bdi dir="ltr">HTML</bdi> و<bdi dir="ltr">GSAP</bdi> و<bdi dir="ltr">HyperFrames</bdi> و<bdi dir="ltr">Remotion</bdi>، مع فحص <bdi dir="ltr">Canvas</bdi> و<bdi dir="ltr">three.js</bdi></span><span lang="en">stacks: HTML, GSAP, HyperFrames, Remotion, plus checks for canvas and three.js</span></div>
+  </div>
+
+  <section class="s" id="problem">
+    <div class="s-head" data-reveal>
+      <div><div class="kicker"><span lang="ar">المشكلة</span><span lang="en">The problem</span></div><h2><span lang="ar">نفس الكود، كلمة مختلفة تماماً</span><span lang="en">Same code. A completely different word.</span></h2></div>
+      <p lang="ar">قوالب الموشن مكتوبة للإنجليزية: كل حرف في صندوق مستقل ليتحرك وحده. مع العربية يظهر كل حرف بشكله المنفصل، وتنقلب الكلمة في صف من اليسار.</p>
+      <p lang="en">Motion templates are written for Latin: each letter gets its own box so it can move on its own. In Arabic every letter then shows its isolated form, and a left-to-right row reverses the word.</p>
+    </div>
+    <div class="rj" id="rejoin">
+      <div class="rj-stage">
+        <div class="rj-in">
+          <div class="rj-head">
+            <h3><span lang="ar"><span class="mv">مرّر ببطء: حرفاً حرفاً، حتى تلتئم الكلمة</span><span class="st">الكلمة نفسها، قبل حركة وبعدها</span></span><span lang="en"><span class="mv">Scroll slowly: letter by letter, until the word holds</span><span class="st">The same word, before and after Harakah</span></span></h3>
+            <div class="rj-meter" aria-hidden="true"><div><small><span lang="ar">حروف منفصلة</span><span lang="en">isolated forms</span></small><b id="rj-n"></b></div><div><small><span lang="ar">المطلوب</span><span lang="en">target</span></small><b data-n="0"></b></div></div>
+          </div>
+          <div class="rj-box keep" id="rj-box" lang="ar" dir="rtl">
+            <p class="sr-only"><span lang="ar">«الحكايات» مقسّمة حرفاً حرفاً تظهر بحروف منفصلة ومقلوبة، وبعد حركة تعود كلمة واحدة متصلة.</span><span lang="en">«الحكايات» split letter by letter shows isolated, reversed letters; after Harakah it is one joined word again.</span></p>
+            <div class="rj-m rj-mb" aria-hidden="true"></div><div class="rj-m rj-mj" aria-hidden="true"></div>
+            <div class="rj-pcs" aria-hidden="true"></div>
+            <div class="rj-final" aria-hidden="true">الحكايات</div>
+            <div class="rj-static" aria-hidden="true"><div class="b"></div><span class="arr">←</span><div class="j">الحكايات</div></div>
+          </div>
+          <div class="rj-code" id="rj-code" aria-hidden="true"></div>
+        </div>
+        <div class="rj-bar"><i></i></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="s" id="fixes">
+    <div class="s-head" data-reveal>
+      <div><div class="kicker"><span lang="ar">ما الذي يصلحه</span><span lang="en">What it fixes</span></div><h2><span lang="ar">التفاصيل اللي تفضح القالب المترجم</span><span lang="en">The details that give a translated template away</span></h2></div>
+      <p lang="ar">تعديلات صغيرة وواضحة في كودك نفسه، مع تعليق عند كل تغيير. وما لا يمكن إصلاحه بأمان يظهر كتنبيه مع اقتراح.</p>
+      <p lang="en">Small, readable edits in your own code, with a comment at every change. Anything that can't be fixed safely is reported with a suggested patch.</p>
+    </div>
+    <div class="rows" data-reveal>
+      <div class="row"><span class="n mono" data-n="1" data-pad="2"></span><div><h3><span lang="ar">الحروف المتقطعة</span><span lang="en">Disconnected letters</span></h3><p lang="ar">تحريك حرفاً حرفاً أو كلمة كلمة بدون ما تنفصل الكلمة، مع «لا» والتشكيل في مكانهما.</p><p lang="en">Per-letter or per-word motion that keeps words joined, with لا and diacritics intact.</p></div><code>split("") → splitArabic()</code></div>
+      <div class="row"><span class="n mono" data-n="2" data-pad="2"></span><div><h3><span lang="ar">الاتجاه والمحاذاة</span><span lang="en">Direction and alignment</span></h3><p lang="ar">اتجاه من اليمين، ومحاذاة تتبع اللغة، وكلمات مثل <bdi dir="ltr">Spotify</bdi> وعلامات الترقيم في مكانها.</p><p lang="en">Right-to-left flow, language-aware alignment, and words like Spotify and punctuation where they belong.</p></div><code>dir="rtl" · &lt;bdi&gt;</code></div>
+      <div class="row"><span class="n mono" data-n="3" data-pad="2"></span><div><h3><span lang="ar">الأرقام</span><span lang="en">Digits</span></h3><p lang="ar">مشرقية ١٢٣ افتراضياً أو غربية 123، بخيار واحد، حتى في العدادات المتحركة: <bdi class="mono" data-n="1250000"></bdi>.</p><p lang="en">Eastern ١٢٣ by default or Western 123 — one switch, even on animated counters: <span class="mono">١٬٢٥٠٬٠٠٠</span>.</p></div><code>--digits eastern</code></div>
+      <div class="row"><span class="n mono" data-n="4" data-pad="2"></span><div><h3><span lang="ar">الخطوط وتراخيصها</span><span lang="en">Fonts and licenses</span></h3><p lang="ar">خط عربي حر بدل الخطوط اللاتينية، وتنبيه قبل رفع خط لا يجوز توزيعه.</p><p lang="en">An open-licensed Arabic face instead of Latin-only fonts, and a warning before you upload one you can't redistribute.</p></div><code>Montserrat → Alexandria</code></div>
+      <div class="row"><span class="n mono" data-n="5" data-pad="2"></span><div><h3><span lang="ar">التباعد وحالة الأحرف</span><span lang="en">Tracking and case</span></h3><p lang="ar">لا تباعد بين الحروف ولا أحرف كبيرة في نص لا يعرفها، ومسافة كافية للتشكيل.</p><p lang="en">No letter-spacing or uppercase on a script that has neither, and room for diacritics.</p></div><code>letterSpacing: 0</code></div>
+    </div>
+  </section>
+
+  <section class="s" id="how">
+    <div class="s-head" data-reveal>
+      <div><div class="kicker"><span lang="ar">كيف تعمل</span><span lang="en">How it works</span></div><h2><span lang="ar">كشف، إصلاح، ثم دليل</span><span lang="en">Detect, fix, then prove it</span></h2></div>
+      <p lang="ar">لا نكتفي بقول «تم الإصلاح». حركة ترندر المشهد قبل وبعد، وتعدّ قطع الحبر في كل كلمة، وتقارنها بنص متصل مرجعي. الأوامر والنتائج هنا حقيقية، من مشروع <bdi dir="ltr">Remotion</bdi> التجريبي في المستودع.</p>
+      <p lang="en">"Fixed" isn't enough. Harakah renders the scene before and after, counts the ink pieces in every word and compares them with a running-text reference. The commands and output here are real, run on the repo's Remotion demo project.</p>
+    </div>
+    <div class="how">
+      <div class="hsteps">
+        <div class="hstep" data-step="0"><span class="k">01 · DETECT</span><h3><span lang="ar">يكشف</span><span lang="en">Detect</span></h3><p lang="ar">قواعد تغطي التقسيم والاتجاه والأرقام والخطوط والتشكيل، وتتبع النص العربي حتى عبر خصائص المكوّنات.</p><p lang="en">Rules for splitting, direction, digits, fonts and diacritics — and it follows Arabic through component props.</p></div>
+        <div class="hstep" data-step="1"><span class="k">02 · FIX</span><h3><span lang="ar">يصلح</span><span lang="en">Fix</span></h3><p lang="ar">يعدّل الكود عبر شجرة الصياغة، فلا يلمس شيئاً خارج التغيير، ويترك تعليقاً عند كل سطر. تشغيله مرتين لا يغيّر شيئاً.</p><p lang="en">Edits go through the syntax tree, touch nothing else, and leave a comment on every line they change. Running it twice changes nothing.</p></div>
+        <div class="hstep" data-step="2"><span class="k">03 · VERIFY</span><h3><span lang="ar">يثبت</span><span lang="en">Prove</span></h3><p lang="ar">يرندر كل مشهد قبل وبعد، ويعدّ قطع الحبر في «سلام على أهل الشام» ويقارنها بالنص المتصل: <span data-n="18"></span> قبل، <span data-n="12"></span> بعد، والمرجع <span data-n="12"></span>.</p><p lang="en">It renders every scene before and after and counts the ink pieces in «سلام على أهل الشام» against running text: 18 before, 12 after, reference 12.</p></div>
+      </div>
+      <div class="hstick">
+        <div class="term" role="img" aria-label="Terminal: harakah-fix check, fix and compare on fixtures/remotion">
+          <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>~/harakah-fixer</span></div>
+          <pre class="term-out" id="term" aria-hidden="true"></pre>
+        </div>
+        <div class="pv" aria-hidden="true">
+          <div class="pv-word keep broken" id="pv-word" lang="ar" dir="rtl"></div>
+          <div class="pv-meter"><div><small>before</small><b class="bad" data-n="18"></b><em><span data-n="1057"></span>px</em></div><div><small>after</small><b class="good" id="pv-after">–</b><em id="pv-after-w">&nbsp;</em></div><div><small>ref</small><b data-n="12"></b><em><span data-n="855"></span>px</em></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="s" id="remotion">
+    <div class="s-head" data-reveal>
+      <div><div class="kicker">Remotion</div><h2><span lang="ar">أداة واحدة، وأدواتك كما هي</span><span lang="en">One fixer, whatever you animate with</span></h2></div>
+      <p lang="ar">في <bdi dir="ltr">Remotion</bdi> تعيد حركة كتابة السطر إلى <bdi dir="ltr">splitArabic()</bdi>، أو استخدم <bdi dir="ltr">&lt;ArabicText&gt;</bdi> مباشرة. وفي <bdi dir="ltr">HTML</bdi> و<bdi dir="ltr">GSAP</bdi> و<bdi dir="ltr">HyperFrames</bdi> تضيف سكربتاً صغيراً يُبقي العناصر نفسها، فتبقى الحركة كما صمّمتها.</p>
+      <p lang="en">In Remotion, Harakah rewrites the line to splitArabic(), or use &lt;ArabicText&gt; directly. In HTML, GSAP and HyperFrames it adds a small runtime shim that keeps the same elements, so your timeline still works.</p>
+    </div>
+    <div data-reveal>
+      <div class="vt-top">
+        <div class="tabs" role="tablist" aria-label="Stack" id="vt-tabs"></div>
+        <button class="vt-flip" id="vt-flip" aria-pressed="false"><span lang="ar">أصلح الكلمة</span><span lang="en">Fix the word</span><span aria-hidden="true">←</span></button>
+      </div>
+      <div class="vt-card" role="tabpanel" id="vt-panel">
+        <div class="vt-stage"><span class="vt-state bad" id="vt-state"></span><div id="vt-view"></div></div>
+        <pre class="code vt-code" id="vt-code" tabindex="0"></pre>
+      </div>
+      <p class="vt-note"><span lang="ar">التبديل بين الأدوات يستخدم <bdi dir="ltr">View Transitions</bdi> في المتصفح، فتنتقل البطاقة والكلمة والكود معاً.</span><span lang="en">Switching uses the browser's View Transitions, so the card, word and code move together.</span></p>
+    </div>
+  </section>
+
+  <section class="s">
+    <div class="duo" data-reveal>
+      <div><div class="kicker"><span lang="ar">الخصوصية</span><span lang="en">Privacy</span></div><h3><span lang="ar">محلي بالكامل</span><span lang="en">Runs entirely on your machine</span></h3><p lang="ar">الأداة تعمل على جهازك. لا يُرفع كود ولا خط ولا فيديو إلى أي خادم.</p><p lang="en">Nothing leaves your machine — no code, fonts or video are uploaded anywhere.</p></div>
+      <div><div class="kicker"><span lang="ar">الخطوط</span><span lang="en">Fonts</span></div><h3><span lang="ar">خطوط حرة فقط</span><span lang="en">Open-licensed fonts only</span></h3><p lang="ar">البدائل كلها برخصة <bdi dir="ltr">OFL</bdi>. والخطوط التي لا يجوز رفعها تبقى للرندر المحلي فقط.</p><p lang="en">Every fallback is SIL OFL. Fonts that can't be redistributed stay local-render only.</p>
+        <div class="fonts keep"><span style="font-family:var(--display)">Alexandria</span><span>IBM Plex Sans Arabic</span><span>Readex Pro</span><span class="x mono">Inter</span><span class="x mono">Montserrat</span></div></div>
+    </div>
+  </section>
+
+  <section class="s" id="pro">
+    <div class="duo" data-reveal>
+      <div><div class="kicker"><span lang="ar">قريباً</span><span lang="en">Coming soon</span></div><h3><span lang="ar">حركة برو</span><span lang="en">Harakah Pro</span></h3><p lang="ar">نسخة مستضافة: رفع مشاريع كاملة، إصلاح دفعات، سجل محفوظ، و<bdi dir="ltr">API</bdi> لأدوات الذكاء الاصطناعي و<bdi dir="ltr">CI</bdi>، وتقارير مراجعة للفيديو: أوراق إطارات تُعلَّم فيها كل مشكلة، جاهزة للعميل. الأداة المحلية تبقى مجانية.</p><p lang="en">A hosted version: whole-project uploads, batch fixes, saved history, an API for AI tools and CI, and video QA reports: frame-by-frame sheets with every problem marked, ready for the client. The local tool stays free.</p>
+        <form class="wl" id="waitlist" action="/api/waitlist" method="post" novalidate>
+          <label class="vh" for="wl-email"><span lang="ar">بريدك الإلكتروني</span><span lang="en">Your email</span></label>
+          <div class="wl-row">
+            <input id="wl-email" name="email" type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" dir="ltr" maxlength="254" required placeholder="you@studio.com" aria-describedby="wl-msg">
+            <button class="btn sm p" type="submit"><span lang="ar">انضم لقائمة الانتظار</span><span lang="en">Join the waitlist</span></button>
+          </div>
+          <div class="vh" aria-hidden="true"><label for="wl-website">Leave this empty</label><input id="wl-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+          <input type="hidden" name="lang" value="ar">
+          <p class="wl-msg" id="wl-msg" role="status"><span lang="ar">بريد واحد عند الإطلاق، لا شيء غيره.</span><span lang="en">One email when Pro opens. Nothing else.</span></p>
+        </form></div>
+      <div><div class="kicker"><span lang="ar">خدمات</span><span lang="en">Services</span></div><h3><span lang="ar">نصلحها لك</span><span lang="en">We'll fix it for you</span></h3><p lang="ar">وكالة أو استوديو بموعد تسليم؟ نراجع ونصلح النصوص العربية في موشن جرافيكس مشروعك.</p><p lang="en">Agency or studio on a deadline? We review and fix the Arabic in your motion-graphics project.</p>
+        <p><a class="btn sm" href="mailto:hello@harakah.si?subject=Arabic%20motion%20graphics%20fix"><span lang="ar">تواصل معنا</span><span lang="en">Get in touch</span></a></p></div>
+    </div>
+  </section>
+
+  <section class="final" data-reveal>
+    <h2><span lang="ar">جاهز تصلح<br>أول مشهد؟</span><span lang="en">Ready to fix<br>your first scene?</span></h2>
+    <div class="cta"><a class="btn p" href="/"><span lang="ar">افتح الأداة</span><span lang="en">Open the tool</span><span class="arr">←</span></a><span class="cmd">harakah-fix check <b>./my-remotion-app</b></span></div>
+  </section>
+</main>
+<footer><div class="wrap">
+  <span><span lang="ar">حركة · أداة مجانية تعمل محلياً</span><span lang="en">Harakah · a free, local tool</span></span>
+  <div class="settings">
+    <span class="lbl" lang="ar">الأرقام</span><span class="lbl" lang="en">DIGITS</span>
+    <div class="seg" id="digits" role="group" aria-label="الأرقام · Digits"><button data-v="eastern" aria-label="أرقام مشرقية · Eastern digits" lang="ar" class="keep">١٢٣</button><button data-v="western" aria-label="أرقام غربية · Western digits" lang="en" class="keep">123</button></div>
+  </div>
+  <span class="links"><a href="https://www.npmjs.com/package/harakah-fixer">npm</a> · <a href="mailto:hello@harakah.si">hello@harakah.si</a></span>
+  <span class="mono" id="ver">harakah-fix v0.4.1</span>
+</div></footer>
+
+<script>
+// Browser port of src/arabic.ts splitArabic(): grapheme clusters, لا kept together, ZWJ padding
+// so every chunk keeps the contextual form it has in running text. Never yields isolated forms
+// unless you ask for them (isolated() is only used to *show the bug*).
+(function (g) {
+  const ZWJ = "\u200D";
+  const TASHKEEL = /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E4\u06E7\u06E8\u06EA-\u06ED]/;
+  const R = new Set([0x622, 0x623, 0x624, 0x625, 0x627, 0x629, 0x62f, 0x630, 0x631, 0x632, 0x648, 0x671]);
+  const U = new Set([0x621]);
+  const jt = (ch) => { const c = ch.codePointAt(0); if (c === 0x200d || c === 0x640) return "C"; if (TASHKEEL.test(ch)) return "T"; if (R.has(c)) return "R"; if (U.has(c)) return "U"; if (c >= 0x620 && c <= 0x64a) return "D"; return "U"; };
+  const edge = (s, last) => { const a = [...s]; if (last) a.reverse(); for (const c of a) { const t = jt(c); if (t !== "T") return t; } return "U"; };
+  const fwd = (t) => t === "D" || t === "C", back = (t) => t === "D" || t === "R" || t === "C";
+  const seg = new Intl.Segmenter("ar", { granularity: "grapheme" });
+  const ALEF = new Set(["\u0622", "\u0623", "\u0625", "\u0627"]);
+  function graphemes(s) {
+    const out = [...seg.segment(s)].map((x) => x.segment);
+    for (let i = 0; i < out.length - 1; i++) { // keep لا as one unit (mandatory ligature)
+      const a = [...out[i]].filter((c) => jt(c) !== "T"), b = [...out[i + 1]].filter((c) => jt(c) !== "T");
+      if (a.at(-1) === "\u0644" && ALEF.has(b[0])) { out.splice(i, 2, out[i] + out[i + 1]); }
+    }
+    return out;
+  }
+  function splitArabic(s) {
+    const p = graphemes(s);
+    return p.map((x, i) => {
+      if (!/[\u0620-\u064A]/.test(x)) return x;
+      let o = x;
+      if (i > 0 && fwd(edge(p[i - 1], true)) && back(edge(x, false))) o = ZWJ + o;
+      if (i < p.length - 1 && fwd(edge(x, true)) && back(edge(p[i + 1], false))) o = o + ZWJ;
+      return o;
+    });
+  }
+  g.HZ = { ZWJ, graphemes, splitArabic, isolated: graphemes };
+})(window);
+// Verbatim excerpts of real harakah-fix runs on the repo's Remotion demo project (fixtures/remotion).
+// "…" marks elided lines; lines starting with "#" are our annotations.
+window.HZ_TERM = [
+  [
+    ["p", "$ harakah-fix check fixtures/remotion"],
+    ["m", "Arabic via props · نص عربي عبر الخصائص:"],
+    ["m", "  Kicker (Kicker.tsx): label ← PropsTitle (title, kicker) → <Kicker>"],
+    ["m", "…"],
+    ["", "fixtures/remotion/src/broken/CharSplitTitle.tsx: 1 error(s), 4 warning(s), 0 info — 5 auto-fixable"],
+    ["w", "WARN  HZ09 Font stack has no Arabic font [auto-fix]  L4"],
+    ["w", "WARN  HZ09 Font stack has no Arabic font [auto-fix]  L6"],
+    ["w", "WARN  HZ09 Font stack has no Arabic font [auto-fix]  L6"],
+    ["w", "WARN  HZ03 Arabic text is not in a right-to-left context [auto-fix]  L13"],
+    ["e", "ERROR HZ02 Script splits text into characters at runtime [auto-fix]  L15"],
+    ["m", "…"],
+    ["", "→ 56 auto-fixable, 2 manual · run `harakah-fix fix fixtures/remotion --write` (or -o <dir>) · add --diff to preview"],
+  ],
+  [
+    ["p", "$ harakah-fix fix fixtures/remotion -o /tmp/hzfix --diff"],
+    ["m", "--- a/src/broken/CharSplitTitle.tsx"],
+    ["m", "+++ b/src/broken/CharSplitTitle.tsx"],
+    ["del", "-import { loadFont } from \"@remotion/google-fonts/Inter\";"],
+    ["add", "+import { loadFont } from \"@remotion/google-fonts/IBMPlexSansArabic\"; // harakah: was Inter (no Arabic glyphs)"],
+    ["add", "+import { splitArabic } from \"../harakah-arabic\"; // harakah: joining-aware Arabic helpers"],
+    ["m", "…"],
+    ["del", "-        {text.split(\"\").map((char, i) => {"],
+    ["add", "+        {/* harakah: was text.split(\"\") */ splitArabic(text).map((char, i) => {"],
+    ["m", "…"],
+    ["o", "✔ Changed 9 file(s): 56 auto-fix(es), 2 manual (report-only) · تم الإصلاح"],
+  ],
+  [
+    ["p", "$ harakah-fix compare fixtures/remotion -o /tmp/hzrp"],
+    ["m", "· bundling before / after…"],
+    ["m", "codemod: 53 change(s) in 8 file(s)"],
+    ["", "CharSplitTitle @ frame 68/90"],
+    ["", "  ink pieces/width: before 18/1057px, after 12/855px, running-text reference 12/855px; pixel diff vs reference: after 0.0%, before 100.0%"],
+    ["o", "  → JOINED ✓ (after matches running text)"],
+    ["", "PropsTitle @ frame 56/75"],
+    ["", "  ink pieces/width: before 31/950px, after 27/809px, running-text reference 27/809px; pixel diff vs reference: after 0.0%, before 95.3%"],
+    ["o", "  → JOINED ✓ (after matches running text)"],
+    ["m", "# 10/10 compositions → JOINED ✓"],
+  ],
+];
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const root = document.documentElement;
+const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+const SHOT = root.classList.contains("shot");
+const still = () => reduce.matches || SHOT; // finished states, no loops
+const mobile = () => matchMedia("(max-width:640px)").matches;
+
+/* ---------- digits: Eastern ١٢٣ with Arabic separators (٬ ٫) by default in Arabic ---------- */
+const nf = (opts = {}) => {
+  const loc = root.dataset.lang === "ar" ? (root.dataset.digits === "western" ? "ar-u-nu-latn" : "ar-EG") : "en-US";
+  return new Intl.NumberFormat(loc, opts);
+};
+const fmt = (n, pad) => nf(pad ? { minimumIntegerDigits: pad, useGrouping: false } : {}).format(n);
+function paintNumbers() { $$("[data-n]").forEach((el) => (el.textContent = fmt(+el.dataset.n, +el.dataset.pad || 0))); }
+
+/* ---------- kinetic hero word (from the live page) ---------- */
+const word = "متصلة";
+const kin = $("#kin");
+$(".broken", kin).innerHTML = [...word].map((c, i, a) => `<span style="--i:${a.length - 1 - i}">${c}</span>`).join("");
+const replay = () => { kin.classList.remove("play"); void kin.offsetWidth; kin.classList.add("play"); };
+kin.addEventListener("mouseenter", () => { if (!still()) replay(); });
+if (!still()) { replay(); setInterval(() => { if (!still() && !document.hidden) replay(); }, 7000); }
+
+/* ---------- segmented controls ---------- */
+const segSync = (sel, v) => $$(`${sel} button`).forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.v === v)));
+function seg(sel, value, set) {
+  $$(`${sel} button`).forEach((b) => b.addEventListener("click", () => { set(b.dataset.v); segSync(sel, b.dataset.v); }));
+  segSync(sel, value);
+}
+const mq = matchMedia("(prefers-color-scheme: dark)");
+const listeners = { theme: [], lang: [], palette: [] };
+const emit = (k) => listeners[k].forEach((f) => f());
+const applyTheme = (p) => { root.dataset.theme = p === "system" ? (mq.matches ? "dark" : "light") : p; root.dataset.themePref = p; emit("theme"); };
+seg("#theme", root.dataset.themePref || "system", (v) => { v === "system" ? localStorage.removeItem("hz-theme") : localStorage.setItem("hz-theme", v); applyTheme(v); });
+mq.addEventListener("change", () => { if (!localStorage.getItem("hz-theme")) applyTheme("system"); });
+seg("#lang", root.dataset.lang, (v) => {
+  localStorage.setItem("hz-lang", v); root.dataset.lang = v; root.lang = v; root.dir = v === "en" ? "ltr" : "rtl";
+  document.title = v === "en" ? "Harakah · Arabic motion with joined letters" : "حركة · الموشن العربي بحروف متصلة";
+  paintNumbers(); emit("lang");
+});
+seg("#digits", root.dataset.digits, (v) => { localStorage.setItem("hz-digits", v); root.dataset.digits = v; paintNumbers(); emit("lang"); });
+const setPalette = (v) => { localStorage.setItem("hz-palette", v); root.dataset.palette = v; segSync("[data-pal]", v); emit("palette"); };
+$$("[data-pal] button").forEach((b) => b.addEventListener("click", () => setPalette(b.dataset.v)));
+segSync("[data-pal]", root.dataset.palette);
+paintNumbers();
+
+/* ---------- demo reel (from the live page) ---------- */
+const vids = { html: ["/demo/harakah-demo.mp4", "/demo/harakah-demo.png"], remotion: ["/demo/remotion-demo.mp4", "/demo/remotion-demo.png"] };
+const vid = $("#vid"), pp = $("#pp");
+let userPaused = still();
+const syncPP = () => pp.setAttribute("aria-pressed", String(vid.paused));
+const playIfAllowed = () => { if (!userPaused && vidVisible) vid.play().catch(() => {}); syncPP(); };
+pp.onclick = () => { userPaused = !vid.paused; userPaused ? vid.pause() : vid.play().catch(() => {}); syncPP(); };
+vid.addEventListener("play", syncPP); vid.addEventListener("pause", syncPP);
+let vidVisible = false;
+new IntersectionObserver(([e]) => { vidVisible = e.isIntersecting; vidVisible ? playIfAllowed() : vid.pause(); }).observe(vid);
+seg("#reel", "html", (v) => { vid.poster = vids[v][1]; vid.src = vids[v][0]; playIfAllowed(); });
+let panTouched = false;
+const pan = (v) => vid.style.setProperty("--pan", v === "before" ? "100%" : "0%");
+seg("#pan", "after", (v) => { panTouched = true; pan(v); });
+if (!still()) setInterval(() => {
+  if (panTouched || !mobile() || document.hidden || !vidVisible) return;
+  const next = vid.style.getPropertyValue("--pan") === "100%" ? "after" : "before";
+  pan(next); segSync("#pan", next);
+}, 3500);
+
+/* ---------- reveal on scroll ---------- */
+const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.12 });
+$$("[data-reveal]").forEach((el) => (SHOT ? el.classList.add("in") : io.observe(el)));
+
+/* ---------- one rAF-throttled scroll bus ---------- */
+const onScrollFns = [];
+let ticking = false;
+const runScroll = () => { ticking = false; for (const f of onScrollFns) f(); };
+addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(runScroll); } }, { passive: true });
+addEventListener("resize", () => requestAnimationFrame(runScroll));
+
+/* ---------- hero A: tesserae panel (mosaic = gold, blue = qishani) ---------- */
+(() => {
+  const art = $(".art"), cv = $("canvas", art), ctx = cv.getContext("2d");
+  const SETS = {
+    mosaic: {
+      dark: { field: ["#0f2a22", "#12332a", "#0c231d", "#163a31", "#1b4a3f", "#0f3434", "#1f5e57", "#123f4a", "#0e2c2a", "#17463d"], word: ["#e3b24c", "#c9962e", "#f0c766", "#b88a2a", "#d9a640", "#f5d27a"], glint: "255,236,190", bg: "#08110e" },
+      light: { field: ["#1d4a3e", "#245647", "#1a4236", "#2a5f50", "#2f6e5d", "#1f5653", "#2e7a70", "#22505c", "#285a4b", "#356f62"], word: ["#e3b24c", "#c9962e", "#f0c766", "#b88a2a", "#d9a640", "#f5d27a"], glint: "255,240,200", bg: "#163a31" },
+    },
+    blue: {
+      dark: { field: ["#0a1630", "#0d1d3d", "#0b1a36", "#112552", "#16306a", "#0e2348", "#1a3a7a", "#132b5c", "#0c1f44", "#1d4590"], word: ["#43d3cb", "#5fe0d6", "#2fb8b4", "#8fe8e0", "#e9f4f2", "#3ac0c9"], glint: "225,250,255", bg: "#060f22" },
+      light: { field: ["#1a3a7a", "#1f4590", "#173470", "#24509f", "#2a5bb0", "#1c3f84", "#2f66c0", "#20488f", "#183a78", "#2a58a8"], word: ["#43d3cb", "#5fe0d6", "#2fb8b4", "#8fe8e0", "#f2f8f6", "#3ac0c9"], glint: "235,252,255", bg: "#132b5c" },
+    },
+  };
+  let tiles = [], W = 0, H = 0, dpr = 1, start = 0, raf = 0, onScreen = false, base = null, settleAt = 0, C = null, key = "";
+  let light = { x: 0.7, y: 0.2 }, pointer = null;
+  const active = () => root.dataset.palette === "mosaic" || root.dataset.palette === "blue";
+  const easeOut = (k) => 1 - Math.pow(1 - k, 3);
+  async function build() {
+    if (!active()) return false;
+    await document.fonts.load('800 100px "Alexandria"');
+    W = art.clientWidth; H = art.clientHeight; if (!W || !H) return false;
+    dpr = Math.min(mobile() ? 1.5 : 2, devicePixelRatio || 1);
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    const s = mobile() ? Math.max(10, Math.round(W / 30)) : Math.max(8, Math.round(W / 50)); // phones: fewer, bigger tiles
+    const o = document.createElement("canvas"); o.width = W; o.height = H;
+    const x = o.getContext("2d"); x.fillStyle = "#fff"; x.direction = "rtl"; x.textAlign = "center"; x.textBaseline = "middle";
+    let fs = H * 0.46; x.font = `800 ${fs}px Alexandria`;
+    const mw = x.measureText(word).width; if (mw > W * 0.84) fs *= (W * 0.84) / mw;
+    x.font = `800 ${fs}px Alexandria`; x.fillText(word, W / 2, H * 0.47);
+    const px = x.getImageData(0, 0, W, H).data;
+    const a = (X, Y) => { X = Math.min(W - 1, Math.max(0, X | 0)); Y = Math.min(H - 1, Math.max(0, Y | 0)); return px[(Y * W + X) * 4 + 3] / 255; };
+    C = SETS[root.dataset.palette][root.dataset.theme === "light" ? "light" : "dark"];
+    let seed = 1337; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    tiles = [];
+    const cols = Math.ceil(W / s) + 1, rows = Math.ceil(H / s) + 1;
+    let maxDelay = 0;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      const cx = c * s + s / 2 + (rnd() - 0.5) * 1.2, cy = r * s + s / 2 + (rnd() - 0.5) * 1.2, q = s * 0.3;
+      const cov = (a(cx, cy) * 2 + a(cx - q, cy - q) + a(cx + q, cy - q) + a(cx - q, cy + q) + a(cx + q, cy + q)) / 6;
+      const w = cov > 0.42, pal = w ? C.word : C.field;
+      // field settles first (sweeping right→left), then the word tiles "write" right→left
+      const delay = w ? 900 + ((W - cx) / W) * 900 + rnd() * 160 : ((W - cx) / W) * 650 + rnd() * 600;
+      maxDelay = Math.max(maxDelay, delay);
+      tiles.push({ x: cx, y: cy, sz: s - 1.8 - rnd() * 1.4, rot: (rnd() - 0.5) * (w ? 0.22 : 0.1), tilt: rnd(), w, col: pal[(rnd() * pal.length) | 0], delay });
+    }
+    settleAt = maxDelay + 760; base = null; key = root.dataset.palette + root.dataset.theme + W;
+    start = performance.now();
+    return true;
+  }
+  function paintTiles(g, t, settled) {
+    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.fillStyle = C.bg; g.fillRect(0, 0, W, H);
+    for (const tl of tiles) {
+      const k = settled ? 1 : Math.min(1, Math.max(0, (t - start - tl.delay) / 720)); if (k <= 0) continue;
+      const e = easeOut(k);
+      g.save(); g.translate(tl.x, tl.y - (1 - e) * 10); g.rotate(tl.rot + (1 - e) * 0.9); g.globalAlpha = Math.min(1, k * 1.6);
+      const z = tl.sz * (0.6 + 0.4 * e);
+      g.fillStyle = tl.col; g.fillRect(-z / 2, -z / 2, z, z);
+      if (!tl.w) { g.fillStyle = "rgba(255,255,255,0.025)"; g.fillRect(-z / 2, -z / 2, z, z * 0.45); }
+      g.restore();
+    }
+  }
+  function glint() { // only the word tiles, on top of the cached settled panel
+    const L = pointer || light, lx = L.x * W, ly = L.y * H, reach = Math.max(W, H) * 0.75;
+    for (const tl of tiles) {
+      if (!tl.w) continue;
+      const d = Math.hypot(tl.x - lx, tl.y - ly) / reach, g = Math.max(0, 1 - d) ** 2.2 * (0.35 + 0.65 * tl.tilt);
+      if (g < 0.02) continue;
+      ctx.save(); ctx.translate(tl.x, tl.y); ctx.rotate(tl.rot); ctx.fillStyle = `rgba(${C.glint},${(g * 0.75).toFixed(3)})`; ctx.fillRect(-tl.sz / 2, -tl.sz / 2, tl.sz, tl.sz); ctx.restore();
+    }
+  }
+  function frame(t) {
+    raf = 0;
+    if (!active() || !onScreen || document.hidden) return; // paused: offscreen, hidden tab, or other palette
+    if (t - start < settleAt) { paintTiles(ctx, t, false); raf = requestAnimationFrame(frame); return; }
+    if (!base) { base = document.createElement("canvas"); base.width = cv.width; base.height = cv.height; paintTiles(base.getContext("2d"), t, true); }
+    if (mobile() || still()) { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(base, 0, 0); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); glint(); return; } // phones: settle, then stop
+    light.x = 0.55 + 0.38 * Math.sin(t / 3400); light.y = 0.32 + 0.22 * Math.cos(t / 4300);
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(base, 0, 0); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); glint();
+    raf = requestAnimationFrame(frame);
+  }
+  const kick = () => { if (!raf && active() && onScreen && !document.hidden) raf = requestAnimationFrame(frame); };
+  async function init() {
+    cancelAnimationFrame(raf); raf = 0;
+    if (!(await build())) return;
+    if (still()) { start = -1e9; light = { x: 0.78, y: 0.28 }; }
+    kick();
+  }
+  art.addEventListener("pointermove", (e) => { const b = art.getBoundingClientRect(); pointer = { x: (e.clientX - b.left) / b.width, y: (e.clientY - b.top) / b.height }; if (still() || mobile()) kick(); });
+  art.addEventListener("pointerleave", () => (pointer = null));
+  const halt = () => { cancelAnimationFrame(raf); raf = 0; };
+  new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; onScreen ? kick() : halt(); }).observe(art);
+  document.addEventListener("visibilitychange", () => (document.hidden ? halt() : kick()));
+  listeners.palette.push(init); listeners.theme.push(init);
+  let rt, lastW = 0; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (art.clientWidth !== lastW) { lastW = art.clientWidth; init(); } }, 200); });
+  lastW = art.clientWidth; init();
+  window.__hzTiles = { running: () => !!raf, tiles: () => tiles.length };
+})();
+
+/* ---------- hero B: Petra strata (inkpetra) + Siq headline ---------- */
+(() => {
+  const el = $(".strata"), h1 = $("#h1");
+  const BANDS = {
+    light: ["#efe2d0", "#e8c9a2", "#dcaa76", "#cf8563", "#c8745a", "#9c7484", "#b0583a", "#8a4a35", "#6b3a2e", "#4a2820"],
+    dark: ["#2a1b16", "#3d261d", "#5a3426", "#7e4632", "#a85d45", "#6e5262", "#924a33", "#6a3727", "#4a281e", "#2c1813"],
+  };
+  let bands = [], built = "", visible = false;
+  const active = () => root.dataset.palette === "inkpetra";
+  function build() {
+    if (!active()) { el.innerHTML = ""; built = ""; return; }
+    const theme = root.dataset.theme === "light" ? "light" : "dark"; if (built === theme) return;
+    const cols = BANDS[theme], W = 2400, H = 300, n = cols.length;
+    let s = 9; const r = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+    let html = "";
+    cols.forEach((c, i) => {
+      const base = 26 + i * ((H - 30) / n), a1 = 6 + r() * 12, f1 = (1 + r() * 2.2) * Math.PI * 2 / W * 3, p1 = r() * 6, a2 = 2 + r() * 5, f2 = f1 * (2.3 + r()), p2 = r() * 6, tilt = (r() - 0.5) * 30;
+      const y = (x) => base + a1 * Math.sin(x * f1 + p1) + a2 * Math.sin(x * f2 + p2) + tilt * (x / W);
+      let d = `M0 ${H + 40}`; for (let x = 0; x <= W; x += 24) d += `L${x} ${y(x).toFixed(1)}`; d += `L${W} ${H + 40}Z`;
+      let lines = ""; for (let k = 1; k <= 3; k++) { let l = ""; for (let x = 0; x <= W; x += 48) l += `${x ? "L" : "M"}${x} ${(y(x) + k * 7 + 3 * Math.sin(x * f2 * 1.7 + k)).toFixed(1)}`; lines += `<path d="${l}" fill="none" stroke="${theme === "light" ? "#000" : "#fff"}" stroke-opacity="${0.035 + 0.02 * (k % 2)}" stroke-width="1"/>`; }
+      // each band is its own HTML layer: drift + parallax are compositor transforms, no SVG repaint per frame
+      html += `<div class="band" data-f="${(0.02 + i * 0.022).toFixed(3)}"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="--t:${(70 + i * 17) | 0}s;animation-direction:${i % 2 ? "alternate-reverse" : "alternate"}"><path d="${d}" fill="${c}"/>${lines}</svg></div>`;
+    });
+    el.innerHTML = html; bands = $$(".band", el); built = theme; parallax();
+  }
+  function parallax() {
+    if (!active() || still() || !visible) return;
+    const y = Math.min(600, scrollY);
+    bands.forEach((g) => (g.style.transform = `translate3d(0,${(-y * +g.dataset.f).toFixed(1)}px,0)`));
+  }
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; el.classList.toggle("paused", !visible || document.hidden); }).observe(el);
+  document.addEventListener("visibilitychange", () => el.classList.toggle("paused", !visible || document.hidden));
+  onScrollFns.push(parallax);
+  const siq = () => { h1.classList.remove("siq-in"); if (active() && !still()) { void h1.offsetWidth; h1.classList.add("siq-in"); } };
+  listeners.palette.push(() => { build(); siq(); }); listeners.theme.push(build);
+  build(); siq();
+})();
+
+/* ---------- Siq reel: the demo opens from a narrow cleft as it scrolls into view ---------- */
+(() => {
+  const wrap = $("#siq"), fr = $(".frame", wrap);
+  const ease = (t) => t * t * (3 - 2 * t);
+  let last = -1;
+  function update() {
+    if (still()) { if (last !== 1) { wrap.style.setProperty("--o", 1); fr.style.setProperty("--o", 1); last = 1; } return; }
+    const r = wrap.getBoundingClientRect();
+    if (r.top > innerHeight * 1.2 || r.bottom < -200) return;
+    const o = +ease(Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight * 0.8)))).toFixed(3);
+    if (o !== last) { wrap.style.setProperty("--o", o); fr.style.setProperty("--o", o); last = o; }
+  }
+  onScrollFns.push(update); update();
+})();
+
+/* ---------- rejoin scroll moment: «الحكايات» flies home letter by letter ---------- */
+(() => {
+  const sec = $("#rejoin"), HZ = window.HZ, WORD = "الحكايات";
+  const iso = HZ.graphemes(WORD), ctxF = HZ.splitArabic(WORD), n = iso.length;
+  const box = $("#rj-box"), pcsEl = $(".rj-pcs", sec), fin = $(".rj-final", sec), num = $("#rj-n"), code = $("#rj-code"), bar = $(".rj-bar i", sec);
+  $(".rj-mb", sec).innerHTML = iso.map((c) => `<span>${c}</span>`).join("");
+  $(".rj-mj", sec).innerHTML = ctxF.map((c) => `<span>${c}</span>`).join("");
+  $(".rj-static .b", sec).innerHTML = iso.map((c) => `<span>${c}</span>`).join("");
+  pcsEl.innerHTML = iso.map((c, i) => `<div class="rj-pc"><i class="iso">${c}</i><i class="ctx">${ctxF[i]}</i></div>`).join("");
+  const pcs = [...pcsEl.children];
+  const BAD = '<span class="d">title.split("")</span>.map((ch) =&gt; &lt;span&gt;{ch}&lt;/span&gt;)', GOOD = '<span class="a">splitArabic(title)</span>.map((ch) =&gt; &lt;span&gt;{ch}&lt;/span&gt;)';
+  let A = [], B = [], lastCode = "", lastN = -1, lastP = -1;
+  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  function measure() {
+    const b = box.getBoundingClientRect();
+    const rel = (el) => { const r = el.getBoundingClientRect(); return { x: r.left - b.left + r.width / 2, y: r.top - b.top }; };
+    A = [...$(".rj-mb", sec).children].map(rel); B = [...$(".rj-mj", sec).children].map(rel);
+  }
+  function render(p) {
+    let swapped = 0;
+    pcs.forEach((el, i) => {
+      const s = (i / n) * 0.45, k = ease(Math.min(1, Math.max(0, (p - s) / 0.5)));
+      const x = A[i].x + (B[i].x - A[i].x) * k, y = A[i].y + (B[i].y - A[i].y) * k - Math.sin(k * Math.PI) * 36;
+      el.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;
+      const sw = Math.min(1, Math.max(0, (k - 0.55) / 0.3)); el.children[0].style.opacity = 1 - sw; el.children[1].style.opacity = sw;
+      if (sw > 0.5) swapped++;
+    });
+    const done = p > 0.985;
+    pcsEl.classList.toggle("off", done); fin.classList.toggle("on", done);
+    const v = done ? 0 : n - swapped; if (v !== lastN) { num.textContent = fmt(v); lastN = v; }
+    bar.style.width = (p * 100).toFixed(1) + "%";
+    const c = p < 0.5 ? BAD : GOOD; if (c !== lastCode) { code.innerHTML = c; lastCode = c; }
+  }
+  function onScroll() {
+    if (still()) return;
+    const r = sec.getBoundingClientRect(); if (r.bottom < -100 || r.top > innerHeight + 100) return;
+    const p = Math.min(1, Math.max(0, -r.top / Math.max(1, sec.offsetHeight - innerHeight)));
+    if (Math.abs(p - lastP) < 0.0005) return; lastP = p; render(p);
+  }
+  document.fonts.ready.then(() => {
+    if (still()) { num.textContent = fmt(0); code.innerHTML = GOOD; return; }
+    measure(); lastP = -1; onScroll(); if (lastP < 0) render(0);
+    onScrollFns.push(onScroll);
+    addEventListener("resize", () => { measure(); lastP = -1; onScroll(); });
+    listeners.lang.push(() => requestAnimationFrame(() => { measure(); lastN = -1; lastP = -1; onScroll(); }));
+  });
+  listeners.lang.push(() => { if (still()) num.textContent = fmt(0); });
+})();
+
+/* ---------- how it works: sticky terminal streams the real harakah-fix output ---------- */
+(() => {
+  const out = $("#term"), pw = $("#pv-word"), after = $("#pv-after"), afterW = $("#pv-after-w");
+  const PHRASE = "سلام على أهل الشام";
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const T = window.HZ_TERM; // [[class, text], …] per step, verbatim from data/*.txt
+  const typing = () => !still() && !SHOT;
+  let cur = -1, token = 0;
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const line = ([c, t]) => (c ? `<span class="${c}">${esc(t)}</span>` : esc(t));
+  function preview(fixed) {
+    if (fixed) { pw.className = "pv-word keep fixed"; pw.innerHTML = PHRASE.split(" ").map((w) => HZ.splitArabic(w).map((c, i) => `<span style="--i:${i}">${c}</span>`).join("")).join(" "); }
+    else { pw.className = "pv-word keep broken"; pw.innerHTML = HZ.graphemes(PHRASE).map((c) => `<span>${c === " " ? "&nbsp;" : c}</span>`).join(""); }
+  }
+  function meter(done) {
+    if (done) after.dataset.n = "12"; else delete after.dataset.n; after.textContent = done ? fmt(12) : "–";
+    afterW.innerHTML = done ? `<span data-n="855">${fmt(855)}</span>px` : "&nbsp;";
+  }
+  // each step clears the screen and shows that command's real output (like running it fresh)
+  async function show(i) {
+    if (i === cur) return; cur = i; const my = ++token;
+    if (pw.classList.contains("fixed") !== i >= 1) preview(i >= 1);
+    if (i < 2) meter(false);
+    const done = [], paint = (extra = "", caret = true) => { out.innerHTML = done.join("\n") + extra + (caret ? '<span class="caret"></span>' : ""); };
+    if (!typing()) { out.innerHTML = T[i].map(line).join("\n"); if (i === 2) meter(true); return; }
+    for (const l of T[i]) {
+      if (my !== token) return;
+      if (l[0] === "p") {
+        let s = "";
+        for (const ch of l[1].slice(2)) { if (my !== token) return; s += ch; paint((done.length ? "\n" : "") + `<span class="p">$ ${esc(s)}</span>`); await sleep(16); }
+        done.push(line(l)); paint(); await sleep(220);
+      } else { done.push(line(l)); paint(); await sleep(90); }
+    }
+    if (my === token) { paint("", false); if (i === 2) meter(true); }
+  }
+  preview(false); meter(false);
+  const steps = $$(".hstep");
+  if (SHOT) { steps.forEach((s) => s.classList.add("on")); show(2); return; }
+  show(0);
+  const sio = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    steps.forEach((s) => s.classList.toggle("on", s === e.target)); show(+e.target.dataset.step);
+  }), { rootMargin: matchMedia("(max-width:960px)").matches ? "-70% 0px -22% 0px" : "-45% 0px -45% 0px" });
+  steps.forEach((s) => sio.observe(s));
+})();
+
+/* ---------- remotion: view-transition tabs ---------- */
+(() => {
+  const WORD = "الحكايات";
+  const SHIM = '\n\n<span class="c">// + harakah-fix fix --write injects its runtime shim:</span>\n<span class="a">&lt;script&gt;/* ZWJ-pads each letter box, keeps لا */&lt;/script&gt;</span>\n<span class="c">// same elements, same timeline</span>';
+  const TOOLS = {
+    HTML: { bad: '<span class="c">// before</span>\nel.innerHTML = [...text]\n  .map((ch) =&gt; `&lt;span class="ch"&gt;${ch}&lt;/span&gt;`)\n  .join("")', good: '<span class="c">// after: your code is unchanged</span>\nel.innerHTML = [...text]\n  .map((ch) =&gt; `&lt;span class="ch"&gt;${ch}&lt;/span&gt;`)\n  .join("")' + SHIM },
+    GSAP: { bad: '<span class="c">// before</span>\n<span class="k">const</span> split = <span class="d">SplitText.create</span>("#title",\n  { type: "words,chars" });\ngsap.from(split.chars, { y: 80, stagger: 0.04 });', good: '<span class="c">// after: your code is unchanged</span>\n<span class="k">const</span> split = SplitText.create("#title",\n  { type: "words,chars" });\ngsap.from(split.chars, { y: 80, stagger: 0.04 });' + SHIM + '\n\n<span class="c">// compare: "الموسم" ink pieces 6 → 3 (reference 3) ✓</span>' },
+    HyperFrames: { bad: '<span class="c">&lt;!-- before --&gt;</span>\n&lt;div id="root" dir="rtl" data-composition-id="main"&gt;\n  &lt;h1 id="title"&gt;الموسم الجديد&lt;/h1&gt;\n&lt;/div&gt;\n&lt;script&gt;\n  tl.from(<span class="d">split.chars</span>, …);\n  window.__timelines["main"] = tl;\n&lt;/script&gt;', good: '<span class="c">&lt;!-- after: same composition --&gt;</span>\n&lt;div id="root" dir="rtl" data-composition-id="main"&gt;\n  &lt;h1 id="title"&gt;الموسم الجديد&lt;/h1&gt;\n&lt;/div&gt;\n&lt;script&gt;\n  tl.from(split.chars, …);\n  window.__timelines["main"] = tl;\n&lt;/script&gt;' + SHIM },
+    Remotion: { bad: '<span class="c">// before · CharSplitTitle.tsx</span>\n<span class="k">const</span> text = "سلام على أهل الشام";\n{text.<span class="d">split("")</span>.map((char, i) =&gt; {\n  <span class="k">const</span> s = spring({ frame: frame - i * 2, fps });', good: '<span class="c">// after · harakah-fix codemod (real diff)</span>\n<span class="k">import</span> { splitArabic } <span class="k">from</span> "../harakah-arabic";\n<span class="k">const</span> text = "سلام على أهل الشام";\n{<span class="c">/* harakah: was text.split("") */</span> <span class="a">splitArabic(text)</span>.map((char, i) =&gt; {\n  <span class="k">const</span> s = spring({ frame: frame - i * 2, fps });\n\n<span class="c">// or the component:</span>\n&lt;ArabicText text="قصص تستحق أن تُروى" preset="rise" stagger={2} /&gt;' },
+  };
+  const names = Object.keys(TOOLS);
+  let tool = "Remotion", fixed = false;
+  const tabs = $("#vt-tabs"), code = $("#vt-code"), view = $("#vt-view"), state = $("#vt-state"), flip = $("#vt-flip"), panel = $("#vt-panel");
+  tabs.innerHTML = names.map((t) => `<button role="tab" id="vt-tab-${t}" aria-controls="vt-panel" data-t="${t}">${t}</button>`).join("");
+  function render() {
+    $$("button", tabs).forEach((b) => { const on = b.dataset.t === tool; b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1; });
+    panel.setAttribute("aria-labelledby", `vt-tab-${tool}`);
+    code.innerHTML = TOOLS[tool][fixed ? "good" : "bad"].replace(/"([^"<]*[\u0600-\u06FF][^"<]*)"/g, '"<bdi dir="rtl">$1</bdi>"');
+    if (tool === "Remotion") {
+      view.innerHTML = `<img class="vt-img" src="/demo/remotion/${fixed ? "after" : "before"}.png" alt="${fixed ? "Remotion render after Harakah: joined Arabic · بعد الإصلاح" : "Remotion render before: broken Arabic letters · قبل الإصلاح"}" width="1280" height="720" decoding="async">`;
+    } else {
+      const parts = fixed ? HZ.splitArabic(WORD) : HZ.graphemes(WORD);
+      view.innerHTML = `<div class="vt-word keep ${fixed ? "fixed" : "broken"}" lang="ar" dir="rtl" role="img" aria-label="${fixed ? "الحكايات · joined" : "الحكايات · split into isolated letters"}">${parts.map((c) => `<span aria-hidden="true">${c}</span>`).join("")}</div>`;
+    }
+    state.className = "vt-state " + (fixed ? "ok" : "bad"); state.textContent = fixed ? "joined ✓" : "split ✗";
+    flip.setAttribute("aria-pressed", String(fixed));
+    $("[lang=ar]", flip).textContent = fixed ? "أرجع الخطأ" : "أصلح الكلمة";
+    $("[lang=en]", flip).textContent = fixed ? "Show the bug" : "Fix the word";
+  }
+  const go = (fn) => (document.startViewTransition && !still() ? document.startViewTransition(() => { fn(); render(); }) : (fn(), render()));
+  tabs.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b && b.dataset.t !== tool) go(() => { tool = b.dataset.t; fixed = false; }); });
+  tabs.addEventListener("keydown", (e) => {
+    const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key]; if (!d) return;
+    e.preventDefault(); const i = (names.indexOf(tool) + d + names.length) % names.length;
+    go(() => { tool = names[i]; fixed = false; }); requestAnimationFrame(() => $(`#vt-tab-${tool}`).focus());
+  });
+  flip.addEventListener("click", () => go(() => (fixed = !fixed)));
+  if (SHOT) fixed = true;
+  render();
+})();
+
+/* ---------- section rail ---------- */
+(() => {
+  const links = $$(".rail a");
+  const map = new Map(links.map((a) => [a.dataset.band, a]));
+  const rio = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    links.forEach((a) => a.removeAttribute("aria-current")); map.get(e.target.id)?.setAttribute("aria-current", "true");
+  }), { rootMargin: "-40% 0px -55% 0px" });
+  ["top", "demo", "problem", "fixes", "how", "remotion"].forEach((id) => { const el = document.getElementById(id); if (el) rio.observe(el); });
+})();
+
+runScroll();
+
+/* ---------- version from the running server (falls back to the baked-in string) ---------- */
+fetch("/api/meta").then((r) => (r.ok ? r.json() : null)).then((m) => { if (m && m.version) $("#ver").textContent = `harakah-fix v${m.version}`; }).catch(() => {});
+
+// Pro waitlist: posts the email to /api/waitlist (Cloudflare Pages Function) and answers inline.
+// Where there's no endpoint (local serve, a static host), it says so and offers the mailto link.
+(() => {
+  const form = $("#waitlist"); if (!form) return;
+  const input = $("#wl-email", form), btn = $("button[type=submit]", form), msg = $("#wl-msg");
+  const MAIL = "mailto:hello@harakah.si?subject=Harakah%20Pro%20waitlist";
+  const note = msg.innerHTML;
+  const say = (cls, ar, en) => { msg.className = `wl-msg ${cls}`; msg.innerHTML = `<span lang="ar">${ar}</span><span lang="en">${en}</span>`; };
+  const valid = (v) => v.length <= 254 && /^[^\s@<>()[\]\\,;:"]+@[^\s@<>()[\]\\,;:"]+\.[^\s@<>()[\]\\,;:"]{2,}$/.test(v);
+  // "gmial.com" → "gmail.com", "hotmail.con" → "hotmail.com". Only .com typos of big providers, so yahoo.ca or
+  // mail.com are never "corrected".
+  const NAMES = ["gmail", "hotmail", "outlook", "yahoo", "icloud", "protonmail", "aol"], REAL = ["mail", "email", "ymail", "gmx", "live", "me"];
+  const COM = ["con", "cmo", "co", "om", "comm", "cm", "vom", "xom", "ocm", "cpm"];
+  const dist = (a, b) => { const d = Array.from({ length: a.length + 1 }, (_, i) => [i]); for (let j = 1; j <= b.length; j++) d[0][j] = j;
+    for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[a.length][b.length]; };
+  const suggest = (v) => {
+    const at = v.lastIndexOf("@"), dom = v.slice(at + 1), dot = dom.lastIndexOf("."), name = dom.slice(0, dot), tld = dom.slice(dot + 1);
+    if (tld !== "com" && !COM.includes(tld)) return "";
+    const hit = NAMES.includes(name) ? (tld === "com" ? "" : name) : REAL.includes(name) ? "" : NAMES.find((n) => { const d = dist(name, n); return d > 0 && d <= (n.length > 4 ? 2 : 1); });
+    return hit ? `${v.slice(0, at)}@${hit}.com` : "";
+  };
+  const esc = (x) => x.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+  let checked = "";
+  input.addEventListener("input", () => { if (input.getAttribute("aria-invalid")) { input.removeAttribute("aria-invalid"); msg.className = "wl-msg"; msg.innerHTML = note; } });
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (btn.getAttribute("aria-disabled") === "true") return;
+    const email = input.value.trim().toLowerCase();
+    if (!valid(email)) { input.setAttribute("aria-invalid", "true"); say("err", "اكتب بريداً إلكترونياً صحيحاً، مثل you@studio.com", "Enter a valid email, like you@studio.com"); input.focus(); return; }
+    const fix = suggest(email);
+    if (fix && checked !== email) {
+      checked = email; // asked once: a second submit sends it as typed
+      say("", `هل تقصد <button type="button">${esc(fix)}</button>؟ أو اضغط الزر مرة أخرى لإرسال ما كتبت.`, `Did you mean <button type="button">${esc(fix)}</button>? Or press the button again to send it as typed.`);
+      $$("button", msg).forEach((b) => b.addEventListener("click", () => { input.value = fix; checked = fix; msg.className = "wl-msg"; msg.innerHTML = note; input.focus(); }));
+      return;
+    }
+    btn.setAttribute("aria-disabled", "true"); say("", "جارٍ الحفظ…", "Saving…");
+    let ok = false, status = 0;
+    try {
+      const r = await fetch(form.action, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email, lang: root.dataset.lang, website: $("#wl-website").value }) });
+      status = r.status; ok = r.ok;
+    } catch {}
+    btn.removeAttribute("aria-disabled");
+    if (ok) { form.classList.add("done"); say("ok", "✓ أنت في القائمة. سنراسلك مرة واحدة عند إطلاق حركة برو.", "✓ You're on the list. We'll email you once, when Harakah Pro opens."); return; }
+    if (status === 400) { input.setAttribute("aria-invalid", "true"); say("err", "اكتب بريداً إلكترونياً صحيحاً، مثل you@studio.com", "Enter a valid email, like you@studio.com"); input.focus(); return; }
+    say("err", `تعذّر الحفظ الآن. <a href="${MAIL}">راسلنا بدلاً من ذلك</a>.`, `Couldn't save it right now. <a href="${MAIL}">Email us instead</a>.`);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Reference docs · التوثيق الكامل
+    url: https://github.com/harakah-si/harakah/blob/main/docs/REFERENCE.md
+    about: Every command, option, rule (HZ01–HZ24) and known limitation.

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Harakah pre-commit: block commits that would ship broken Arabic in staged compositions.
+HF=${HARAKAH_FIX:-$( [ -x ./node_modules/.bin/harakah-fix ] && echo ./node_modules/.bin/harakah-fix || echo harakah-fix )}
+fail=0
+# Arabic block U+0600–U+06FF = UTF-8 lead bytes D8–DB; a byte match works with BSD grep too (macOS has no grep -P)
+ARABIC="$(printf '[\330-\333]')"
+while IFS= read -r f; do
+  [ -f "$f" ] || continue
+  LC_ALL=C grep -q "$ARABIC" "$f" 2>/dev/null || continue
+  $HF gate "$f" || fail=1
+done < <(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(html?|tsx|jsx)$')
+[ $fail = 0 ] || { echo "Fix with: harakah-fix fix <file> (or --no-verify to skip)" >&2; exit 1; }

@@ -1,0 +1,21 @@
+name: Feature · اقتراح
+description: A new rule, a new framework or tool, or a workflow improvement.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem · المشكلة
+      description: What breaks for Arabic today, ideally with an example composition or screenshot.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Proposed behaviour · السلوك المقترح
+  - type: checkboxes
+    id: roadmap
+    attributes:
+      label: Checked
+      options:
+        - label: I checked the open issues.

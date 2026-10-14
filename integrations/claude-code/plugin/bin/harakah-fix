@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# On the Bash tool's PATH while the plugin is enabled: `harakah-fix check|fix|gate|compare …`
+exec node "$(dirname "$(readlink -f "$0")")/../scripts/harakah.cjs" cli "$@"

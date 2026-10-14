@@ -1,0 +1,56 @@
+name: Smoke (macOS, Windows)
+
+# What a user does first, on macOS and Windows (Linux runs the full suite in ci.yml): check, fix, gate exit codes, the
+# Remotion codemod, doctor (Chrome found, starts and joins Arabic) and one real layout render. scripts/smoke.mjs
+# Its own workflow so pull requests run it only when the product changes: a macOS minute is billed as ten, and docs or
+# site changes can't break the CLI. Every commit on main runs it, so main stays tested on all three systems.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - "src/**"
+      - "assets/**"
+      - "fixtures/**"
+      - "scripts/smoke.mjs"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig.json"
+      - ".github/workflows/smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: smoke-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  smoke:
+    name: smoke (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        # pinned images, like the test job: renders depend on the image's Chrome and fonts
+        os: [macos-15, windows-2025]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install and build
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
+      - name: Smoke test
+        run: node scripts/smoke.mjs

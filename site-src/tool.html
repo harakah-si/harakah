@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Run Harakah · حركة</title>
+<meta name="description" content="Run the Harakah web tool on your machine: one npx command, then open 127.0.0.1:4747.">
+<link rel="icon" href="/favicon.ico">
+<link rel="preload" href="/fonts/IBMPlexSansArabic-Regular.ttf" as="font" type="font/ttf" crossorigin>
+<script>
+// English unless the visitor picked a language on this site (shared with the landing); theme as on the landing.
+(function () {
+  var d = document.documentElement, q = new URLSearchParams(location.search), s;
+  try { s = localStorage; } catch (e) { s = null; }
+  var ql = q.get("lang"); if ((ql === "en" || ql === "ar") && s) s.setItem("hz-lang", ql);
+  var l = ql === "ar" || ql === "en" ? ql : (s && s.getItem("hz-lang") === "ar" ? "ar" : "en");
+  d.dataset.lang = l; d.lang = l; d.dir = l === "ar" ? "rtl" : "ltr";
+  var t = s && s.getItem("hz-theme");
+  d.dataset.theme = t === "light" || t === "dark" ? t : (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+})();
+</script>
+<style>
+@font-face{font-family:"IBM Plex Sans Arabic";src:url("/fonts/IBMPlexSansArabic-Regular.ttf");font-weight:400;font-display:swap}
+@font-face{font-family:"IBM Plex Sans Arabic";src:url("/fonts/IBMPlexSansArabic-SemiBold.ttf");font-weight:600;font-display:swap}
+@font-face{font-family:"Alexandria";src:url("/fonts/Alexandria.ttf");font-weight:100 900;font-display:swap}
+:root{--display:"Alexandria","IBM Plex Sans Arabic",sans-serif;--text:"IBM Plex Sans Arabic",system-ui,sans-serif;--mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace}
+:root[data-theme=dark]{color-scheme:dark;--bg:#0a1411;--bg2:#0d1915;--card:#10201b;--line:#1f342c;--ink:#f2ecde;--mute:#9daa9f;--acc:#e3b24c;--on-acc:#0a1411;--ok:#5acb9b;--faint:#7d8980}
+:root[data-theme=light]{color-scheme:light;--bg:#f3efe6;--bg2:#ece6da;--card:#e8e1d3;--line:#d8d0bf;--ink:#0e1d18;--mute:#53615a;--acc:#8a6312;--on-acc:#fff;--ok:#0f6b3f;--faint:#56645d}
+[data-lang=ar] [lang=en]:not(.keep),[data-lang=en] [lang=ar]:not(.keep){display:none!important}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.75 var(--text);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:6px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;max-width:820px;margin:0 auto;padding:22px 20px}
+.logo{display:inline-flex;align-items:center;gap:10px;font:700 22px/1 var(--display);text-decoration:none}
+.logo i{width:10px;height:10px;background:var(--acc);transform:rotate(9deg)}
+.logo small{font:500 13px/1 var(--mono);color:var(--mute)}.logo small bdi{font:500 15px/1 var(--text)}
+.seg{display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:999px;background:var(--bg2);direction:ltr}
+.seg button{all:unset;cursor:pointer;font:500 13px/1 var(--mono);padding:8px 12px;border-radius:999px;color:var(--mute)}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.seg button[data-v=ar]{font-family:var(--text);font-size:15px;padding:6px 12px}
+main{max-width:820px;margin:0 auto;padding:28px 20px 72px}
+.kicker{display:flex;align-items:center;gap:10px;margin:0 0 14px;color:var(--acc);font:500 15px/1 var(--text)}
+.kicker [lang=en]{font:500 13px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.kicker:before{content:"";width:7px;height:7px;background:var(--acc);transform:rotate(9deg)}
+h1{font:700 clamp(34px,5.6vw,56px)/1.15 var(--display);margin:0 0 18px}
+h1 [lang=en]{letter-spacing:-.02em}
+[data-lang=ar] h1{line-height:1.45;margin-top:-4px}
+.lead{color:var(--mute);font-size:clamp(17px,1.6vw,19px);margin:0 0 40px;max-width:60ch}
+ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:14px;counter-reset:s}
+li{counter-increment:s;border:1px solid var(--line);border-radius:20px;background:var(--card);padding:24px 26px}
+li h2{display:flex;align-items:baseline;gap:12px;font:600 20px/1.4 var(--display);margin:0 0 10px}
+li h2:before{content:counter(s,decimal-leading-zero);font:500 13px/1 var(--mono);color:var(--acc)}
+li p{margin:10px 0 0;color:var(--mute)}
+.cmd{display:flex;align-items:center;gap:10px;direction:ltr;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:6px 6px 6px 16px;margin-top:10px}
+.cmd code{flex:1;min-width:0;overflow-wrap:anywhere;font:500 14px/1.6 var(--mono);padding:6px 0}
+.cmd button{all:unset;cursor:pointer;flex:0 0 auto;font:600 13px/1 var(--text);padding:10px 14px;border-radius:9px;background:var(--acc);color:var(--on-acc)}
+.cmd button.done{background:var(--ok)}
+code.i{white-space:nowrap;font:500 .88em var(--mono);background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;direction:ltr;unicode-bidi:isolate}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.foot{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:36px;color:var(--mute);font-size:15px}
+@media (max-width:560px){li{padding:20px}.cmd{flex-wrap:wrap;padding:10px 12px}.cmd button{box-sizing:border-box;width:100%;text-align:center}}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="logo" href="/en/" data-home><i aria-hidden="true"></i><span lang="ar" dir="rtl">حركة</span><span lang="en">Harakah</span><small lang="en"><bdi dir="rtl">حركة</bdi></small><small lang="ar" dir="rtl">Harakah</small></a>
+  <div class="seg" id="lang" role="group" aria-label="Language · اللغة"><button type="button" data-v="en" lang="en" class="keep">EN</button><button type="button" data-v="ar" lang="ar" dir="rtl" class="keep">ع</button></div>
+</header>
+<main>
+  <p class="kicker"><span lang="en">Runs on your machine</span><span lang="ar" dir="rtl">يعمل على جهازك</span></p>
+  <h1><span lang="en">Run Harakah locally</span><span lang="ar" dir="rtl">شغّل حركة على جهازك</span></h1>
+  <p class="lead" lang="en">The tool checks your composition in a real browser, so it runs on your computer and nothing is uploaded. Paste HTML, GSAP, HyperFrames or a Remotion file, see what breaks, fix it, and compare real before and after renders.</p>
+  <p class="lead" lang="ar" dir="rtl">تفحص الأداة عملك في متصفح حقيقي، لذلك تعمل على جهازك ولا يُرفع أي شيء. الصق كود <bdi dir="ltr">HTML</bdi> أو <bdi dir="ltr">GSAP</bdi> أو <bdi dir="ltr">HyperFrames</bdi> أو ملف <bdi dir="ltr">Remotion</bdi>، وشاهد ما ينكسر، وأصلحه، وقارن رندراً حقيقياً قبل الإصلاح وبعده.</p>
+  <ol>
+    <li>
+      <h2><span lang="en">What you need</span><span lang="ar" dir="rtl">ما تحتاجه</span></h2>
+      <p lang="en"><b>Node.js 22.12</b> or newer and <b>Google Chrome</b> (or Chromium). <code class="i">ffmpeg</code> is only needed for MP4 comparisons.</p>
+      <p lang="ar" dir="rtl"><bdi dir="ltr"><b>Node.js 22.12</b></bdi> أو أحدث، و<bdi dir="ltr"><b>Google Chrome</b></bdi> أو <bdi dir="ltr">Chromium</bdi>. أما <bdi dir="ltr">ffmpeg</bdi> فمطلوب فقط لمقارنات <bdi dir="ltr">MP4</bdi>.</p>
+      <div class="cmd"><code>npx -y -p harakah-fixer harakah-fix doctor</code><button type="button" data-copy><span lang="en">Copy</span><span lang="ar" dir="rtl">نسخ</span></button></div>
+      <p lang="en"><code class="i">doctor</code> checks all of this on your computer (it starts Chrome and renders Arabic text) and prints the fix for anything missing.</p>
+      <p lang="ar" dir="rtl"><code class="i">doctor</code> يفحص هذا كله على جهازك (يشغّل <bdi dir="ltr">Chrome</bdi> ويرسم نصاً عربياً) ويكتب طريقة إصلاح أي شيء ناقص.</p>
+    </li>
+    <li>
+      <h2><span lang="en">Start the tool</span><span lang="ar" dir="rtl">شغّل الأداة</span></h2>
+      <div class="cmd"><code>npx -y -p harakah-fixer harakah-fix serve</code><button type="button" data-copy><span lang="en">Copy</span><span lang="ar" dir="rtl">نسخ</span></button></div>
+      <p lang="en">Then open <a href="http://127.0.0.1:4747">127.0.0.1:4747</a> in your browser. Everything stays on your computer.</p>
+      <p lang="ar" dir="rtl">ثم افتح <a href="http://127.0.0.1:4747" dir="ltr">127.0.0.1:4747</a> في متصفحك. كل شيء يبقى على جهازك.</p>
+    </li>
+    <li>
+      <h2><span lang="en">Or use it inside a project</span><span lang="ar" dir="rtl">أو استخدمها داخل مشروعك</span></h2>
+      <div class="cmd"><code>npm install -D harakah-fixer</code><button type="button" data-copy><span lang="en">Copy</span><span lang="ar" dir="rtl">نسخ</span></button></div>
+      <div class="cmd"><code>npx harakah-fix check ./my-remotion-app</code><button type="button" data-copy><span lang="en">Copy</span><span lang="ar" dir="rtl">نسخ</span></button></div>
+      <p lang="en"><code class="i">check</code> reports what's broken, <code class="i">fix --write</code> repairs it, and <code class="i">gate</code> stops a broken render in CI.</p>
+      <p lang="ar" dir="rtl"><code class="i">check</code> يكتب تقريراً بما انكسر، و<code class="i">fix --write</code> يصلحه، و<code class="i">gate</code> يوقف الرندر المكسور في <bdi dir="ltr">CI</bdi>.</p>
+    </li>
+  </ol>
+  <p class="foot"><a href="/en/" data-home><span lang="en">Harakah home</span><span lang="ar" dir="rtl">الصفحة الرئيسية</span></a><span lang="en">Questions? <a href="mailto:hello@harakah.si">hello@harakah.si</a></span><span lang="ar" dir="rtl">أسئلة؟ <a href="mailto:hello@harakah.si" dir="ltr">hello@harakah.si</a></span></p>
+  <p class="vh" id="copied" role="status" aria-live="polite"></p>
+</main>
+<script>
+(function () {
+  var d = document.documentElement;
+  var home = function () { document.querySelectorAll("[data-home]").forEach(function (a) { a.href = d.dataset.lang === "ar" ? "/" : "/en/"; }); };
+  var sync = function () { document.querySelectorAll("#lang button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.v === d.dataset.lang)); }); home(); };
+  document.querySelectorAll("#lang button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var l = b.dataset.v; d.dataset.lang = l; d.lang = l; d.dir = l === "ar" ? "rtl" : "ltr";
+      try { localStorage.setItem("hz-lang", l); } catch (e) {}
+      sync();
+    });
+  });
+  sync();
+  var live = document.getElementById("copied");
+  document.querySelectorAll("[data-copy]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var text = b.parentNode.querySelector("code").textContent;
+      var done = function () {
+        var keep = b.innerHTML; b.classList.add("done");
+        b.innerHTML = '<span lang="en">Copied</span><span lang="ar" dir="rtl">نُسخ</span>';
+        live.textContent = d.dataset.lang === "ar" ? "تم نسخ الأمر" : "Command copied";
+        setTimeout(function () { b.classList.remove("done"); b.innerHTML = keep; }, 1600);
+      };
+      if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, function () {});
+    });
+  });
+})();
+</script>
+</body>
+</html>

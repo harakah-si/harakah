@@ -1,0 +1,9 @@
+node_modules/
+dist/
+out/
+.tmp/
+*.log
+.tmp*
+site/
+*.vsix
+.vscode-test/

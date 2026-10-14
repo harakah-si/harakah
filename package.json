@@ -1,0 +1,129 @@
+{
+  "name": "harakah-fixer",
+  "version": "0.4.1",
+  "description": "Find and fix broken Arabic in motion graphics before you render: Remotion codemod, HyperFrames/GSAP/HTML fixer, render gate, MCP server and Claude Code plugin. كشف وإصلاح النص العربي في الموشن جرافيك.",
+  "keywords": [
+    "arabic",
+    "rtl",
+    "bidi",
+    "remotion",
+    "hyperframes",
+    "gsap",
+    "splittext",
+    "motion-graphics",
+    "video",
+    "typography",
+    "codemod",
+    "fonts",
+    "i18n",
+    "mcp",
+    "claude-code"
+  ],
+  "license": "MIT",
+  "homepage": "https://harakah.si",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harakah-si/harakah.git"
+  },
+  "bugs": {
+    "url": "https://github.com/harakah-si/harakah/issues",
+    "email": "hello@harakah.si"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./remotion": {
+      "types": "./integrations/remotion/index.d.ts",
+      "default": "./integrations/remotion/index.cjs"
+    },
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "harakah-fix": "dist/cli.js",
+    "harakah-mcp": "dist/mcp.js",
+    "harakah-hook": "dist/claude-hook.js"
+  },
+  "files": [
+    "dist/",
+    "assets/fonts/",
+    "web/index.html",
+    "web/meta.json",
+    "web/site.webmanifest",
+    "web/assets/favicon.ico",
+    "web/assets/favicon-32.png",
+    "web/assets/apple-touch-icon.png",
+    "web/assets/icon-192.png",
+    "web/assets/icon-512.png",
+    "integrations/",
+    "!integrations/vscode/test/",
+    "packages/remotion-arabic/src/",
+    "packages/remotion-arabic/README.md",
+    "packages/remotion-arabic/package.json",
+    "fixtures/*.html",
+    "fixtures/*.tsx",
+    "fixtures/remotion/src/",
+    "fixtures/remotion/package.json",
+    "fixtures/remotion/props.ar.json",
+    "demo/harakah-demo.mp4",
+    "demo/harakah-demo.png",
+    "demo/remotion-demo.mp4",
+    "demo/remotion-demo.png",
+    "demo/remotion/after.png",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc -p .",
+    "build:skills": "node scripts/build-skills.mjs",
+    "pretest": "npm run build",
+    "test": "node --import tsx --test test/*.test.ts",
+    "serve": "node dist/server.js",
+    "prepack": "npm run build",
+    "pack:check": "node scripts/pack-check.mjs",
+    "smoke": "node scripts/smoke.mjs",
+    "test:vscode": "npm run build && node integrations/vscode/test/run.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "cheerio": "^1.2.0",
+    "commander": "^15.0.0",
+    "diff": "^9.0.0",
+    "fflate": "^0.8.3",
+    "fontkit": "^2.0.4",
+    "pngjs": "^7.0.0",
+    "postcss": "^8.5.29",
+    "puppeteer-core": "^25.12.0",
+    "ts-morph": "^28.0.0",
+    "zod": "^4.6.5"
+  },
+  "peerDependencies": {
+    "prettier": ">=3"
+  },
+  "peerDependenciesMeta": {
+    "prettier": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "@types/pngjs": "^6.0.5",
+    "@types/react": "^19.3.0",
+    "@vscode/test-electron": "^3.1.0",
+    "axe-core": "^4.14.0",
+    "gsap": "^3.15.0",
+    "prettier": "^3.9.9",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "remotion": "^4.0.534",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

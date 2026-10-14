@@ -1,0 +1,6 @@
+{
+  "name": "harakah-fixture-remotion-theme",
+  "private": true,
+  "description": "Fixture: Remotion project whose styles live in theme.ts / styles.ts / utils (shared by Arabic and Latin scenes)",
+  "dependencies": { "remotion": "*", "@remotion/google-fonts": "*", "react": "*", "react-dom": "*" }
+}

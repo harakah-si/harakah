@@ -1,0 +1,90 @@
+{
+  "name": "harakah-vscode",
+  "displayName": "Harakah · حركة (Arabic motion & RTL)",
+  "description": "Arabic motion/RTL diagnostics from harakah-fix (split letters, direction, digits, fonts) with a quick fix. Local only.",
+  "version": "0.2.0",
+  "publisher": "harakah-local",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Linters"
+  ],
+  "keywords": [
+    "arabic",
+    "rtl",
+    "remotion",
+    "gsap",
+    "motion"
+  ],
+  "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:html",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescriptreact",
+    "onLanguage:astro",
+    "onLanguage:vue",
+    "onLanguage:svelte",
+    "onLanguage:plaintext",
+    "workspaceContains:**/*.{html,htm,astro,vue,svelte}"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "harakah.checkFile",
+        "title": "Harakah: Check this file · افحص الملف"
+      },
+      {
+        "command": "harakah.previewFix",
+        "title": "Harakah: Preview fix · معاينة الإصلاح"
+      },
+      {
+        "command": "harakah.applyFix",
+        "title": "Harakah: Apply fix (undoable) · طبّق الإصلاح"
+      },
+      {
+        "command": "harakah.fixFile",
+        "title": "Harakah: Fix this file · أصلح الملف"
+      }
+    ],
+    "configuration": {
+      "title": "Harakah",
+      "properties": {
+        "harakah.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run harakah-fix check on open and save."
+        },
+        "harakah.command": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Command that runs the CLI, e.g. `npx harakah-fix` or `node /path/to/harakah-fixer/dist/cli.js`. Empty: the workspace's `node_modules/.bin/harakah-fix`, else `harakah-fix` on PATH."
+        },
+        "harakah.language": {
+          "type": "string",
+          "enum": [
+            "en",
+            "ar",
+            "both"
+          ],
+          "default": "en",
+          "description": "Diagnostic language · لغة التنبيهات"
+        }
+      }
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "harakah.previewFix",
+          "when": "resourceExtname =~ /^\\.(astro|vue|svelte|tsx|jsx)$/"
+        },
+        {
+          "command": "harakah.applyFix",
+          "when": "resourceExtname =~ /^\\.(astro|vue|svelte|tsx|jsx)$/"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080, height=1080">
+<style>
+@font-face{font-family:'IBM Plex Sans Arabic';src:url('../../assets/fonts/IBMPlexSansArabic-Bold.ttf');font-weight:700}
+html,body{margin:0;width:1080px;height:1080px;background:#0e0f12;color:#f2efe9;font-family:'IBM Plex Sans Arabic',sans-serif}
+/* horizontal overflow on an RTL page */
+.wide{position:absolute;top:0;right:0;width:1600px;height:10px}
+.t{position:absolute;left:0;right:0;margin:0;text-align:center;font-size:110px;font-weight:700;transform-origin:center}
+.ch{display:inline-block}
+/* the word is grown with a transform, not font-size: the reference must follow it */
+#joined{top:30%;transform:translateY(-50%) scale(1.4)}
+#broken{top:70%;transform:translateY(-50%) scale(1.4)}
+</style>
+</head>
+<body>
+<div class="wide"></div>
+<h1 class="t" id="joined"><span class="ch">م&zwj;</span><span class="ch">&zwj;ت&zwj;</span><span class="ch">&zwj;ص&zwj;</span><span class="ch">&zwj;ل&zwj;</span><span class="ch">&zwj;ة</span></h1>
+<h1 class="t" id="broken"><span class="ch">م</span><span class="ch">ت</span><span class="ch">ص</span><span class="ch">ل</span><span class="ch">ة</span></h1>
+</body>
+</html>
