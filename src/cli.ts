@@ -59,8 +59,8 @@ function remotionIssues(r: FixRemotionResult, fixed: boolean): { file: string; i
   return out;
 }
 function only(issues: Issue[], o: any): Issue[] {
-  const on = o.only ? String(o.only).toUpperCase().split(",") : undefined;
-  const off = o.disable ? String(o.disable).toUpperCase().split(",") : [];
+  const on = o.only ? String(o.only).split(",").map((s: string) => s.trim().toUpperCase()).filter(Boolean) : undefined;
+  const off = o.disable ? String(o.disable).split(",").map((s: string) => s.trim().toUpperCase()).filter(Boolean) : [];
   return issues.filter((i) => (!on || on.includes(i.code)) && !off.includes(i.code));
 }
 
@@ -81,7 +81,7 @@ fixOpts(program.command("check <target>").description("report Arabic problems in
       // .astro / .vue / .svelte templates (report-only, original line numbers)
       const tplPer = fs.statSync(file).isDirectory() ? checkTemplates(path.resolve(file), toOptions(o)).map((x) => ({ file: path.relative(process.cwd(), x.file), issues: only(x.issues, o) })).filter((x) => x.issues.length) : [];
       per.push(...tplPer);
-      const scanned = r.files.length + htmls.length + tplPer.length;
+      const scanned = r.files.length + htmls.length + (fs.statSync(file).isDirectory() ? templateFiles(path.resolve(file)).length : 0);
       const all = per.flatMap((x) => x.issues);
       const rep = { tool: "harakah-fix", version: VERSION, target: file, kind: "remotion", files: scanned, summary: summarize(all), results: per, props: r.props, styles: r.styles, i18n: r.i18n };
       if (o.report) fs.writeFileSync(o.report, JSON.stringify(rep, null, 2));
@@ -204,7 +204,7 @@ fixOpts(program.command("compare <target>").description("render before/after PNG
     offline(o);
     if (isRemotion(file)) {
       const r = await compareRemotion(file, { ...remotionOptions(o), outDir: o.out, video: o.video, frame: o.frame, panelWidth: o.panelWidth, layout: o.layout,
-        compositions: o.composition ? String(o.composition).split(",") : undefined, component: o.component, width: o.width, height: o.height, fps: o.fps, durationInFrames: o.frames,
+        compositions: o.composition ? String(o.composition).split(",").map((s: string) => s.trim()).filter(Boolean) : undefined, component: o.component, width: o.width, height: o.height, fps: o.fps, durationInFrames: o.frames,
         log: (m) => console.error(`· ${m}`) });
       const n = r.fix.files.flatMap((f) => f.result.changes).length;
       console.log(`codemod: ${n} change(s) in ${r.fix.files.filter((f) => f.after !== f.before).length} file(s)`);
@@ -260,7 +260,7 @@ program.command("audit <target>").description("render in headless Chrome and aud
     };
     if (isRemotion(file)) {
       const { auditRemotion } = await import("./remotion/layout.js");
-      const r = await auditRemotion(file, { fps: o.fps, maxFrames: o.maxFrames, allFrames: !!o.allFrames, inputProps: loadInputProps(o.props), compositions: o.composition ? String(o.composition).split(",") : undefined, log: (m) => console.error(`· ${m}`) });
+      const r = await auditRemotion(file, { fps: o.fps, maxFrames: o.maxFrames, allFrames: !!o.allFrames, inputProps: loadInputProps(o.props), compositions: o.composition ? String(o.composition).split(",").map((s: string) => s.trim()).filter(Boolean) : undefined, log: (m) => console.error(`· ${m}`) });
       const { coverage, coverageText } = await import("./layout-audit.js");
       const cov = (c: { frames: number; durationInFrames: number; fps: number }) => coverage(c.frames, (c.durationInFrames - 1) / c.fps, c.fps);
       if (o.json) console.log(JSON.stringify({ target: file, root: r.root, compositions: r.compositions.map((c) => ({ id: c.id, width: c.width, height: c.height, fps: c.fps, durationInFrames: c.durationInFrames, frames: c.frames, coverage: cov(c), findings: c.findings })) }, null, 2));
