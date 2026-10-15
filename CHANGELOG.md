@@ -2,6 +2,11 @@
 
 Released to npm as [`harakah-fixer`](https://www.npmjs.com/package/harakah-fixer). Full options and behaviour: [docs/REFERENCE.md](docs/REFERENCE.md).
 
+## Unreleased
+
+- Releases publish through npm Trusted Publishing (OIDC): the Release workflow needs no npm token, and npm signs provenance on every publish. `npm deprecate` in the npm maintenance workflow still uses a token.
+- The Claude Code plugin, the VS Code extension and `@harakah/remotion-arabic` link to the source repository, and the harakah.si footer links to GitHub.
+
 ## v0.4.1 · 2026-10-13
 
 - **Renders say what they reach on the internet.** `compare` and `audit` list the hosts a scene loaded from (CDN scripts, web fonts). `--offline` refuses them before they leave the machine and names them; a scene that needed them is inconclusive (exit 2), not passed.
