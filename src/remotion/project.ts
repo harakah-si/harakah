@@ -99,7 +99,9 @@ export function listModules(target: string): string[] {
   const base = fs.existsSync(path.join(target, "src")) ? path.join(target, "src") : target;
   const out: string[] = [];
   const walk = (d: string) => {
-    for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+    let ents: fs.Dirent[];
+    try { ents = fs.readdirSync(d, { withFileTypes: true }); } catch { return; } // unreadable folder: skip it
+    for (const e of ents) {
       if (e.isDirectory()) { if (!SKIP_DIRS.has(e.name) && !e.name.startsWith(".")) walk(path.join(d, e.name)); }
       else if (MOD_EXT.test(e.name) && !e.name.endsWith(".d.ts") && !/\.(config|test|spec|stories)\.|^remotion\.config/.test(e.name)) out.push(path.join(d, e.name));
     }
@@ -114,7 +116,9 @@ export function listSources(target: string): string[] {
   const base = fs.existsSync(path.join(target, "src")) ? path.join(target, "src") : target;
   const out: string[] = [];
   const walk = (d: string) => {
-    for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+    let ents: fs.Dirent[];
+    try { ents = fs.readdirSync(d, { withFileTypes: true }); } catch { return; } // unreadable folder: skip it
+    for (const e of ents) {
       if (e.isDirectory()) { if (!SKIP_DIRS.has(e.name) && !e.name.startsWith(".")) walk(path.join(d, e.name)); }
       else if (SRC_EXT.test(e.name) && e.name !== HELPER_FILE && !e.name.endsWith(".d.ts")) out.push(path.join(d, e.name));
     }
@@ -362,7 +366,11 @@ export function fontSources(text: string, file: string, root: string): [string, 
 
 function listAll(d: string): string[] {
   const out: string[] = [];
-  const walk = (x: string) => { for (const e of fs.readdirSync(x, { withFileTypes: true })) { if (e.isDirectory()) { if (!SKIP_DIRS.has(e.name)) walk(path.join(x, e.name)); } else out.push(path.join(x, e.name)); } };
+  const walk = (x: string) => {
+    let ents: fs.Dirent[];
+    try { ents = fs.readdirSync(x, { withFileTypes: true }); } catch { return; } // unreadable folder (EACCES): skip it, don't crash
+    for (const e of ents) { if (e.isDirectory()) { if (!SKIP_DIRS.has(e.name) && !e.name.startsWith(".")) walk(path.join(x, e.name)); } else out.push(path.join(x, e.name)); }
+  };
   walk(d);
   return out;
 }
