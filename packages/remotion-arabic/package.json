@@ -1,18 +1,49 @@
 {
   "name": "@harakah/remotion-arabic",
   "version": "0.1.0",
-  "private": true,
   "description": "Joining-aware Arabic text animation for Remotion: <ArabicText>, splitArabic(), formatDigits(), isolateLatin()",
-  "keywords": ["arabic", "rtl", "remotion", "animation", "typography", "zwj"],
+  "keywords": [
+    "arabic",
+    "rtl",
+    "remotion",
+    "animation",
+    "typography",
+    "zwj"
+  ],
   "license": "MIT",
   "homepage": "https://harakah.si",
-  "bugs": { "url": "https://harakah.si", "email": "hello@harakah.si" },
+  "bugs": {
+    "url": "https://github.com/harakah-si/harakah/issues",
+    "email": "hello@harakah.si"
+  },
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "files": ["dist", "src"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
   "sideEffects": false,
-  "peerDependencies": { "react": ">=18", "remotion": ">=4" },
-  "scripts": { "build": "tsc -p .", "prepack": "tsc -p ." }
+  "peerDependencies": {
+    "react": ">=18",
+    "remotion": ">=4"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "prepack": "tsc -p ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harakah-si/harakah.git",
+    "directory": "packages/remotion-arabic"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
