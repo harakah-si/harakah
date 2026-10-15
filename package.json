@@ -85,6 +85,7 @@
     "build:skills": "node scripts/build-skills.mjs",
     "pretest": "npm run build",
     "test": "node --import tsx --test test/*.test.ts",
+    "version": "node scripts/sync-versions.mjs && git add integrations/claude-code/plugin/.claude-plugin/plugin.json",
     "serve": "node dist/server.js",
     "prepack": "npm run build",
     "pack:check": "node scripts/pack-check.mjs",
