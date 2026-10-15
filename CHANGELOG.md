@@ -2,6 +2,12 @@
 
 Released to npm as [`harakah-fixer`](https://www.npmjs.com/package/harakah-fixer). Full options and behaviour: [docs/REFERENCE.md](docs/REFERENCE.md).
 
+## v0.4.2 · 2026-10-15
+
+- **Claude Code render gate checks the right folder** when the `cd` path is single-quoted, or when options come before the HyperFrames folder (`hyperframes render --out ./dist ./scenes`). Before, it could check the wrong folder and let a broken render through.
+- **Fixing a lone `.tsx` file no longer crashes** with EACCES next to an unreadable folder; unreadable and hidden folders are skipped while scanning.
+- `--only` / `--disable` and `--composition` lists accept spaces after commas (`--only "HZ01, HZ07"`), and "files scanned" counts clean templates too.
+
 ## v0.4.1 · 2026-10-13
 
 - **Renders say what they reach on the internet.** `compare` and `audit` list the hosts a scene loaded from (CDN scripts, web fonts). `--offline` refuses them before they leave the machine and names them; a scene that needed them is inconclusive (exit 2), not passed.
