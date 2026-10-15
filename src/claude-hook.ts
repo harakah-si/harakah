@@ -29,9 +29,18 @@ async function readStdin(): Promise<any> {
 /** Where a render command will read from: hyperframes' positional dir, else the shell cwd. */
 export function renderTarget(command: string, cwd: string): string {
   const m = command.match(/hyperframes(?:@[\w.-]+)?\s+render\s+((?:"[^"]+")|(?:'[^']+')|[^\s-][^\s]*)/);
-  const dirArg = m?.[1]?.replace(/^["']|["']$/g, "");
-  const cd = command.match(/(?:^|&&|;)\s*cd\s+((?:"[^"]+")|[^\s;&]+)/);
-  const base = cd ? path.resolve(cwd, cd[1].replace(/^"|"$/g, "")) : cwd;
+  let dirArg = m?.[1]?.replace(/^["']|["']$/g, "");
+  if (!dirArg) {
+    // flags before the dir (`render --out ./dist ./scenes`): skip each flag and its value, take the first positional left
+    const rest = command.match(/hyperframes(?:@[\w.-]+)?\s+render\s+([^;&|]*)/)?.[1] ?? "";
+    const toks = rest.match(/"[^"]*"|'[^']*'|\S+/g) ?? [];
+    for (let i = 0; i < toks.length; i++) {
+      if (toks[i].startsWith("-")) { if (!toks[i].includes("=")) i++; continue; }
+      dirArg = toks[i].replace(/^["']|["']$/g, ""); break;
+    }
+  }
+  const cd = command.match(/(?:^|&&|;)\s*cd\s+((?:"[^"]+")|(?:'[^']+')|[^\s;&]+)/);
+  const base = cd ? path.resolve(cwd, cd[1].replace(/^["']|["']$/g, "")) : cwd;
   return dirArg ? path.resolve(base, dirArg) : base;
 }
 
