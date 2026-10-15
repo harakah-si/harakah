@@ -6,6 +6,15 @@
   "publisher": "harakah-local",
   "private": true,
   "license": "MIT",
+  "homepage": "https://harakah.si",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harakah-si/harakah.git",
+    "directory": "integrations/vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/harakah-si/harakah/issues"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },

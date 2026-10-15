@@ -1,7 +1,8 @@
 name: npm maintenance
 
 # Manual only: Actions → npm maintenance → Run workflow. Marks one published version deprecated (npm warns on install,
-# the version stays installable), with the NPM_TOKEN secret the Release workflow uses. An empty message un-deprecates.
+# the version stays installable). An empty message un-deprecates. Trusted Publishing only covers `npm publish`, so
+# this still needs the NPM_TOKEN secret: a granular token with read and write on these two packages only.
 # Guards: an exact version that exists on npm, never the version `latest` points at. Nothing else runs here.
 
 on:
