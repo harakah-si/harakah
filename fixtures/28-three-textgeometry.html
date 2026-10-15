@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face{font-family:'IBM Plex Sans Arabic';src:url('../assets/fonts/IBMPlexSansArabic-Bold.ttf');font-weight:700}
+html,body{margin:0;width:1280px;height:720px;background:#0e0f12;color:#f2efe9}
+</style>
+</head>
+<body>
+<script type="importmap">{"imports":{"three":"../node_modules/three/build/three.module.js","three/addons/":"../node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from "three";
+import { FontLoader } from "three/addons/loaders/FontLoader.js";
+import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
+const scene = new THREE.Scene();
+new FontLoader().load("./fonts/arabic.typeface.json", (font) => {
+  const geo = new TextGeometry("قصص تستحق أن تُروى", { font, size: 0.6, height: 0.12, bevelEnabled: true });
+  scene.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0xe3b24c })));
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+# Weekly dependency updates, grouped to keep the PR count low. Dependabot only opens PRs; nothing merges or
+# publishes on its own, and CI (real Chrome + Remotion renders, the extension in VS Code) runs on each PR.
+# Groups take minor/patch only: a major (TypeScript 5 → 7, a new checkout@vN) arrives as its own PR for review.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule: { interval: weekly, day: monday, time: "06:00", timezone: America/New_York }
+    open-pull-requests-limit: 5
+    labels: [dependencies]
+    groups:
+      dev-dependencies:
+        dependency-type: development
+        update-types: [minor, patch]
+      production-dependencies:
+        dependency-type: production
+        update-types: [minor, patch]
+    ignore:
+      # Remotion versions move together with the pinned fixture project (fixtures/remotion); bump both by hand
+      - dependency-name: "remotion"
+      - dependency-name: "@remotion/*"
+
+  - package-ecosystem: npm
+    directory: /fixtures/remotion
+    schedule: { interval: monthly }
+    open-pull-requests-limit: 2
+    labels: [dependencies, "area: remotion"]
+    groups:
+      remotion:
+        patterns: ["remotion", "@remotion/*"]
+        update-types: [minor, patch]
+      other:
+        patterns: ["*"]
+        exclude-patterns: ["remotion", "@remotion/*"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly, day: monday, time: "06:00", timezone: America/New_York }
+    labels: [dependencies, "area: ci"]
+    groups:
+      actions:
+        patterns: ["*"]
+        update-types: [minor, patch]

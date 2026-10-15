@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "declaration": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "skipLibCheck": true,
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
+    "types": [],
+    "typeRoots": [
+      "../../fixtures/remotion/node_modules/@types"
+    ],
+    "paths": {
+      "react": [
+        "../../fixtures/remotion/node_modules/@types/react"
+      ],
+      "react/*": [
+        "../../fixtures/remotion/node_modules/@types/react/*"
+      ],
+      "remotion": [
+        "../../fixtures/remotion/node_modules/remotion"
+      ],
+      "*": [
+        "../../fixtures/remotion/node_modules/*"
+      ]
+    }
+  },
+  "include": [
+    "src"
+  ]
+}

@@ -1,0 +1,189 @@
+<body>
+<a class="skip" href="#main"><span lang="ar">تخطَّ إلى المحتوى</span><span lang="en">Skip to content</span></a>
+<nav aria-label="الرئيسية · Main"><div class="wrap">
+  <a class="logo" href="/landing">حركة<i></i></a>
+  <div class="links">
+    <a href="#problem"><span lang="ar">المشكلة</span><span lang="en">Problem</span></a>
+    <a href="#fixes"><span lang="ar">ما يصلحه</span><span lang="en">Fixes</span></a>
+    <a href="#how"><span lang="ar">كيف تعمل</span><span lang="en">How it works</span></a>
+    <a href="#remotion">Remotion</a>
+  </div>
+  <div class="ctrls">
+    <div class="seg" id="lang" role="group" aria-label="Language"><button data-v="ar" aria-label="العربية" lang="ar" class="keep">ع</button><button data-v="en" aria-label="English" lang="en" class="keep">EN</button></div>
+    <div class="seg" id="theme" role="group" aria-label="Theme"><button data-v="system" title="تلقائي · Auto" aria-label="تلقائي · Auto">◐</button><button data-v="light" title="فاتح · Light" aria-label="فاتح · Light">☀</button><button data-v="dark" title="داكن · Dark" aria-label="داكن · Dark">☾</button></div>
+    <a class="btn sm p" href="/"><span lang="ar">افتح الأداة</span><span lang="en">Open the tool</span></a>
+  </div>
+</div></nav>
+
+<nav class="rail" aria-label="أقسام الصفحة · Sections">
+  <a href="#top" data-band="top"><i></i><b class="mono" data-n="1" data-pad="2"></b><span><span lang="ar">البداية</span><span lang="en">Start</span></span></a>
+  <a href="#demo" data-band="demo"><i></i><b class="mono" data-n="2" data-pad="2"></b><span><span lang="ar">العرض</span><span lang="en">Demo</span></span></a>
+  <a href="#problem" data-band="problem"><i></i><b class="mono" data-n="3" data-pad="2"></b><span><span lang="ar">المشكلة</span><span lang="en">Problem</span></span></a>
+  <a href="#fixes" data-band="fixes"><i></i><b class="mono" data-n="4" data-pad="2"></b><span><span lang="ar">الإصلاحات</span><span lang="en">Fixes</span></span></a>
+  <a href="#how" data-band="how"><i></i><b class="mono" data-n="5" data-pad="2"></b><span><span lang="ar">الطريقة</span><span lang="en">How</span></span></a>
+  <a href="#remotion" data-band="remotion"><i></i><b class="mono" data-n="6" data-pad="2"></b><span>Remotion</span></a>
+</nav>
+
+<main class="wrap" id="main">
+  <header class="hero" id="top">
+    <div class="hero-h">
+      <div class="eyebrow"><span lang="ar">أداة مجانية · موشن عربي</span><span lang="en">Free tool · Arabic motion</span></div>
+      <h1 id="h1">
+        <span lang="ar">حرّك العنوان،<br>والحروف تبقى</span><span lang="en">Animate Arabic titles.<br>Keep the letters</span>
+        <span class="kin keep" id="kin" lang="ar" dir="rtl"><span class="broken" aria-hidden="true"></span><span class="joined">متصلة.</span></span>
+      </h1>
+    </div>
+    <div class="side">
+      <p lang="ar">كود الموشن اللي يكتبه الذكاء الاصطناعي يقسّم الكلمة حرفاً حرفاً، فتتفكك العربية. <b>حركة</b> تكشف المشكلة وتصلحها قبل الرندر، في <bdi dir="ltr">HTML</bdi> و<bdi dir="ltr">GSAP</bdi> و<bdi dir="ltr">HyperFrames</bdi> و<bdi dir="ltr">Remotion</bdi>، ثم تثبت النتيجة برندر حقيقي.</p>
+      <p lang="en">AI-written motion code splits words letter by letter, and Arabic falls apart. <b>Harakah</b> finds and fixes it before you render — HTML, GSAP, HyperFrames and Remotion — then proves it with a real render.</p>
+      <div class="cta"><a class="btn p" href="/"><span lang="ar">افتح الأداة</span><span lang="en">Open the tool</span><span class="arr">←</span></a><span class="cmd">harakah-fix fix <b>./video</b> --write</span></div>
+    </div>
+    <figure class="art" aria-hidden="true"><canvas></canvas><figcaption><span class="cap-mosaic"><span lang="ar">فسيفساء · دمشق <span data-n="715"></span>م</span><span lang="en">Tesserae · Damascus, 715 CE</span></span><span class="cap-blue"><span lang="ar">قيشاني · دمشق</span><span lang="en">Qishani tiles · Damascus</span></span></figcaption></figure>
+  </header>
+  <div class="strata bleed" aria-hidden="true"></div>
+
+  <section class="reel" id="demo" aria-label="عرض قبل وبعد · Before and after demo">
+    <div class="reel-top">
+      <div class="seg" id="reel" role="group" aria-label="Demo"><button data-v="html">HTML · GSAP</button><button data-v="remotion">Remotion</button></div>
+      <span class="cap"><span lang="ar">بعد الإصلاح على اليسار · قبل على اليمين</span><span lang="en">After on the left · before on the right</span></span>
+      <div class="seg pan" id="pan" role="group" aria-label="Panel · اللقطة"><button data-v="after"><span lang="ar">بعد</span><span lang="en">After</span></button><button data-v="before"><span lang="ar">قبل</span><span lang="en">Before</span></button></div>
+    </div>
+    <div class="siq-wrap" id="siq">
+    <figure class="frame" style="margin:0"><video id="vid" src="/demo/harakah-demo.mp4" poster="/demo/harakah-demo.png" muted loop playsinline preload="metadata" aria-label="Before and after render of an Arabic title · قبل وبعد"></video>
+      <button class="pp" id="pp" type="button" aria-pressed="false"><span class="i-pause" aria-hidden="true">❚❚</span><span class="i-play" aria-hidden="true">▶</span><span class="sr"><span lang="ar">إيقاف أو تشغيل الفيديو</span><span lang="en">Pause or play video</span></span></button><span class="tag"><span lang="ar">رندر حقيقي، بدون مونتاج</span><span lang="en">Real render, no editing</span></span></figure>
+    </div>
+  </section>
+
+  <div class="stats" data-reveal>
+    <div><b data-n="{{RULES}}">{{RULES}}</b><span lang="ar">قاعدة فحص للنص العربي</span><span lang="en">Arabic text checks</span></div>
+    <div><b data-n="3">3</b><span lang="ar">أنظمة تشغيل يُختبر عليها كل تعديل: لينكس وماك وويندوز</span><span lang="en">operating systems every change is tested on: Linux, macOS, Windows</span></div>
+    <div><b data-n="0">0</b><span lang="ar">ملفات تُرفع، كل شيء محلي</span><span lang="en">uploads — it all runs locally</span></div>
+    <div><b data-n="4">4</b><span lang="ar">أُطر: <bdi dir="ltr">HTML</bdi> و<bdi dir="ltr">GSAP</bdi> و<bdi dir="ltr">HyperFrames</bdi> و<bdi dir="ltr">Remotion</bdi>، مع فحص <bdi dir="ltr">Canvas</bdi> و<bdi dir="ltr">three.js</bdi></span><span lang="en">stacks: HTML, GSAP, HyperFrames, Remotion, plus checks for canvas and three.js</span></div>
+  </div>
+
+  <section class="s" id="problem">
+    <div class="s-head" data-reveal>
+      <div><div class="kicker"><span lang="ar">المشكلة</span><span lang="en">The problem</span></div><h2><span lang="ar">نفس الكود، كلمة مختلفة تماماً</span><span lang="en">Same code. A completely different word.</span></h2></div>
+      <p lang="ar">قوالب الموشن مكتوبة للإنجليزية: كل حرف في صندوق مستقل ليتحرك وحده. مع العربية يظهر كل حرف بشكله المنفصل، وتنقلب الكلمة في صف من اليسار.</p>
+      <p lang="en">Motion templates are written for Latin: each letter gets its own box so it can move on its own. In Arabic every letter then shows its isolated form, and a left-to-right row reverses the word.</p>
+    </div>
+    <div class="rj" id="rejoin">
+      <div class="rj-stage">
+        <div class="rj-in">
+          <div class="rj-head">
+            <h3><span lang="ar"><span class="mv">مرّر ببطء: حرفاً حرفاً، حتى تلتئم الكلمة</span><span class="st">الكلمة نفسها، قبل حركة وبعدها</span></span><span lang="en"><span class="mv">Scroll slowly: letter by letter, until the word holds</span><span class="st">The same word, before and after Harakah</span></span></h3>
+            <div class="rj-meter" aria-hidden="true"><div><small><span lang="ar">حروف منفصلة</span><span lang="en">isolated forms</span></small><b id="rj-n"></b></div><div><small><span lang="ar">المطلوب</span><span lang="en">target</span></small><b data-n="0"></b></div></div>
+          </div>
+          <div class="rj-box keep" id="rj-box" lang="ar" dir="rtl">
+            <p class="sr-only"><span lang="ar">«الحكايات» مقسّمة حرفاً حرفاً تظهر بحروف منفصلة ومقلوبة، وبعد حركة تعود كلمة واحدة متصلة.</span><span lang="en">«الحكايات» split letter by letter shows isolated, reversed letters; after Harakah it is one joined word again.</span></p>
+            <div class="rj-m rj-mb" aria-hidden="true"></div><div class="rj-m rj-mj" aria-hidden="true"></div>
+            <div class="rj-pcs" aria-hidden="true"></div>
+            <div class="rj-final" aria-hidden="true">الحكايات</div>
+            <div class="rj-static" aria-hidden="true"><div class="b"></div><span class="arr">←</span><div class="j">الحكايات</div></div>
+          </div>
+          <div class="rj-code" id="rj-code" aria-hidden="true"></div>
+        </div>
+        <div class="rj-bar"><i></i></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="s" id="fixes">
+    <div class="s-head" data-reveal>
+      <div><div class="kicker"><span lang="ar">ما الذي يصلحه</span><span lang="en">What it fixes</span></div><h2><span lang="ar">التفاصيل اللي تفضح القالب المترجم</span><span lang="en">The details that give a translated template away</span></h2></div>
+      <p lang="ar">تعديلات صغيرة وواضحة في كودك نفسه، مع تعليق عند كل تغيير. وما لا يمكن إصلاحه بأمان يظهر كتنبيه مع اقتراح.</p>
+      <p lang="en">Small, readable edits in your own code, with a comment at every change. Anything that can't be fixed safely is reported with a suggested patch.</p>
+    </div>
+    <div class="rows" data-reveal>
+      <div class="row"><span class="n mono" data-n="1" data-pad="2"></span><div><h3><span lang="ar">الحروف المتقطعة</span><span lang="en">Disconnected letters</span></h3><p lang="ar">تحريك حرفاً حرفاً أو كلمة كلمة بدون ما تنفصل الكلمة، مع «لا» والتشكيل في مكانهما.</p><p lang="en">Per-letter or per-word motion that keeps words joined, with لا and diacritics intact.</p></div><code>split("") → splitArabic()</code></div>
+      <div class="row"><span class="n mono" data-n="2" data-pad="2"></span><div><h3><span lang="ar">الاتجاه والمحاذاة</span><span lang="en">Direction and alignment</span></h3><p lang="ar">اتجاه من اليمين، ومحاذاة تتبع اللغة، وكلمات مثل <bdi dir="ltr">Spotify</bdi> وعلامات الترقيم في مكانها.</p><p lang="en">Right-to-left flow, language-aware alignment, and words like Spotify and punctuation where they belong.</p></div><code>dir="rtl" · &lt;bdi&gt;</code></div>
+      <div class="row"><span class="n mono" data-n="3" data-pad="2"></span><div><h3><span lang="ar">الأرقام</span><span lang="en">Digits</span></h3><p lang="ar">مشرقية ١٢٣ افتراضياً أو غربية 123، بخيار واحد، حتى في العدادات المتحركة: <bdi class="mono" data-n="1250000"></bdi>.</p><p lang="en">Eastern ١٢٣ by default or Western 123 — one switch, even on animated counters: <span class="mono">١٬٢٥٠٬٠٠٠</span>.</p></div><code>--digits eastern</code></div>
+      <div class="row"><span class="n mono" data-n="4" data-pad="2"></span><div><h3><span lang="ar">الخطوط وتراخيصها</span><span lang="en">Fonts and licenses</span></h3><p lang="ar">خط عربي حر بدل الخطوط اللاتينية، وتنبيه قبل رفع خط لا يجوز توزيعه.</p><p lang="en">An open-licensed Arabic face instead of Latin-only fonts, and a warning before you upload one you can't redistribute.</p></div><code>Montserrat → Alexandria</code></div>
+      <div class="row"><span class="n mono" data-n="5" data-pad="2"></span><div><h3><span lang="ar">التباعد وحالة الأحرف</span><span lang="en">Tracking and case</span></h3><p lang="ar">لا تباعد بين الحروف ولا أحرف كبيرة في نص لا يعرفها، ومسافة كافية للتشكيل.</p><p lang="en">No letter-spacing or uppercase on a script that has neither, and room for diacritics.</p></div><code>letterSpacing: 0</code></div>
+    </div>
+  </section>
+
+  <section class="s" id="how">
+    <div class="s-head" data-reveal>
+      <div><div class="kicker"><span lang="ar">كيف تعمل</span><span lang="en">How it works</span></div><h2><span lang="ar">كشف، إصلاح، ثم دليل</span><span lang="en">Detect, fix, then prove it</span></h2></div>
+      <p lang="ar">لا نكتفي بقول «تم الإصلاح». حركة ترندر المشهد قبل وبعد، وتعدّ قطع الحبر في كل كلمة، وتقارنها بنص متصل مرجعي. الأوامر والنتائج هنا حقيقية، من مشروع <bdi dir="ltr">Remotion</bdi> التجريبي في المستودع.</p>
+      <p lang="en">"Fixed" isn't enough. Harakah renders the scene before and after, counts the ink pieces in every word and compares them with a running-text reference. The commands and output here are real, run on the repo's Remotion demo project.</p>
+    </div>
+    <div class="how">
+      <div class="hsteps">
+        <div class="hstep" data-step="0"><span class="k">01 · DETECT</span><h3><span lang="ar">يكشف</span><span lang="en">Detect</span></h3><p lang="ar">قواعد تغطي التقسيم والاتجاه والأرقام والخطوط والتشكيل، وتتبع النص العربي حتى عبر خصائص المكوّنات.</p><p lang="en">Rules for splitting, direction, digits, fonts and diacritics — and it follows Arabic through component props.</p></div>
+        <div class="hstep" data-step="1"><span class="k">02 · FIX</span><h3><span lang="ar">يصلح</span><span lang="en">Fix</span></h3><p lang="ar">يعدّل الكود عبر شجرة الصياغة، فلا يلمس شيئاً خارج التغيير، ويترك تعليقاً عند كل سطر. تشغيله مرتين لا يغيّر شيئاً.</p><p lang="en">Edits go through the syntax tree, touch nothing else, and leave a comment on every line they change. Running it twice changes nothing.</p></div>
+        <div class="hstep" data-step="2"><span class="k">03 · VERIFY</span><h3><span lang="ar">يثبت</span><span lang="en">Prove</span></h3><p lang="ar">يرندر كل مشهد قبل وبعد، ويعدّ قطع الحبر في «سلام على أهل الشام» ويقارنها بالنص المتصل: <span data-n="18"></span> قبل، <span data-n="12"></span> بعد، والمرجع <span data-n="12"></span>.</p><p lang="en">It renders every scene before and after and counts the ink pieces in «سلام على أهل الشام» against running text: 18 before, 12 after, reference 12.</p></div>
+      </div>
+      <div class="hstick">
+        <div class="term" role="img" aria-label="Terminal: harakah-fix check, fix and compare on fixtures/remotion">
+          <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>~/harakah-fixer</span></div>
+          <pre class="term-out" id="term" aria-hidden="true"></pre>
+        </div>
+        <div class="pv" aria-hidden="true">
+          <div class="pv-word keep broken" id="pv-word" lang="ar" dir="rtl"></div>
+          <div class="pv-meter"><div><small>before</small><b class="bad" data-n="18"></b><em><span data-n="1057"></span>px</em></div><div><small>after</small><b class="good" id="pv-after">–</b><em id="pv-after-w">&nbsp;</em></div><div><small>ref</small><b data-n="12"></b><em><span data-n="855"></span>px</em></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="s" id="remotion">
+    <div class="s-head" data-reveal>
+      <div><div class="kicker">Remotion</div><h2><span lang="ar">أداة واحدة، وأدواتك كما هي</span><span lang="en">One fixer, whatever you animate with</span></h2></div>
+      <p lang="ar">في <bdi dir="ltr">Remotion</bdi> تعيد حركة كتابة السطر إلى <bdi dir="ltr">splitArabic()</bdi>، أو استخدم <bdi dir="ltr">&lt;ArabicText&gt;</bdi> مباشرة. وفي <bdi dir="ltr">HTML</bdi> و<bdi dir="ltr">GSAP</bdi> و<bdi dir="ltr">HyperFrames</bdi> تضيف سكربتاً صغيراً يُبقي العناصر نفسها، فتبقى الحركة كما صمّمتها.</p>
+      <p lang="en">In Remotion, Harakah rewrites the line to splitArabic(), or use &lt;ArabicText&gt; directly. In HTML, GSAP and HyperFrames it adds a small runtime shim that keeps the same elements, so your timeline still works.</p>
+    </div>
+    <div data-reveal>
+      <div class="vt-top">
+        <div class="tabs" role="tablist" aria-label="Stack" id="vt-tabs"></div>
+        <button class="vt-flip" id="vt-flip" aria-pressed="false"><span lang="ar">أصلح الكلمة</span><span lang="en">Fix the word</span><span aria-hidden="true">←</span></button>
+      </div>
+      <div class="vt-card" role="tabpanel" id="vt-panel">
+        <div class="vt-stage"><span class="vt-state bad" id="vt-state"></span><div id="vt-view"></div></div>
+        <pre class="code vt-code" id="vt-code" tabindex="0"></pre>
+      </div>
+      <p class="vt-note"><span lang="ar">التبديل بين الأدوات يستخدم <bdi dir="ltr">View Transitions</bdi> في المتصفح، فتنتقل البطاقة والكلمة والكود معاً.</span><span lang="en">Switching uses the browser's View Transitions, so the card, word and code move together.</span></p>
+    </div>
+  </section>
+
+  <section class="s">
+    <div class="duo" data-reveal>
+      <div><div class="kicker"><span lang="ar">الخصوصية</span><span lang="en">Privacy</span></div><h3><span lang="ar">محلي بالكامل</span><span lang="en">Runs entirely on your machine</span></h3><p lang="ar">الأداة تعمل على جهازك. لا يُرفع كود ولا خط ولا فيديو إلى أي خادم.</p><p lang="en">Nothing leaves your machine — no code, fonts or video are uploaded anywhere.</p></div>
+      <div><div class="kicker"><span lang="ar">الخطوط</span><span lang="en">Fonts</span></div><h3><span lang="ar">خطوط حرة فقط</span><span lang="en">Open-licensed fonts only</span></h3><p lang="ar">البدائل كلها برخصة <bdi dir="ltr">OFL</bdi>. والخطوط التي لا يجوز رفعها تبقى للرندر المحلي فقط.</p><p lang="en">Every fallback is SIL OFL. Fonts that can't be redistributed stay local-render only.</p>
+        <div class="fonts keep"><span style="font-family:var(--display)">Alexandria</span><span>IBM Plex Sans Arabic</span><span>Readex Pro</span><span class="x mono">Inter</span><span class="x mono">Montserrat</span></div></div>
+    </div>
+  </section>
+
+  <section class="s" id="pro">
+    <div class="duo" data-reveal>
+      <div><div class="kicker"><span lang="ar">قريباً</span><span lang="en">Coming soon</span></div><h3><span lang="ar">حركة برو</span><span lang="en">Harakah Pro</span></h3><p lang="ar">نسخة مستضافة: رفع مشاريع كاملة، إصلاح دفعات، سجل محفوظ، و<bdi dir="ltr">API</bdi> لأدوات الذكاء الاصطناعي و<bdi dir="ltr">CI</bdi>، وتقارير مراجعة للفيديو: أوراق إطارات تُعلَّم فيها كل مشكلة، جاهزة للعميل. الأداة المحلية تبقى مجانية.</p><p lang="en">A hosted version: whole-project uploads, batch fixes, saved history, an API for AI tools and CI, and video QA reports: frame-by-frame sheets with every problem marked, ready for the client. The local tool stays free.</p>
+        <form class="wl" id="waitlist" action="/api/waitlist" method="post" novalidate>
+          <label class="vh" for="wl-email"><span lang="ar">بريدك الإلكتروني</span><span lang="en">Your email</span></label>
+          <div class="wl-row">
+            <input id="wl-email" name="email" type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" dir="ltr" maxlength="254" required placeholder="you@studio.com" aria-describedby="wl-msg">
+            <button class="btn sm p" type="submit"><span lang="ar">انضم لقائمة الانتظار</span><span lang="en">Join the waitlist</span></button>
+          </div>
+          <div class="vh" aria-hidden="true"><label for="wl-website">Leave this empty</label><input id="wl-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+          <input type="hidden" name="lang" value="ar">
+          <p class="wl-msg" id="wl-msg" role="status"><span lang="ar">بريد واحد عند الإطلاق، لا شيء غيره.</span><span lang="en">One email when Pro opens. Nothing else.</span></p>
+        </form></div>
+      <div><div class="kicker"><span lang="ar">خدمات</span><span lang="en">Services</span></div><h3><span lang="ar">نصلحها لك</span><span lang="en">We'll fix it for you</span></h3><p lang="ar">وكالة أو استوديو بموعد تسليم؟ نراجع ونصلح النصوص العربية في موشن جرافيكس مشروعك.</p><p lang="en">Agency or studio on a deadline? We review and fix the Arabic in your motion-graphics project.</p>
+        <p><a class="btn sm" href="mailto:hello@harakah.si?subject=Arabic%20motion%20graphics%20fix"><span lang="ar">تواصل معنا</span><span lang="en">Get in touch</span></a></p></div>
+    </div>
+  </section>
+
+  <section class="final" data-reveal>
+    <h2><span lang="ar">جاهز تصلح<br>أول مشهد؟</span><span lang="en">Ready to fix<br>your first scene?</span></h2>
+    <div class="cta"><a class="btn p" href="/"><span lang="ar">افتح الأداة</span><span lang="en">Open the tool</span><span class="arr">←</span></a><span class="cmd">harakah-fix check <b>./my-remotion-app</b></span></div>
+  </section>
+</main>
+<footer><div class="wrap">
+  <span><span lang="ar">حركة · أداة مجانية تعمل محلياً</span><span lang="en">Harakah · a free, local tool</span></span>
+  <div class="settings">
+    <span class="lbl" lang="ar">الأرقام</span><span class="lbl" lang="en">DIGITS</span>
+    <div class="seg" id="digits" role="group" aria-label="الأرقام · Digits"><button data-v="eastern" aria-label="أرقام مشرقية · Eastern digits" lang="ar" class="keep">١٢٣</button><button data-v="western" aria-label="أرقام غربية · Western digits" lang="en" class="keep">123</button></div>
+  </div>
+  <span class="links"><a href="https://www.npmjs.com/package/harakah-fixer">npm</a> · <a href="mailto:hello@harakah.si">hello@harakah.si</a></span>
+  <span class="mono" id="ver">harakah-fix v{{VERSION}}</span>
+</div></footer>

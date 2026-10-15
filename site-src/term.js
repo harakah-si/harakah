@@ -1,0 +1,43 @@
+// Verbatim excerpts of real harakah-fix runs on the repo's Remotion demo project (fixtures/remotion).
+// "…" marks elided lines; lines starting with "#" are our annotations.
+window.HZ_TERM = [
+  [
+    ["p", "$ harakah-fix check fixtures/remotion"],
+    ["m", "Arabic via props · نص عربي عبر الخصائص:"],
+    ["m", "  Kicker (Kicker.tsx): label ← PropsTitle (title, kicker) → <Kicker>"],
+    ["m", "…"],
+    ["", "fixtures/remotion/src/broken/CharSplitTitle.tsx: 1 error(s), 4 warning(s), 0 info — 5 auto-fixable"],
+    ["w", "WARN  HZ09 Font stack has no Arabic font [auto-fix]  L4"],
+    ["w", "WARN  HZ09 Font stack has no Arabic font [auto-fix]  L6"],
+    ["w", "WARN  HZ09 Font stack has no Arabic font [auto-fix]  L6"],
+    ["w", "WARN  HZ03 Arabic text is not in a right-to-left context [auto-fix]  L13"],
+    ["e", "ERROR HZ02 Script splits text into characters at runtime [auto-fix]  L15"],
+    ["m", "…"],
+    ["", "→ 56 auto-fixable, 2 manual · run `harakah-fix fix fixtures/remotion --write` (or -o <dir>) · add --diff to preview"],
+  ],
+  [
+    ["p", "$ harakah-fix fix fixtures/remotion -o /tmp/hzfix --diff"],
+    ["m", "--- a/src/broken/CharSplitTitle.tsx"],
+    ["m", "+++ b/src/broken/CharSplitTitle.tsx"],
+    ["del", "-import { loadFont } from \"@remotion/google-fonts/Inter\";"],
+    ["add", "+import { loadFont } from \"@remotion/google-fonts/IBMPlexSansArabic\"; // harakah: was Inter (no Arabic glyphs)"],
+    ["add", "+import { splitArabic } from \"../harakah-arabic\"; // harakah: joining-aware Arabic helpers"],
+    ["m", "…"],
+    ["del", "-        {text.split(\"\").map((char, i) => {"],
+    ["add", "+        {/* harakah: was text.split(\"\") */ splitArabic(text).map((char, i) => {"],
+    ["m", "…"],
+    ["o", "✔ Changed 9 file(s): 56 auto-fix(es), 2 manual (report-only) · تم الإصلاح"],
+  ],
+  [
+    ["p", "$ harakah-fix compare fixtures/remotion -o /tmp/hzrp"],
+    ["m", "· bundling before / after…"],
+    ["m", "codemod: 53 change(s) in 8 file(s)"],
+    ["", "CharSplitTitle @ frame 68/90"],
+    ["", "  ink pieces/width: before 18/1057px, after 12/855px, running-text reference 12/855px; pixel diff vs reference: after 0.0%, before 100.0%"],
+    ["o", "  → JOINED ✓ (after matches running text)"],
+    ["", "PropsTitle @ frame 56/75"],
+    ["", "  ink pieces/width: before 31/950px, after 27/809px, running-text reference 27/809px; pixel diff vs reference: after 0.0%, before 95.3%"],
+    ["o", "  → JOINED ✓ (after matches running text)"],
+    ["m", "# 10/10 compositions → JOINED ✓"],
+  ],
+];

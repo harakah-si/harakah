@@ -1,0 +1,5 @@
+reviewer,where,frames,family,severity,safe_to_autofix,note
+# reviewer: initials · where: file:line or element (e.g. src/Title.tsx:14, h1.title) · frames: first-last frame visible, or "all" for a still
+# family: splits | layout | typography | fonts | digits-bidi | canvas-3d | other | clean (one row for a scene with no problem)
+# severity: visible | subtle | none · safe_to_autofix: yes | no | unsure (no = the fix would change the design)
+AB,src/Title.tsx:14,0-45,splits,visible,yes,"«قصص» letters animate one by one and show isolated forms"

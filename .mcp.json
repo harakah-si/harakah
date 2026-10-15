@@ -1,0 +1,1 @@
+{ "mcpServers": { "harakah": { "command": "node", "args": ["integrations/claude-code/plugin/scripts/harakah.cjs", "mcp"] } } }

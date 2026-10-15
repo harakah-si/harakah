@@ -1,0 +1,5 @@
+{
+  "mcpServers": {
+    "harakah": { "command": "node", "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/harakah.cjs", "mcp"] }
+  }
+}

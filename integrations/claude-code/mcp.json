@@ -1,0 +1,5 @@
+{
+  "mcpServers": {
+    "harakah": { "command": "npx", "args": ["--no-install", "harakah-mcp"] }
+  }
+}

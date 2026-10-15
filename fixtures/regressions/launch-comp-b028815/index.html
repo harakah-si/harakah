@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Harakah · launch promo composition</title>
+<!-- Deterministic composition: every frame is a pure function of t (window.seek). Rendered frame-by-frame by ../src/render.mjs. -->
+<style>
+@font-face{font-family:"Alexandria";src:url("../../../assets/fonts/Alexandria.ttf");font-weight:100 900}
+@font-face{font-family:"IBM Plex Sans Arabic";src:url("../../../assets/fonts/IBMPlexSansArabic-Regular.ttf");font-weight:400}
+@font-face{font-family:"IBM Plex Sans Arabic";src:url("../../../assets/fonts/IBMPlexSansArabic-Medium.ttf");font-weight:500}
+@font-face{font-family:"IBM Plex Sans Arabic";src:url("../../../assets/fonts/IBMPlexSansArabic-SemiBold.ttf");font-weight:600}
+@font-face{font-family:"IBM Plex Sans Arabic";src:url("../../../assets/fonts/IBMPlexSansArabic-Bold.ttf");font-weight:700}
+/* Arabic inside monospace text is drawn with a joining face, never a mono font */
+@font-face{font-family:"HZ Mono Arabic";src:url("../../../assets/fonts/IBMPlexSansArabic-Regular.ttf");unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F}
+:root{--display:"Alexandria","IBM Plex Sans Arabic",sans-serif;--text:"IBM Plex Sans Arabic",sans-serif;--mono:"HZ Mono Arabic","JetBrains Mono",monospace;--u:min(1vw,1vh)}
+:root[data-palette=mosaic]{--bg:#0a1411;--bg2:#0d1915;--card:#10201b;--line:#1f342c;--ink:#f2ecde;--mute:#9daa9f;--acc:#e3b24c;--acc2:#3fb6a7;--acc3:#1f5e57;--ok:#5acb9b;--err:#ff7563;--warn:#e9c46a}
+:root[data-palette=inkpetra]{--bg:#0b0b0d;--bg2:#0f0f12;--card:#141416;--line:#2a2623;--ink:#f3efe7;--mute:#958c82;--acc:#ff5a36;--acc2:#d9a066;--acc3:#8e6a7a;--ok:#3ccf8e;--err:#ff6157;--warn:#e9c46a}
+*{box-sizing:border-box}
+html,body{margin:0;width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:var(--ink);font-family:var(--text)}
+.layer{position:absolute;inset:0;opacity:0}
+.glow{position:absolute;inset:0;background:radial-gradient(60% 50% at 50% 42%,color-mix(in srgb,var(--acc) 9%,transparent),transparent 70%)}
+/* corner brand */
+.brand{position:absolute;top:calc(var(--u)*4.4);inset-inline-start:calc(var(--u)*4.4);display:flex;align-items:center;gap:calc(var(--u)*1.2);font:700 calc(var(--u)*3.2)/1 var(--display);z-index:5}
+.brand i{width:calc(var(--u)*1.6);height:calc(var(--u)*1.6);background:var(--acc);border-radius:3px;transform:rotate(12deg)}
+[data-palette=inkpetra] .brand i{background:linear-gradient(180deg,var(--acc2),var(--acc),var(--acc3))}
+.brand small{font:500 calc(var(--u)*1.7)/1 var(--mono);color:var(--mute);margin-inline-start:calc(var(--u)*.6)}
+/* captions (burned in; the video has no sound) */
+.cap{position:absolute;left:50%;bottom:calc(var(--u)*6);transform:translateX(-50%);max-width:86vw;text-align:center;z-index:6;
+  font:600 calc(var(--u)*4.3)/1.45 var(--text);padding:calc(var(--u)*1.1) calc(var(--u)*2.4);border-radius:calc(var(--u)*1.4);background:rgba(0,0,0,.55);color:#fff;white-space:nowrap}
+:root[lang=en] .cap{font-weight:500}
+.sq .cap{white-space:normal;text-wrap:balance;width:max-content;max-width:88vw;font-size:calc(var(--u)*4.5)}
+/* titles */
+.title{position:absolute;left:0;right:0;top:44%;transform:translateY(-50%);text-align:center;direction:rtl;white-space:pre;font:800 7.8vw/1.35 var(--display);margin:0}
+.title span{display:inline-block}
+.title .sp{display:inline}
+/* S1 prompt */
+.prompt{position:absolute;top:17%;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:calc(var(--u)*1.6);padding:calc(var(--u)*1.4) calc(var(--u)*2.4);border:1px solid var(--line);background:var(--card);border-radius:calc(var(--u)*5);font:500 calc(var(--u)*3.6)/1.3 var(--text);white-space:nowrap;direction:rtl}
+:root[lang=en] .prompt{direction:ltr}
+.prompt b{font:600 calc(var(--u)*1.8)/1 var(--mono);color:var(--bg);background:var(--acc2);padding:calc(var(--u)*.7) calc(var(--u)*1);border-radius:calc(var(--u)*1)}
+.prompt .caret{display:inline-block;width:2px;height:1.1em;background:var(--ink);vertical-align:middle;margin-inline-start:2px}
+.tag{position:absolute;top:63%;left:50%;transform:translateX(-50%);font:600 calc(var(--u)*2.8)/1 var(--mono);color:var(--err);border:1.5px solid var(--err);padding:calc(var(--u)*1) calc(var(--u)*1.6);border-radius:99px;white-space:nowrap}
+/* S2 problem */
+.s2{display:grid;grid-template-columns:1fr 1.15fr;align-items:center;gap:calc(var(--u)*4);padding:0 6vw;direction:ltr}
+.sq .s2{grid-template-columns:1fr;grid-template-rows:auto auto;align-content:center;gap:calc(var(--u)*5);padding-bottom:12vh}
+.boxes{direction:rtl;text-align:center;white-space:pre;font:800 calc(var(--u)*10.5)/1.3 var(--display)}
+.sq .boxes{font-size:calc(var(--u)*11)}
+.sq .title{font-size:8vw}
+.boxes span{display:inline-block;outline:2px dashed var(--err);outline-offset:-2px;border-radius:6px;padding:0 .04em;margin:0 .05em;color:var(--ink)}
+.boxlbl{direction:rtl;text-align:center;font:500 calc(var(--u)*3)/1.4 var(--text);color:var(--mute);margin-top:calc(var(--u)*3.5)}
+:root[lang=en] .boxlbl{direction:ltr}
+.code{background:var(--card);border:1px solid var(--line);border-radius:calc(var(--u)*2);padding:calc(var(--u)*3);font:500 calc(var(--u)*2.6)/1.7 var(--mono);white-space:pre;color:var(--ink);direction:ltr;text-align:left}
+.sq .code{font-size:calc(var(--u)*2.75)}
+.code .c{color:var(--mute)}.code .k{color:var(--acc2)}.code .s{color:var(--acc)}
+.code .bad{color:var(--err);border-radius:6px;padding:0 .15em;margin:0 -.15em}
+.chips{display:flex;gap:calc(var(--u)*1.2);justify-content:center;flex-wrap:wrap;margin-top:calc(var(--u)*3);direction:ltr}
+:root[lang=ar] .chips{direction:rtl}
+.chips span{font:500 calc(var(--u)*2.3)/1 var(--mono);border:1px solid var(--line);color:var(--ink);padding:calc(var(--u)*1.1) calc(var(--u)*1.7);border-radius:99px;background:var(--bg2)}
+.chips .lbl{border:0;background:none;color:var(--mute);font-family:var(--text);font-size:calc(var(--u)*2.8);padding-inline:0}
+/* S3 terminal */
+.term{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:min(88vw,1700px);background:#0e0e10;border:1px solid #2a2a2e;border-radius:calc(var(--u)*2);overflow:hidden;box-shadow:0 40px 120px -40px rgba(0,0,0,.8);direction:ltr}
+.sq .term{width:90vw;top:43%}
+.term .bar{display:flex;gap:9px;align-items:center;padding:calc(var(--u)*1.4) calc(var(--u)*2);border-bottom:1px solid #222}
+.term .bar i{width:12px;height:12px;border-radius:50%;background:#2c2a28}
+.term .bar span{margin-left:12px;font:500 calc(var(--u)*1.7)/1 var(--mono);color:#a29c92}
+.term pre{margin:0;padding:calc(var(--u)*2.4) calc(var(--u)*2.8);min-height:calc(var(--u)*44);font:500 calc(var(--u)*2.55)/1.65 var(--mono);color:#d9d4c9;white-space:pre-wrap;text-align:left}
+.sq .term pre{font-size:calc(var(--u)*2.6);min-height:calc(var(--u)*64)}
+.term .p{color:#ff8a66}.term .m{color:#a29c92}.term .w{color:#e9c46a}.term .i{color:#8ab4f8}.term .o{color:#5fd39d}
+.term .cur{display:inline-block;width:.6em;height:1.1em;background:#d9d4c9;vertical-align:text-bottom}
+/* S4 rejoin */
+.s4 .title{color:var(--mute)}
+.s4 .j{color:var(--acc)}
+.meter{position:absolute;top:66%;left:50%;transform:translateX(-50%);display:flex;gap:calc(var(--u)*4);align-items:flex-end;direction:ltr;white-space:nowrap}
+:root[lang=ar] .meter{direction:rtl}
+.meter div{display:flex;flex-direction:column;gap:calc(var(--u)*.8);align-items:center}
+.meter small{font:500 calc(var(--u)*2.1)/1 var(--mono);color:var(--mute);letter-spacing:.08em;text-transform:uppercase}
+.meter small [lang=ar]{font-family:var(--text);letter-spacing:0;text-transform:none;font-size:calc(var(--u)*2.6)}
+.meter b{font:700 calc(var(--u)*7)/1 var(--display);font-variant-numeric:tabular-nums}
+.meter .bad{color:var(--err)}.meter .good{color:var(--ok)}
+.meter .ok{font:600 calc(var(--u)*3)/1 var(--mono);color:var(--ok);border:1.5px solid var(--ok);padding:calc(var(--u)*1) calc(var(--u)*1.6);border-radius:99px;align-self:center}
+/* S5 end card */
+#tiles{position:absolute;inset:0;width:100%;height:100%}
+.strata{position:absolute;left:0;right:0;bottom:0;height:46%}
+.strata svg{position:absolute;inset:0;width:100%;height:100%}
+.end{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u)*2.6);padding-bottom:10vh;text-align:center}
+.end .panel{display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*2.4);padding:calc(var(--u)*4) calc(var(--u)*6);border-radius:calc(var(--u)*3);background:color-mix(in srgb,var(--bg) 82%,transparent);border:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:calc(var(--u)*2.4);direction:rtl}
+.logo i{width:calc(var(--u)*5);height:calc(var(--u)*5);background:var(--acc);border-radius:calc(var(--u)*1);transform:rotate(12deg)}
+[data-palette=inkpetra] .logo i{background:linear-gradient(180deg,var(--acc2),var(--acc),var(--acc3))}
+.logo .ar{font:800 calc(var(--u)*15)/1 var(--display)}
+.logo .en{font:700 calc(var(--u)*5)/1 var(--display);color:var(--mute);direction:ltr}
+.tagline{font:600 calc(var(--u)*4.8)/1.35 var(--display);max-width:80vw}
+.tagline em{font-style:normal;color:var(--acc)}
+.cmd{direction:ltr;font:500 calc(var(--u)*3.1)/1 var(--mono);padding:calc(var(--u)*1.8) calc(var(--u)*2.8);border:1.5px dashed var(--line);border-radius:99px;background:var(--bg2);color:var(--ink)}
+.cmd b{color:var(--acc);font-weight:600}
+.fine{font:500 calc(var(--u)*2.6)/1.4 var(--text);color:var(--mute)}
+</style>
+</head>
+<body>
+<div class="glow"></div>
+<div class="brand" id="brand"><i></i><span id="brand-name"></span><small>harakah-fix</small></div>
+
+<!-- S1 hook: an AI-written per-letter reveal, then the letters fall apart (intentional "before" state) -->
+<section class="layer s1" id="s1">
+  <div class="prompt" id="prompt"><b>AI</b><span id="prompt-t"></span><span class="caret" id="caret"></span></div>
+  <h1 class="title" id="t1" aria-label="سنة من الحكايات"></h1>
+  <div class="tag" id="tag1"></div>
+</section>
+
+<!-- S2 the problem -->
+<section class="layer s2" id="s2">
+  <div class="code" id="code"></div>
+  <div><div class="boxes" id="boxes" aria-label="الحكايات"></div><div class="boxlbl" id="boxlbl"></div><div class="chips" id="chips"></div></div>
+</section>
+
+<!-- S3 harakah-fix in a terminal (verbatim output, see ../data/) -->
+<section class="layer s3" id="s3">
+  <div class="term"><div class="bar"><i></i><i></i><i></i><span>~/ai-title</span></div><pre id="term"></pre></div>
+</section>
+
+<!-- S4 the rejoin: isolated letters slide home and join; per-letter motion still works -->
+<section class="layer s4" id="s4">
+  <h1 class="title" id="t4b" aria-hidden="true"></h1>
+  <h1 class="title j" id="t4j" aria-label="سنة من الحكايات"></h1>
+  <div class="meter" id="meter"></div>
+</section>
+
+<!-- S5 end card -->
+<section class="layer s5" id="s5">
+  <canvas id="tiles"></canvas>
+  <div class="strata" id="strata"></div>
+  <div class="end"><div class="panel" id="panel">
+    <div class="logo"><i></i><span class="ar">حركة</span><span class="en">Harakah</span></div>
+    <div class="tagline" id="tagline"></div>
+    <div class="cmd"><b>harakah-fix</b> fix ./video --write</div>
+    <div class="fine" id="fine"></div>
+  </div></div>
+</section>
+
+<div class="cap" id="cap"></div>
+
+<script src="harakah-split.js"></script>
+<script>
+const Q = new URLSearchParams(location.search);
+const LANG = Q.get("lang") === "en" ? "en" : "ar";
+const PAL = Q.get("palette") === "inkpetra" ? "inkpetra" : "mosaic";
+const DIGITS = Q.get("digits") || (LANG === "ar" ? "eastern" : "western");
+const CAPS = Q.get("cap") !== "0";
+const CAPTEXT = Q.get("captext"); // carousel stills: one fixed headline
+const root = document.documentElement;
+root.lang = LANG; root.dir = LANG === "ar" ? "rtl" : "ltr"; root.dataset.palette = PAL;
+if (innerWidth / innerHeight < 1.3) root.classList.add("sq");
+const $ = (s) => document.querySelector(s);
+const nf = new Intl.NumberFormat(DIGITS === "eastern" ? "ar-EG" : "en-US");
+const N = (n) => nf.format(n);
+const L = (ar, en) => (LANG === "ar" ? ar : en);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const eo = (k) => 1 - Math.pow(1 - k, 3), eio = (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+const lerp = (a, b, k) => a + (b - a) * k;
+function rng(seed) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+const TITLE = "سنة من الحكايات";
+const DUR = 26;
+
+/* ---------- copy ---------- */
+$("#brand-name").textContent = L("حركة", "Harakah");
+const PROMPT = L("اكتب لي عنوان موشن: «سنة من الحكايات»", "Write me a motion title: “سنة من الحكايات”");
+$("#tag1").textContent = L("حروف منفصلة ✗", "letters split apart ✗");
+$("#boxlbl").textContent = L("كل حرف في صندوق مستقل ← شكل منفصل", "one letter per box → isolated forms");
+$("#chips").innerHTML = `<span class="lbl">${L("نفس المشكلة في:", "Same bug in:")}</span><span>HTML</span><span>GSAP</span><span>HyperFrames</span><span>Remotion</span>`;
+$("#tagline").innerHTML = L("حرّك العنوان، والحروف تبقى <em>متصلة.</em>", "Animate Arabic titles. Keep the letters <em>joined.</em>");
+$("#fine").textContent = L("مجانية · تعمل على جهازك · HTML · GSAP · HyperFrames · Remotion", "Free · runs on your machine · HTML · GSAP · HyperFrames · Remotion");
+const CAPTIONS = [
+  [0.3, 2.7, L("طلبنا من الذكاء الاصطناعي عنوان موشن بالعربي…", "We asked an AI for an Arabic motion title…")],
+  [2.8, 4.9, L("…فتفكّكت الحروف.", "…and the letters fell apart.")],
+  [5.2, 7.5, L("كود الموشن يقسّم النص حرفاً حرفاً ليحرّكه.", "Motion code splits text into letters to animate it.")],
+  [7.6, 9.9, L("وكل حرف في صندوق مستقل يفقد وصله بما حوله.", "Each Arabic letter in its own box loses its joins.")],
+  [10.2, 13.6, L("حركة تكشف المشكلة وتصلحها في الكود نفسه…", "Harakah finds the problem and fixes your code…")],
+  [13.7, 16.9, L("…ثم تثبت النتيجة برندر حقيقي.", "…then proves it with a real render.")],
+  [17.2, 19.9, L("الحروف ترجع لمكانها…", "The letters find their way back…")],
+  [20.0, 22.4, L("والحركة كما صمّمتها، والكلمة متصلة.", "Same animation. Joined letters.")],
+  [22.8, 25.9, L("حركة: أداة مجانية تعمل على جهازك.", "Harakah: free, and it runs on your machine.")],
+];
+
+/* ---------- build letter layers ---------- */
+const G = HZ.graphemes(TITLE);         // intentional "before": one grapheme per box → isolated forms
+const J = HZ.splitArabic(TITLE);       // joining-aware chunks (ZWJ-padded) → joined forms
+const span = (c) => (c === " " ? `<span class="sp"> </span>` : `<span>${c}</span>`);
+$("#t1").innerHTML = G.map(span).join("");
+$("#t4b").innerHTML = G.map(span).join("");
+$("#t4j").innerHTML = J.map(span).join("");
+$("#boxes").innerHTML = HZ.graphemes("الحكايات").map(span).join("");
+const t1 = [...$("#t1").children].filter((e) => !e.classList.contains("sp"));
+const t4b = [...$("#t4b").children].filter((e) => !e.classList.contains("sp"));
+const t4j = [...$("#t4j").children].filter((e) => !e.classList.contains("sp"));
+const boxes = [...$("#boxes").children];
+const R1 = rng(7), FALL = t1.map(() => ({ dx: (R1() - 0.5) * 0.9, dy: 0.25 + R1() * 0.55, rot: (R1() - 0.5) * 50 }));
+const R4 = rng(11), SCAT = t4b.map(() => ({ dx: (R1() - 0.5) * 0.5, dy: (R4() - 0.5) * 0.7, rot: (R4() - 0.5) * 30 }));
+
+/* code card (the AI scene's real line, see ../scene/ai-title.html) */
+$("#code").innerHTML = [
+  `<span class="c">// ai-title.html · AI-written per-letter reveal</span>`,
+  `<span class="k">const</span> text = el.textContent;`,
+  `el.innerHTML = text.<span class="bad" id="bad">split("")</span>.map((ch, i) =&gt;`,
+  `  \`&lt;span class=<span class="s">"ch"</span>&gt;\${ch}&lt;/span&gt;\``,
+  `).join("");`,
+].join("\n");
+const codeLines = $("#code").innerHTML.split("\n");
+
+/* terminal script: verbatim from ../data/{check,fix,compare}.txt */
+const bdi = (s) => s.replace(/([\u0600-\u06FF][\u0600-\u06FF\s،0-9]*[\u0600-\u06FF])/g, '<bdi dir="rtl">$1</bdi>');
+const TERM = [
+  [10.4, "p", "$ harakah-fix check ai-title.html"],
+  [11.5, "", "ai-title.html: 0 error(s), 1 warning(s), 1 info — 2 auto-fixable"],
+  [11.7, "w", "WARN  HZ02 Script splits text into characters at runtime [auto-fix]  L17"],
+  [11.9, "i", "INFO  HZ09 Font stack has no Arabic font [auto-fix]  L16 h1#title"],
+  [12.5, "p", "$ harakah-fix fix ai-title.html -o fixed.html"],
+  [13.6, "o", "✔ Applied 2 fix(es) · تم تطبيق 2 إصلاح: HZ02, HZ09 (+ runtime shim)"],
+  [14.1, "p", "$ harakah-fix compare ai-title.html -o compare/"],
+  [15.2, "m", "stage 1280×720, 1.3s; fixes: HZ02, HZ09"],
+  [15.5, "o", "join audit \"سنة من الحكايات\": ink pieces/width before 22/1153px, after 14/1031px, … → JOINED ✓"],
+];
+const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+
+/* end-card tiles (mosaic) / strata (inkpetra), deterministic */
+const cv = $("#tiles"), cx = cv.getContext("2d");
+let TILES = [];
+function buildTiles() {
+  const W = innerWidth, H = innerHeight, dpr = 1; cv.width = W * dpr; cv.height = H * dpr;
+  const pitch = Math.round(Math.min(W, H) / 26), r = rng(3), pal = ["#10241e", "#143029", "#18392f", "#1f5e57", "#2a4f45", "#0f1d19", "#173a34"];
+  TILES = [];
+  for (let y = pitch / 2; y < H + pitch; y += pitch) for (let x = pitch / 2; x < W + pitch; x += pitch) {
+    const d = Math.hypot(x - W / 2, y - H * 0.45) / Math.hypot(W / 2, H / 2), gold = r() < 0.035;
+    TILES.push({ x, y, s: pitch - 3 - r() * 2, rot: (r() - 0.5) * 0.12, c: gold ? "#e3b24c" : pal[(r() * pal.length) | 0], delay: d * 0.9 + r() * 0.25, a: gold ? 0.9 : 0.55 + r() * 0.35 });
+  }
+}
+function drawTiles(k) {
+  const W = innerWidth, H = innerHeight; cx.clearRect(0, 0, W, H);
+  for (const t of TILES) {
+    const p = eo(clamp((k - t.delay) / 0.5)); if (p <= 0) continue;
+    cx.save(); cx.translate(t.x, t.y + (1 - p) * 8); cx.rotate(t.rot + (1 - p) * 0.6); cx.globalAlpha = p * t.a;
+    const z = t.s * (0.6 + 0.4 * p); cx.fillStyle = t.c; cx.fillRect(-z / 2, -z / 2, z, z); cx.restore();
+  }
+}
+function buildStrata() {
+  const cols = ["#3a1f1a", "#5a2a20", "#8e3b26", "#b5532f", "#d9a066", "#8e6a7a", "#c46a43"], r = rng(5);
+  let svg = `<svg viewBox="0 0 1000 400" preserveAspectRatio="none">`;
+  for (let i = 0; i < 9; i++) {
+    const base = 60 + i * 38, amp = 18 + r() * 22, ph = r() * 6; let d = `M0 400 L0 ${base}`;
+    for (let x = 0; x <= 1000; x += 25) d += ` L${x} ${(base + Math.sin(x / 110 + ph) * amp + Math.sin(x / 41 + ph * 2) * amp * 0.3).toFixed(1)}`;
+    svg += `<path class="sb" data-i="${i}" d="${d} L1000 400 Z" fill="${cols[i % cols.length]}" opacity="${(0.55 + i * 0.05).toFixed(2)}"/>`;
+  }
+  $("#strata").innerHTML = svg + "</svg>";
+}
+
+/* rejoin geometry (measured once fonts are ready) */
+let GEO = [];
+function measure() {
+  GEO = t4b.map((b, i) => { const rb = b.getBoundingClientRect(), rj = t4j[i].getBoundingClientRect(); return { dx: rj.left + rj.width / 2 - (rb.left + rb.width / 2) }; });
+}
+
+/* ---------- seek ---------- */
+function show(id, a, b, t, fi = 0.35, fo = 0.35) { const o = Math.min(seg(t, a, a + fi), 1 - seg(t, b - fo, b)); $(id).style.opacity = o; return o; }
+function seek(t) {
+  const fs = parseFloat(getComputedStyle($("#t1")).fontSize);
+  // S1 hook 0–5
+  if (show("#s1", -1, 5.0, t, 0.01, 0.35) > 0) {
+    const n = Math.round(PROMPT.length * seg(t, 0.15, 1.3));
+    $("#prompt-t").textContent = [...PROMPT].slice(0, n).join("");
+    $("#caret").style.opacity = t < 1.6 && Math.floor(t * 3) % 2 === 0 ? 1 : 0;
+    $("#prompt").style.opacity = 1 - seg(t, 3.2, 3.8) * 0.6;
+    t1.forEach((el, i) => {
+      const k = eo(seg(t, 1.45 + i * 0.06, 1.45 + i * 0.06 + 0.5));   // rise in, one by one (as the AI scene does)
+      const f = eio(seg(t, 3.0 + i * 0.09, 3.0 + i * 0.09 + 1.1)), F = FALL[i]; // then fall apart, letter by letter
+      el.style.opacity = k * (1 - f * 0.55);
+      el.style.transform = `translate(${F.dx * f * fs}px, ${(1 - k) * 0.4 * fs + F.dy * f * f * fs}px) rotate(${F.rot * f}deg)`;
+    });
+    $("#tag1").style.opacity = seg(t, 2.6, 2.9);
+  }
+  // S2 problem 5–10
+  if (show("#s2", 5.0, 10.0, t) > 0) {
+    boxes.forEach((b, i) => { const k = eo(seg(t, 5.3 + i * 0.07, 5.8 + i * 0.07)); b.style.opacity = k; b.style.transform = `translateY(${(1 - k) * 20}px)`; });
+    const nl = Math.ceil(codeLines.length * seg(t, 5.5, 6.4));
+    $("#code").innerHTML = codeLines.map((l, i) => (i < nl ? l : " ")).join("\n");
+    const bad = $("#bad"); if (bad) { const p = seg(t, 6.6, 7.0); bad.style.background = `rgba(255,117,99,${0.22 * p})`; bad.style.outline = p > 0 ? `1.5px solid rgba(255,117,99,${p})` : "none"; }
+    $("#boxlbl").style.opacity = seg(t, 6.9, 7.3);
+    const ch = $("#chips"); ch.style.opacity = seg(t, 7.8, 8.2); ch.style.transform = `translateY(${(1 - eo(seg(t, 7.8, 8.4))) * 14}px)`;
+  }
+  // S3 terminal 10–17
+  if (show("#s3", 10.0, 17.0, t) > 0) {
+    const out = [];
+    for (let i = 0; i < TERM.length; i++) {
+      const [at, c, s] = TERM[i]; if (t < at) break;
+      if (c === "p") { const typed = s.slice(0, 2 + Math.floor((s.length - 2) * seg(t, at, at + 0.9))); out.push(`<span class="p">${esc(typed)}</span>`); }
+      else out.push(c ? `<span class="${c}">${bdi(esc(s))}</span>` : bdi(esc(s)));
+    }
+    const blink = Math.floor(t * 2.5) % 2 === 0 ? '<span class="cur"></span>' : "";
+    $("#term").innerHTML = out.join("\n") + blink;
+  }
+  // S4 rejoin 17–22.5
+  if (show("#s4", 17.0, 22.6, t) > 0) {
+    let joined = 0;
+    t4b.forEach((b, i) => {
+      const a = 17.7 + i * 0.16, p = eio(seg(t, a, a + 0.75)), S = SCAT[i], g = GEO[i] || { dx: 0 };
+      const sc = 1 - p;
+      b.style.transform = `translate(${S.dx * sc * fs + g.dx * p}px, ${S.dy * sc * fs}px) rotate(${S.rot * sc}deg)`;
+      const x = seg(p, 0.7, 1); b.style.opacity = (0.9 * (1 - x)).toFixed(3);
+      const wave = Math.sin(clamp((t - 20.75 - i * 0.05) / 0.45) * Math.PI) * 0.12; // per-letter wave, still joined
+      t4j[i].style.opacity = x.toFixed(3);
+      t4j[i].style.transform = `translateY(${-wave * fs}px)`;
+      if (p >= 1) joined++;
+    });
+    const pieces = Math.round(lerp(22, 14, seg(t, 17.7, 17.7 + t4b.length * 0.16 + 0.75)));
+    const done = seg(t, 20.55, 20.85);
+    $("#meter").innerHTML = `<div><small>${L('<span lang="ar">قطع الحبر</span>', "ink pieces")}</small><b class="${pieces > 14 ? "bad" : "good"}">${N(pieces)}</b></div>` +
+      `<div><small>${L('<span lang="ar">المرجع</span>', "reference")}</small><b>${N(14)}</b></div>` +
+      `<span class="ok" style="opacity:${done}">${L("متصلة ✓", "JOINED ✓")}</span>`;
+    $("#meter").style.opacity = seg(t, 17.4, 17.8);
+  }
+  // S5 end card 22.5–26
+  if (show("#s5", 22.5, DUR + 1, t, 0.4, 0.01) > 0) {
+    const k = seg(t, 22.5, 24.2);
+    if (PAL === "mosaic") drawTiles(k * 1.6);
+    else document.querySelectorAll("#strata .sb").forEach((p) => { const i = +p.dataset.i, q = eo(seg(t, 22.5 + i * 0.08, 23.4 + i * 0.08)); p.setAttribute("transform", `translate(${-(t - 22.5) * 6} ${(1 - q) * 160})`); });
+    const pk = eo(seg(t, 23.0, 23.8)); $("#panel").style.opacity = pk; $("#panel").style.transform = `translateY(${(1 - pk) * 24}px) scale(${0.97 + 0.03 * pk})`;
+  }
+  $("#brand").style.opacity = 1 - seg(t, 22.4, 22.8);
+  // captions
+  const c = CAPTIONS.find(([a, b]) => t >= a && t < b), cap = $("#cap");
+  if (CAPTEXT) { cap.textContent = CAPTEXT; cap.style.opacity = 1; }
+  else if (CAPS && c) { cap.textContent = c[2]; cap.style.opacity = Math.min(seg(t, c[0], c[0] + 0.18), 1 - seg(t, c[1] - 0.18, c[1])); } else cap.style.opacity = 0;
+}
+window.DUR = DUR;
+window.ready = (async () => {
+  await document.fonts.load('800 100px "Alexandria"', TITLE); await document.fonts.load('600 40px "IBM Plex Sans Arabic"', "عربي"); await document.fonts.load('500 20px "HZ Mono Arabic"', "عربي"); await document.fonts.ready;
+  if (PAL === "mosaic") buildTiles(); else { buildStrata(); $("#tiles").style.display = "none"; }
+  if (PAL === "mosaic") $("#strata").style.display = "none";
+  measure(); seek(+(Q.get("t") || 0));
+  return true;
+})();
+window.seek = seek;
+</script>
+</body>
+</html>

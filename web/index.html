@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{OG_TITLE}}</title>
+<meta name="description" content="{{OG_DESC}}">
+<link rel="canonical" href="{{URL}}">
+<link rel="alternate" hreflang="en" href="{{ORIGIN}}/">
+<link rel="alternate" hreflang="ar" href="{{ORIGIN}}/?lang=ar">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0a1411" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f3efe6" media="(prefers-color-scheme: light)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="حركة · Harakah">
+<meta property="og:title" content="{{OG_TITLE}}">
+<meta property="og:description" content="{{OG_DESC}}">
+<meta property="og:url" content="{{URL}}">
+<meta property="og:image" content="{{OG_IMAGE}}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{OG_ALT}}">
+<meta property="og:locale" content="{{OG_LOCALE}}">
+<meta property="og:locale:alternate" content="{{OG_LOCALE_ALT}}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{OG_TITLE}}">
+<meta name="twitter:description" content="{{OG_DESC}}">
+<meta name="twitter:image" content="{{OG_IMAGE}}">
+<meta name="twitter:image:alt" content="{{OG_ALT}}">
+<script>
+  // Theme + language before paint: saved choice → else system preference / Arabic.
+  (function () {
+    var d = document.documentElement;
+    var t = localStorage.getItem("hz-theme");
+    d.dataset.theme = t === "light" || t === "dark" ? t : (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    d.dataset.themePref = t || "system";
+    var q = new URLSearchParams(location.search).get("lang");
+  if (q === "en" || q === "ar") localStorage.setItem("hz-lang", q);
+  var l = localStorage.getItem("hz-lang") === "ar" ? "ar" : "en"; // English unless Arabic was picked
+    d.dataset.lang = l; d.lang = l; d.dir = l === "en" ? "ltr" : "rtl";
+  })();
+</script>
+<style>
+/* Arabic inside code: monospace fonts (DejaVu Sans Mono, Consolas…) don't join Arabic → Plex for Arabic code points only */
+@font-face{font-family:'HZ Mono Arabic';src:url('/fonts/IBMPlexSansArabic-Regular.ttf');font-weight:100 550;font-display:swap;unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F}@font-face{font-family:'HZ Mono Arabic';src:url('/fonts/IBMPlexSansArabic-Bold.ttf');font-weight:551 900;font-display:swap;unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F}
+@font-face{font-family:'IBM Plex Sans Arabic';src:url('/fonts/IBMPlexSansArabic-Regular.ttf');font-weight:400;font-display:swap}
+@font-face{font-family:'IBM Plex Sans Arabic';src:url('/fonts/IBMPlexSansArabic-Medium.ttf');font-weight:500;font-display:swap}
+@font-face{font-family:'IBM Plex Sans Arabic';src:url('/fonts/IBMPlexSansArabic-SemiBold.ttf');font-weight:600;font-display:swap}
+@font-face{font-family:'IBM Plex Sans Arabic';src:url('/fonts/IBMPlexSansArabic-Bold.ttf');font-weight:700;font-display:swap}
+@font-face{font-family:'Alexandria';src:url('/fonts/Alexandria.ttf');font-weight:100 900;font-display:swap}
+
+/* Mosaic: the palette of harakah.si (site-src/palettes.mjs); test/consistency.test.ts keeps them equal */
+:root{
+  --radius:20px; --gap:16px;
+  --font:'IBM Plex Sans Arabic',system-ui,sans-serif; --display:'Alexandria','IBM Plex Sans Arabic',sans-serif;
+  --mono:'HZ Mono Arabic',ui-monospace,'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+[data-theme="dark"]{
+  --bg:#0a1411; --surface:#0d1915; --surface2:#10201b; --border:#1f342c; --text:#f2ecde; --muted:#9daa9f; --faint:#7d8980;
+  --accent:#e3b24c; --accent-t:#e3b24c; --accent-ink:#0a1411; --ok:#5acb9b; --warn:#f0913a; --err:#ff7563; --info:#7fb8f0; --code:#0d1915;
+  color-scheme:dark;
+}
+[data-theme="light"]{
+  --bg:#f3efe6; --surface:#ece6da; --surface2:#e8e1d3; --border:#d8d0bf; --text:#0e1d18; --muted:#53615a; --faint:#56645d;
+  --accent:#8a6312; --accent-t:#755310; --accent-ink:#ffffff; --ok:#0f6b3f; --warn:#a14800; --err:#a6311f; --info:#2a5fa8; --code:#f8f5ee;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+body{transition:background .3s var(--ease),color .3s var(--ease)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.05;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+a{color:inherit}
+[data-lang=ar] [lang=en]:not(.keep),[data-lang=en] [lang=ar]:not(.keep){display:none!important}
+[hidden]{display:none!important}
+.skip{position:absolute;inset-inline-start:12px;top:-60px;z-index:60;background:var(--text);color:var(--bg);padding:10px 14px;border-radius:10px}.skip:focus{top:12px}
+bdi{unicode-bidi:isolate}
+.wrap{max-width:1320px;margin:0 auto;padding:0 clamp(20px,4vw,56px)}
+
+nav{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:68px;gap:20px}
+.logo{font:800 26px/1 var(--display);display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo i{width:10px;height:10px;border-radius:1.5px;background:var(--accent);display:inline-block;transform:translateY(-6px) rotate(9deg)}
+.logo small{font:500 11px/1 var(--mono);color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:5px 9px;letter-spacing:.06em}
+.ctrls{display:flex;gap:8px;align-items:center}
+.navlink{font-size:14px;color:var(--muted);text-decoration:none;margin-inline-end:10px}.navlink:hover{color:var(--text)}
+
+.intro{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:40px;align-items:end;padding:44px 0 30px}
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent-t);margin-bottom:18px;display:flex;gap:12px;align-items:center}
+.eyebrow:before{content:"";width:28px;height:7px;background:repeating-linear-gradient(90deg,currentColor 0 6px,transparent 6px 9px)}
+.eyebrow [lang=ar]{font-family:var(--font);letter-spacing:0;font-size:14px;font-weight:500}
+.intro h1{font:700 clamp(34px,4.2vw,58px)/1.18 var(--display);margin:0}
+[data-lang=en] .intro h1{letter-spacing:-.02em;line-height:1.05}
+.intro h1 em{font-style:normal;color:var(--accent-t)}
+.lead{color:var(--muted);margin:0;font-size:16px;line-height:1.8}
+.lead b{color:var(--text);font-weight:600}
+
+.seg{display:inline-flex;background:transparent;border:1px solid var(--border);border-radius:999px;padding:3px;gap:2px}
+.seg button{all:unset;cursor:pointer;padding:7px 12px;border-radius:999px;font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:6px;transition:all .2s var(--ease)}
+nav .seg button{font:500 12px/1 var(--mono);padding:8px 11px}
+.seg button[aria-pressed="true"]{background:var(--text);color:var(--bg)}
+.seg button:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:var(--gap)}
+@media (max-width:980px){.grid,.intro{grid-template-columns:minmax(0,1fr)}.navlink{display:none}}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.card-h h2{margin:0;font:600 15px/1.4 var(--font);display:flex;gap:10px;align-items:center}
+.card-h h2 .n{font:500 11px/1 var(--mono);color:var(--accent-t);letter-spacing:.1em}
+.card-b{padding:18px 20px}
+textarea{width:100%;min-height:340px;resize:vertical;background:var(--code);color:var(--text);border:1px solid var(--border);border-radius:14px;padding:14px 16px;font:13px/1.65 var(--mono);direction:ltr;text-align:left;tab-size:2;white-space:pre;overflow:auto}
+.diff{margin:0;max-height:520px;overflow:auto;background:var(--code);border:1px solid var(--border);border-radius:14px;padding:10px 0;font:12.5px/1.65 var(--mono);text-align:left;white-space:pre;tab-size:2}
+.diff span{display:block;padding:0 16px}
+.diff .add{background:color-mix(in srgb,var(--ok) 14%,transparent);color:color-mix(in srgb,var(--ok) 70%,var(--text))}
+.diff .del{background:color-mix(in srgb,var(--err) 12%,transparent);color:color-mix(in srgb,var(--err) 65%,var(--text))}
+.diff .hunk{color:var(--info);margin-top:6px}
+.diff .meta{color:var(--muted)}
+.kind{font:600 11px/1 var(--mono);padding:5px 8px;border-radius:999px;border:1px solid var(--accent);color:var(--accent-t);letter-spacing:.04em}
+.kind:empty{display:none}
+[data-lang=ar] textarea:placeholder-shown{direction:rtl;text-align:right;font-family:var(--font);font-size:14px}
+textarea:focus{outline:2px solid color-mix(in srgb,var(--accent) 60%,transparent);outline-offset:1px}
+.drop{position:relative}
+.proj{display:grid;gap:10px;margin-bottom:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--code)}
+.proj.over{border-color:var(--accent)}
+.proj-run{border:1px solid var(--border);border-radius:14px;padding:10px 14px 12px;margin:12px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;align-items:end}
+.proj-run legend{padding:0 6px;font-size:13px}.proj-run label{display:grid;gap:4px;font-size:13px;min-width:0}
+.proj-run textarea,.proj-run .hint,.proj-run button{grid-column:1/-1}.proj-run button{justify-self:start}
+.proj-run textarea{font-family:var(--mono);font-size:13px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:8px 10px;resize:vertical}
+@media (max-width:560px){.proj-run{grid-template-columns:1fr}}
+.proj-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.proj-h strong{font-family:var(--mono);direction:ltr}.proj-h .ghost{margin-inline-start:auto}
+.tree{list-style:none;margin:0;padding:0;max-height:220px;overflow:auto;font:12.5px/1.7 var(--mono);direction:ltr;text-align:left}
+.tree li{display:grid;grid-template-columns:1ch minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:1px 6px;border-radius:6px}
+.tree .p{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tree li.ch{color:var(--ink)}.tree li:not(.ch){color:var(--muted)}
+.tree .b{font-size:11px;line-height:1.5;padding:0 7px;border-radius:99px;border:1px solid currentColor;white-space:nowrap;font-family:var(--font)}
+.tree .b.fix{color:var(--ok)}.tree .b.err{color:var(--err)}
+.hint{margin:0;color:var(--muted);font-size:13px}
+.issue .file{font-family:var(--mono);font-size:12px;direction:ltr;unicode-bidi:isolate;color:var(--muted)}
+.fileh{font:600 12.5px/1.4 var(--mono);direction:ltr;text-align:left;color:var(--muted);margin:10px 2px 2px;border-top:1px dashed var(--line);padding-top:10px}.fileh:first-child{border:0;margin-top:0;padding-top:0}
+.drop.over textarea{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 6%,var(--code))}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 18px;margin-top:18px}
+.opt label.t{display:block;font-size:13px;color:var(--muted);margin-bottom:7px}
+select{appearance:none;background:var(--surface2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' fill='none' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat left 12px center;border:1px solid var(--border);color:var(--text);border-radius:999px;padding:8px 14px 8px 32px;font:inherit;font-size:14px;width:100%}
+[dir=ltr] select{background-position:right 12px center;padding:8px 32px 8px 14px}
+.check{grid-column:1/-1;display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer}
+.check input{accent-color:var(--accent-t);width:16px;height:16px}
+.btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:999px;font-weight:600;font-size:14px;border:1px solid var(--border);background:transparent;color:var(--text);transition:transform .3s var(--ease),background .2s,border-color .2s}
+.btn:hover{border-color:var(--text);transform:translateY(-1px)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.btn.small{padding:7px 13px;font-size:13px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.summary{display:flex;gap:6px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:999px;padding:3px 10px;font-size:12.5px}
+.chip i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.issues{display:flex;flex-direction:column;gap:10px;max-height:640px;overflow:auto;padding:2px}
+.issue{border:1px solid var(--border);border-radius:14px;padding:13px 15px;background:var(--surface2);border-inline-start:3px solid var(--sev);animation:rise .4s var(--ease) both}
+.issue .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.issue .code{font:600 11.5px var(--mono);color:var(--muted);direction:ltr}
+.issue h3{margin:0;font-size:15px;font-weight:600}
+.issue p{margin:6px 0 0;font-size:14px;color:color-mix(in srgb,var(--text) 82%,var(--muted))}
+.issue p[lang=en],.issue h3[lang=en]{direction:ltr;text-align:left}
+.issue .loc{margin-top:7px;font:12px var(--mono);color:var(--faint);direction:ltr;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--border);color:var(--muted);margin-inline-start:auto;white-space:nowrap}
+.pill.auto{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}
+.pill.opt{color:var(--info);border-color:color-mix(in srgb,var(--info) 40%,transparent)}
+.sev{font-size:12px;font-weight:600;color:var(--sev)}
+.empty{color:var(--muted);text-align:center;padding:64px 12px}
+.empty .big{font:700 30px/1.3 var(--display);color:var(--text);margin-bottom:8px}
+.shots{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.shot{margin:0}
+.shot img{width:100%;display:block;border-radius:14px;border:1px solid var(--border);background:#000}
+.shot figcaption{display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:8px;font-weight:600}
+.dot{width:8px;height:8px;border-radius:50%;flex:none}
+.shot.vid{margin-top:14px}
+.shot.vid video{display:block;width:100%;height:auto;background:#000;border-radius:8px}
+.shot.vid figcaption{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.vid-dl{margin-inline-start:auto;font-size:13px;color:var(--accent)}
+.audit{margin-top:12px;font-size:13px;color:var(--muted)}
+.audit div{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.full{grid-column:1/-1}
+.spinner{width:14px;height:14px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:60}
+.toast.show{opacity:1}
+footer{margin:48px 0 0;border-top:1px solid var(--border);padding:22px 0 36px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+footer .mono{font-family:var(--mono)}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* layout audit: frame scrubber */
+.lay{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px;align-items:start}
+.lay-stage{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--border);background:#000;line-height:0}
+.lay-stage img{width:100%;height:auto;display:block}
+.lay-stage svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.lay-stage rect{fill:color-mix(in srgb,var(--err) 18%,transparent);stroke:var(--err);stroke-width:2;vector-effect:non-scaling-stroke}
+.lay-stage rect.dim{fill:none;stroke:var(--warn);stroke-dasharray:4 3;opacity:.7}
+.lay-stage text{fill:#fff;font-family:var(--mono);font-weight:700;paint-order:stroke;stroke:var(--err);stroke-width:4px}
+.lay-scrub{margin-top:12px;display:flex;gap:8px;align-items:center}
+.lay-track{position:relative;flex:1;height:30px;display:flex;align-items:center}
+.lay-track input{width:100%;margin:0;accent-color:var(--accent);position:relative;z-index:1;background:transparent}
+.lay-ticks{position:absolute;inset:0 8px;pointer-events:none}
+.lay-ticks i{position:absolute;top:2px;width:3px;height:8px;border-radius:2px;background:var(--err);transform:translateX(50%)}
+.lay-ticks i.ok{background:var(--border);height:5px}
+.lay-time{font:500 12px var(--mono);color:var(--muted);min-width:9ch;text-align:center}
+.lay-list{display:flex;flex-direction:column;gap:8px;max-height:460px;overflow:auto}
+.lay-item{all:unset;box-sizing:border-box;display:block;cursor:pointer;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:var(--surface2);font-size:13px}
+.lay-item:hover{border-color:var(--accent)}
+.lay-item[aria-current="true"]{border-color:var(--err);border-inline-start:4px solid var(--err)}
+.lay-item:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lay-item .h{display:flex;gap:8px;align-items:center;font-weight:600;margin-bottom:4px}
+.lay-item .h .k{font:700 11px var(--mono);color:#fff;background:var(--err);border-radius:6px;padding:2px 6px}
+.lay-item .w{font:12px var(--mono);color:var(--muted);word-break:break-word}
+.lay-item .w .sep{display:inline-block;width:1px;height:.9em;background:currentColor;opacity:.5;margin:0 8px;vertical-align:-.1em}
+.lay-sum{display:flex;gap:8px;flex-wrap:wrap}
+.lay-item .sg{margin-top:6px;font-size:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;color:var(--muted)}
+.lay-item .sg .ok{color:var(--ok);font-weight:600}
+.lay-item .sg code{display:block;width:100%;font:12px var(--mono);background:var(--code);border-radius:8px;padding:6px 8px;color:var(--text);white-space:pre-wrap;word-break:break-all;text-align:left}
+@media (max-width:900px){.lay{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:640px){
+  nav .wrap{height:60px;gap:10px}.logo{font-size:23px}.logo small{display:none}.ctrls{gap:6px}nav .seg button{padding:7px 9px}
+  .intro{padding:28px 0 22px;gap:16px}.intro h1{font-size:clamp(32px,9.4vw,42px)}.lead{font-size:15px}
+  .card-h{padding:12px 14px}.card-b{padding:14px}
+  .card-h .row{width:100%}.card-h .row select{flex:1;min-width:0!important}
+  .opts{grid-template-columns:minmax(0,1fr)}
+  textarea{min-height:260px;font-size:12px}
+  .shots{grid-template-columns:minmax(0,1fr)}
+  .actions .btn{flex:1;justify-content:center}
+  .empty{padding:40px 8px}
+}
+.grid>*,.intro>*{min-width:0}
+</style>
+</head>
+<body>
+<a class="skip" href="#main"><span lang="ar">تخطَّ إلى المحتوى</span><span lang="en">Skip to content</span></a>
+<nav><div class="wrap">
+  <a class="logo" href="/landing">حركة<i></i><small>TOOL</small></a>
+  <div class="ctrls">
+    <a class="navlink" href="/landing"><span lang="ar">عن حركة</span><span lang="en">About</span></a>
+    <div class="seg" id="lang" role="group" aria-label="Language"><button data-v="ar" aria-label="العربية" lang="ar" class="keep">ع</button><button data-v="en" aria-label="English" lang="en" class="keep">EN</button></div>
+    <div class="seg" id="theme" role="group" aria-label="Theme"><button data-v="system" title="تلقائي · Auto" aria-label="تلقائي · Auto">◐</button><button data-v="light" title="فاتح · Light" aria-label="فاتح · Light">☀</button><button data-v="dark" title="داكن · Dark" aria-label="داكن · Dark">☾</button></div>
+  </div>
+</div></nav>
+
+<main class="wrap" id="main">
+  <section class="intro">
+    <div>
+      <div class="eyebrow"><span lang="ar">الأداة · تعمل محلياً</span><span lang="en">The tool · runs locally</span></div>
+      <h1><span lang="ar">الصق المشهد،<br>وخلّ الحروف <em>متصلة.</em></span><span lang="en">Paste a scene.<br>Keep the letters <em lang="ar" class="keep">متصلة.</em></span></h1>
+    </div>
+    <p class="lead" lang="ar">كود <bdi>HTML</bdi> لمشهد موشن (<bdi>HyperFrames</bdi> أو <bdi>GSAP</bdi>) أو مكوّن <bdi>Remotion</bdi> بصيغة <bdi dir="ltr">.tsx</bdi> أو <bdi dir="ltr">.jsx</bdi>. حركة <b>تكشف وتصلح</b> مشاكل النص العربي قبل الرندر: الحروف المتقطعة، الاتجاه، الأرقام، الخطوط وتراخيصها، ثم تثبت النتيجة برندر حقيقي.</p>
+    <p class="lead" lang="en">HTML for a motion scene (HyperFrames or GSAP) or a Remotion <bdi>.tsx/.jsx</bdi> component. Harakah <b>finds and fixes</b> Arabic text problems before you render — split letters, direction, digits, fonts and licences — then proves it with a real render.</p>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <div class="card-h">
+        <h2><span class="n">01</span><span lang="ar">الكود</span><span lang="en">Code</span> <span class="kind" id="kind"></span></h2>
+        <div class="row">
+          <select id="example" aria-label="أمثلة · Examples" style="width:auto;min-width:210px"><option value="" data-ar="أمثلة جاهزة" data-en="Examples">أمثلة جاهزة</option></select>
+          <label class="btn small" for="file"><span lang="ar">رفع ملف</span><span lang="en">Upload</span></label>
+          <input id="file" type="file" accept=".html,.htm,.tsx,.jsx,.zip,text/html" hidden>
+          <label class="btn small" for="dir" title="Remotion project folder · مجلد مشروع Remotion"><span lang="ar">مجلد مشروع</span><span lang="en">Project folder</span></label>
+          <input id="dir" type="file" webkitdirectory multiple hidden>
+          <label class="btn small" for="zip"><bdi>.zip</bdi></label>
+          <input id="zip" type="file" accept=".zip,application/zip" hidden>
+        </div>
+      </div>
+      <div class="card-b">
+        <div class="proj" id="proj" hidden>
+          <div class="proj-h"><strong id="projName"></strong><span class="summary" id="projStat"></span>
+            <button class="btn small ghost" id="projClose" type="button"><span lang="ar">إغلاق المشروع</span><span lang="en">Close project</span></button></div>
+          <ul class="tree" id="projTree" tabindex="0" aria-label="Project files · ملفات المشروع"></ul>
+          <div class="row"><a class="btn small primary" id="projZip" download><span lang="ar">تنزيل المشروع المصلَّح</span><span lang="en">Download fixed project</span> <bdi>.zip</bdi></a>
+            <a class="btn small" id="projPatch" download><span lang="ar">تنزيل التغييرات</span><span lang="en">Download patch</span> <bdi>.patch</bdi></a></div>
+          <p class="hint" id="projHint"></p>
+          <fieldset class="proj-run" id="projRun" hidden>
+            <legend><span lang="ar">خصائص الرندر</span><span lang="en">Render props</span> <bdi dir="ltr" class="hint">--props</bdi></legend>
+            <label><span class="t"><span lang="ar">التركيبة</span><span lang="en">Composition</span></span><select id="projComp"></select></label>
+            <label><span class="t"><span lang="ar">الخصائص</span><span lang="en">Props</span></span><select id="projProps"></select></label>
+            <textarea id="projPropsJson" dir="ltr" rows="3" spellcheck="false" hidden aria-label="Render props JSON · خصائص الرندر بصيغة JSON" placeholder='{ "title": "مرحبا" }'></textarea>
+            <button class="btn small" id="projApply" type="button"><span lang="ar">أعد الفحص بهذه الخصائص</span><span lang="en">Re-check with these props</span></button>
+            <p class="hint" id="projRunHint" aria-live="polite"></p>
+          </fieldset>
+        </div>
+        <div class="drop" id="drop"><textarea id="src" wrap="off" spellcheck="false" data-ar="الصق كود HTML أو مكوّن Remotion هنا، أو اسحب ملفاً أو مجلد مشروع أو ملف zip وأفلته…" data-en="Paste HTML or a Remotion .tsx/.jsx component, or drop a file, a project folder or a .zip…"></textarea></div>
+        <div class="opts">
+          <div class="opt">
+            <label class="t"><span lang="ar">الأرقام</span><span lang="en">Digits</span></label>
+            <div class="seg" id="digits" role="group">
+              <button data-v="eastern"><span lang="ar">مشرقية</span><span lang="en">Eastern</span> ١٢٣</button>
+              <button data-v="western"><span lang="ar">غربية</span><span lang="en">Western</span> 123</button>
+              <button data-v="keep"><span lang="ar">كما هي</span><span lang="en">Keep</span></button>
+            </div>
+          </div>
+          <div class="opt">
+            <label class="t"><span lang="ar">إصلاح الحروف المقسّمة</span><span lang="en">Per-letter splits</span></label>
+            <div class="seg" id="split" role="group">
+              <button data-v="zwj"><span lang="ar">حرف حرف</span><span lang="en">Per letter</span> (ZWJ)</button>
+              <button data-v="word"><span lang="ar">كلمة كلمة</span><span lang="en">Per word</span></button>
+            </div>
+          </div>
+          <div class="opt rem-only" hidden>
+            <label class="t" for="rfont"><span lang="ar">استبدال الخطوط اللاتينية</span><span lang="en">Latin font swap</span></label>
+            <select id="rfont">
+              <option value="auto" data-ar="تلقائي: Alexandria للعناوين، IBM Plex للنصوص" data-en="Auto: Alexandria for titles, IBM Plex for text">تلقائي: Alexandria للعناوين، IBM Plex للنصوص</option>
+              <option value="plex" data-ar="IBM Plex Sans Arabic للكل" data-en="IBM Plex Sans Arabic everywhere">IBM Plex Sans Arabic للكل</option>
+              <option value="alexandria" data-ar="Alexandria للكل" data-en="Alexandria everywhere">Alexandria للكل</option>
+            </select>
+          </div>
+          <div class="opt html-only">
+            <label class="t" for="font"><span lang="ar">الخط العربي البديل</span><span lang="en">OFL fallback font</span></label>
+            <select id="font">
+              <option value="plex" data-ar="IBM Plex Sans Arabic — نصوص" data-en="IBM Plex Sans Arabic — text">IBM Plex Sans Arabic — نصوص</option>
+              <option value="alexandria" data-ar="Alexandria — عناوين" data-en="Alexandria — titles">Alexandria — عناوين</option>
+              <option value="readex">Readex Pro</option>
+              <option value="cairo">Cairo</option>
+              <option value="tajawal">Tajawal</option>
+            </select>
+          </div>
+          <div class="opt html-only">
+            <label class="t" for="fontSrc"><span lang="ar">ربط ملف الخط</span><span lang="en">@font-face source</span></label>
+            <select id="fontSrc">
+              <option value="file" data-ar="ملف بجانب الـHTML (fonts/)" data-en="File next to the HTML (fonts/)">ملف بجانب الـHTML (fonts/)</option>
+              <option value="google">Google Fonts</option>
+              <option value="data" data-ar="مضمّن داخل الملف (data:)" data-en="Embedded in the file (data:)">مضمّن داخل الملف (data:)</option>
+            </select>
+          </div>
+          <label class="check"><input type="checkbox" id="bidi" checked> <span lang="ar">عزل الكلمات اللاتينية بـ <bdi>&lt;bdi&gt;</bdi></span><span lang="en">Isolate Latin runs with &lt;bdi&gt;</span></label>
+          <label class="check rem-only" hidden><input type="checkbox" id="wrapWords"> <span lang="ar">إبقاء حروف الكلمة معاً (لا ينكسر السطر وسط كلمة)</span><span lang="en">Keep words together (no mid-word line breaks)</span></label>
+          <label class="check html-only"><input type="checkbox" id="replace"> <span lang="ar">استبدال الخطوط غير الحرّة (ثمانية وغيرها)</span><span lang="en">Replace non-free fonts (Thmanyah etc.)</span></label>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="run"><span lang="ar">افحص وأصلح</span><span lang="en">Check &amp; fix</span></button>
+          <button class="btn" id="cmp"><span lang="ar">قارن قبل وبعد برندر حقيقي</span><span lang="en">Render before / after</span></button>
+          <button class="btn" id="lay" type="button"><span lang="ar">دقّق ترتيب العرض عبر الإطارات</span><span lang="en">Audit layout over time</span></button>
+          <label class="check"><input type="checkbox" id="cmpVideo"> <span lang="ar">مع فيديو المقارنة (MP4، حتى ١٢ ثانية)</span><span lang="en">With a compare video (MP4, up to 12 s)</span></label>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-h">
+        <h2><span class="n">02</span><span lang="ar">المشاكل</span><span lang="en">Issues</span></h2>
+        <div class="summary" id="summary"></div>
+      </div>
+      <div class="card-b">
+        <div class="issues" id="issues" tabindex="0" role="region" aria-label="Issues · المشاكل"><div class="empty"><div class="big"><span lang="ar">جاهزين</span><span lang="en">Ready</span></div><span lang="ar">الصق الكود أو اختر مثالاً، واضغط «افحص وأصلح».</span><span lang="en">Paste code or pick an example, then press Check &amp; fix.</span></div></div>
+      </div>
+    </section>
+
+    <section class="card full" id="shotsCard" hidden>
+      <div class="card-h"><h2><span class="n">03</span><span lang="ar">قبل وبعد</span><span lang="en">Before / after</span></h2><span class="chip" id="shotsEngine">headless Chrome</span></div>
+      <div class="card-b">
+        <div class="shots">
+          <figure class="shot"><figcaption><span class="dot" style="background:var(--err)"></span><span lang="ar">قبل</span><span lang="en">Before</span></figcaption><img id="before" alt="Before"></figure>
+          <figure class="shot"><figcaption><span class="dot" style="background:var(--ok)"></span><span lang="ar">بعد الإصلاح</span><span lang="en">After</span></figcaption><img id="after" alt="After"></figure>
+        </div>
+        <figure class="shot vid" id="vidFig" hidden>
+          <figcaption><span class="dot" style="background:var(--accent)"></span><span lang="ar">فيديو المقارنة: قبل يميناً، بعد يساراً</span><span lang="en">Compare video: before on the right, after on the left</span><span class="chip" id="vidEngine"></span><a class="vid-dl" id="vidDl" download="harakah-compare.mp4"><span lang="ar">تنزيل MP4</span><span lang="en">Download MP4</span></a></figcaption>
+          <video id="vid" controls playsinline muted loop preload="metadata" aria-label="Before / after compare video · فيديو المقارنة قبل وبعد"></video>
+        </figure>
+        <div class="audit" id="audit"></div>
+      </div>
+    </section>
+
+    <section class="card full" id="layCard" hidden aria-labelledby="layTitle">
+      <div class="card-h"><h2 id="layTitle"><span class="n">HZ24</span><span lang="ar">ترتيب العرض عبر الإطارات</span><span lang="en">Layout over time</span></h2><div class="lay-sum" id="laySum"></div></div>
+      <div class="card-b">
+        <div class="lay">
+          <div>
+            <div class="lay-stage" dir="ltr"><img id="layImg" alt="Sampled frame · إطار من المشهد"><svg id="layBoxes" aria-hidden="true" preserveAspectRatio="none"></svg></div>
+            <div class="lay-scrub">
+              <button class="btn small ghost" id="layPrev" type="button" aria-label="الإطار المعلَّم السابق · Previous flagged frame">⇤</button>
+              <div class="lay-track"><div class="lay-ticks" id="layTicks"></div><input type="range" id="layRange" min="0" max="0" value="0" step="1" aria-label="الإطار · Frame"></div>
+              <button class="btn small ghost" id="layNext" type="button" aria-label="الإطار المعلَّم التالي · Next flagged frame">⇥</button>
+              <span class="lay-time" id="layTime" aria-live="polite"></span>
+            </div>
+            <p class="hint" id="layHint"></p>
+          </div>
+          <div class="lay-list" id="layList" role="list" aria-label="Layout findings · مشاكل الترتيب"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card full" id="diffCard" hidden>
+      <div class="card-h">
+        <h2><span class="n">04</span><span lang="ar">التغييرات</span><span lang="en">Diff</span></h2>
+        <div class="row"><span class="summary" id="diffStat"></span><a class="btn small" id="helperDl" href="/api/helper" download="harakah-arabic.tsx" hidden><span lang="ar">ملف المساعد</span><span lang="en">Helper file</span> <bdi>harakah-arabic.tsx</bdi></a></div>
+      </div>
+      <div class="card-b"><pre class="diff" id="diff" dir="ltr" tabindex="0" aria-label="Diff · التغييرات"></pre></div>
+    </section>
+
+    <section class="card full">
+      <div class="card-h">
+        <h2><span class="n">05</span><span lang="ar">الكود بعد الإصلاح</span><span lang="en">Fixed code</span> <span class="chip" id="outLabel">HTML</span></h2>
+        <div class="row">
+          <button class="btn small" id="copy"><span lang="ar">نسخ</span><span lang="en">Copy</span></button>
+          <button class="btn small" id="dl"><span lang="ar">تنزيل</span><span lang="en">Download</span></button>
+        </div>
+      </div>
+      <div class="card-b"><textarea id="out" wrap="off" readonly spellcheck="false" style="min-height:260px" data-ar="سيظهر الكود المصلَّح هنا" data-en="The fixed code appears here"></textarea>
+        <div class="audit" id="assets"></div>
+      </div>
+    </section>
+  </div>
+  <footer>
+    <span><span lang="ar">يعمل محلياً بالكامل، لا يُرفع شيء إلى أي خادم.</span><span lang="en">Runs locally. Nothing leaves this machine.</span></span>
+    <span class="mono" id="ver"></span>
+  </footer>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+const $ = (s) => document.querySelector(s);
+const root = document.documentElement;
+const state = { digits: "eastern", split: "zwj", example: "", kind: "html" };
+const lang = () => root.dataset.lang;
+const L = (ar, en) => (lang() === "en" ? en : ar);             // plain text (toasts)
+const B = (ar, en) => `<span lang="ar">${ar}</span><span lang="en">${en}</span>`; // markup, switches live
+const SEV = { error: [B("خطأ", "Error"), "var(--err)"], warning: [B("تنبيه", "Warning"), "var(--warn)"], info: [B("ملاحظة", "Note"), "var(--info)"] };
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const toast = (m) => { const t = $("#toast"); t.textContent = m; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 1800); };
+const toEastern = (n) => String(n).replace(/[0-9]/g, (d) => "٠١٢٣٤٥٦٧٨٩"[d]);
+// Arabic count agreement for frames: 1 إطار واحد · 2 إطاران · 3–10 إطارات · 11+ إطاراً
+const arFramesChecked = (n) => n === 1 ? "إطار واحد مفحوص" : n === 2 ? "إطاران مفحوصان" : n >= 3 && n <= 10 ? `${toEastern(n)} إطارات مفحوصة` : `${toEastern(n)} إطاراً مفحوصاً`;
+const arFrames = (n) => n === 1 ? "إطار واحد" : n === 2 ? "إطاران" : n >= 3 && n <= 10 ? `${toEastern(n)} إطارات` : `${toEastern(n)} إطاراً`;
+const N = (n) => B(toEastern(n), String(n));
+const arNum = (x) => toEastern(String(x).replace(".", "٫"));
+// what a sampled audit covers (server: layout-audit.ts coverage()): samples are evenly spaced, so a shorter problem can slip between two
+const coverageChip = (c) => c.total != null && c.sampled >= c.total
+  ? B(`كل الإطارات مفحوصة (${toEastern(c.total)})`, `every frame checked (${c.total})`)
+  : B(`${arFramesChecked(c.sampled)}${c.total != null ? ` من ${toEastern(c.total)}` : ""}، واحد كل ${c.gapFrames != null ? arFrames(c.gapFrames) : `${arNum(+c.gapSeconds.toFixed(2))} ث`}`,
+      `${c.sampled} frames sampled${c.total != null ? ` of ${c.total}` : ""}, one every ${c.gapFrames != null ? `${c.gapFrames} frame(s)` : `${+c.gapSeconds.toFixed(2)}s`}`);
+
+function seg(id, value, onPick) {
+  const btns = document.querySelectorAll(`#${id} button`);
+  const sync = (v) => btns.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.v === v)));
+  btns.forEach((b) => (b.onclick = () => { onPick(b.dataset.v); sync(b.dataset.v); }));
+  sync(value);
+}
+
+// theme (system default, remembered)
+const mq = matchMedia("(prefers-color-scheme: dark)");
+const applyTheme = (pref) => { root.dataset.theme = pref === "system" ? (mq.matches ? "dark" : "light") : pref; root.dataset.themePref = pref; };
+seg("theme", root.dataset.themePref, (v) => { if (v === "system") localStorage.removeItem("hz-theme"); else localStorage.setItem("hz-theme", v); applyTheme(v); });
+mq.addEventListener("change", () => { if (!localStorage.getItem("hz-theme")) applyTheme("system"); });
+
+// language (Arabic default, remembered, shared with /landing)
+function applyLang(v) {
+  root.dataset.lang = v; root.lang = v; root.dir = v === "en" ? "ltr" : "rtl";
+  document.title = v === "en" ? "Harakah · Tool" : "حركة · الأداة";
+  document.querySelectorAll("[data-ar]").forEach((el) => { const t = el.dataset[v] || el.dataset.ar; if (el.tagName === "OPTION") el.textContent = t; else el.placeholder = t; });
+}
+seg("lang", lang(), (v) => { localStorage.setItem("hz-lang", v); applyLang(v); if (typeof lay !== "undefined" && lay.r) layShow(lay.i); });
+applyLang(lang());
+
+// segmented options (remembered)
+function rerun() { if (state.project) runProject(); else if ($("#src").value.trim()) run(); }
+for (const key of ["digits", "split"]) {
+  state[key] = localStorage.getItem("hz-" + key) || state[key];
+  seg(key, state[key], (v) => { state[key] = v; localStorage.setItem("hz-" + key, v); rerun(); });
+}
+["font", "fontSrc", "rfont"].forEach((k) => { const v = localStorage.getItem("hz-" + k); if (v) $("#" + k).value = v; $("#" + k).onchange = () => { localStorage.setItem("hz-" + k, $("#" + k).value); rerun(); }; });
+["bidi", "replace", "wrapWords"].forEach((k) => $("#" + k).onchange = rerun);
+
+const options = () => ({ digits: state.digits, split: state.split, font: state.kind === "remotion" ? $("#rfont").value : $("#font").value, fontSrc: $("#fontSrc").value, bidi: $("#bidi").checked, replaceProprietary: $("#replace").checked, wrapWords: $("#wrapWords").checked });
+
+async function api(path, body) {
+  const r = await fetch(path, { method: body ? "POST" : "GET", headers: { "content-type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || r.statusText);
+  return j;
+}
+
+function issueCards(issues, fixedCodes, n0 = 0) {
+  return issues.map((i, k) => {
+    const n = n0 + k;
+    const pill = i.fixable ? `<span class="pill auto">${fixedCodes.has(i.code) ? B("أُصلحت تلقائياً", "Auto-fixed") : B("إصلاح تلقائي", "Auto-fix")}</span>` : i.fixMode === "option" ? `<span class="pill opt">${B("عبر خيار", "Via option")}</span>` : `<span class="pill">${B("كشف فقط", "Report only")}</span>`;
+    return `<article class="issue" style="--sev:${SEV[i.severity][1]};animation-delay:${Math.min(n, 12) * 30}ms">
+      <div class="top"><span class="sev">${SEV[i.severity][0]}</span><span class="code">${esc(i.code)}</span><h3 lang="ar">${esc(i.title.ar)}</h3><h3 lang="en">${esc(i.title.en)}</h3>${pill}</div>
+      <p lang="ar">${esc(i.message.ar)}</p><p lang="en">${esc(i.message.en)}</p>
+      ${i.where || i.line ? `<div class="loc">${i.line ? "L" + i.line + " · " : ""}${esc(i.where || "")}</div>` : ""}
+    </article>`;
+  }).join("");
+}
+/** groups: optional [{ file, issues }] for project mode (issues shown under a file header). */
+function renderIssues(issues, summary, applied, groups) {
+  const fixedCodes = new Set((applied || []).map((i) => i.code));
+  $("#summary").innerHTML = [["error", summary.errors], ["warning", summary.warnings], ["info", summary.info]]
+    .map(([k, n]) => `<span class="chip"><i style="background:${SEV[k][1]}"></i>${SEV[k][0]} ${N(n)}</span>`).join("") +
+    `<span class="chip" style="color:var(--ok)">${B("إصلاح تلقائي", "Auto-fix")} ${N(summary.autoFixable)}</span>`;
+  if (!issues.length) { $("#issues").innerHTML = `<div class="empty"><div class="big">${B("النص العربي سليم ✓", "Arabic looks right ✓")}</div>${B("لا توجد مشاكل تستحق الإصلاح.", "No Arabic issues found.")}</div>`; return; }
+  if (!groups) { $("#issues").innerHTML = issueCards(issues, fixedCodes); return; }
+  let n = 0;
+  $("#issues").innerHTML = groups.filter((g) => g.issues.length).map((g) => { const h = `<div class="fileh">${esc(g.file)}</div>` + issueCards(g.issues, fixedCodes, n); n += g.issues.length; return h; }).join("");
+}
+
+const looksLikeJsx = (t) => !/<!doctype|<html[\s>]/i.test(t) && (/^\s*import\s.+from\s+["']/m.test(t) || /export\s+(default|const|function)\s/.test(t) || /React\.FC|useCurrentFrame/.test(t));
+async function run() {
+  const html = $("#src").value;
+  if (!html.trim()) { toast(L("الصق الكود أولاً", "Paste some code first")); return; }
+  const btn = $("#run"); btn.disabled = true;
+  try {
+    state.kind = looksLikeJsx(html) ? "remotion" : "html";
+    const r = await api("/api/analyze", { html, options: options(), name: state.example || "" });
+    state.kind = r.kind || "html";
+    const rem = state.kind === "remotion";
+    $("#kind").textContent = rem ? "Remotion · TSX" : "HTML";
+    document.querySelectorAll(".rem-only").forEach((e) => (e.hidden = !rem));
+    document.querySelectorAll(".html-only").forEach((e) => (e.hidden = rem));
+    $("#outLabel").textContent = rem ? "TSX/JSX · codemod" : "HTML";
+    $("#shotsEngine").textContent = rem ? "Remotion render" : "headless Chrome";
+    renderIssues(r.issues, r.summary, r.applied);
+    $("#out").value = r.fixedHtml;
+    renderDiff(rem ? r.diff : "", r.helper);
+    const parts = [];
+    if (r.assets.length) parts.push(B(`ملفات الخط المطلوبة بجانب الـHTML: <bdi>${r.assets.map((a) => "fonts/" + a).join("، ")}</bdi> · <a href="/fonts/${encodeURIComponent(r.assets[0])}" download>تنزيل</a> (رخصة <bdi>OFL</bdi>)`, `Font files to place next to the HTML: ${r.assets.map((a) => "fonts/" + a).join(", ")} · <a href="/fonts/${encodeURIComponent(r.assets[0])}" download>download</a> (OFL)`));
+    if (rem && r.helper) parts.push(B(`يستورد الكود <bdi>splitArabic</bdi> و<bdi>formatDigits</bdi> من <bdi>./harakah-arabic</bdi>، نزّل الملف وضعه بجانب المكوّن.`, `The code imports splitArabic / formatDigits from ./harakah-arabic. Save harakah-arabic.tsx next to the component.`));
+    if (rem && r.cssModules?.length) parts.push(B(`ملفات <bdi>CSS modules</bdi> (<bdi>${r.cssModules.join("، ")}</bdi>) تُصلح عبر سطر الأوامر: <bdi>harakah-fix fix &lt;project&gt; --write</bdi>`, `CSS modules (${r.cssModules.join(", ")}) are fixed from the CLI: harakah-fix fix &lt;project&gt; --write`));
+    if (r.shimInjected) parts.push(B("أُضيف سكربت حركة الصغير لإصلاح التقسيم الذي يحدث أثناء التشغيل (SplitText وغيره).", "Added the small Harakah runtime shim to fix splits that happen at runtime (SplitText etc.)."));
+    $("#assets").innerHTML = parts.map((p) => `<div>${p}</div>`).join("");
+  } catch (e) { toast(L("خطأ: ", "Error: ") + e.message); } finally { btn.disabled = false; }
+}
+
+async function compare() {
+  const html = $("#src").value;
+  if (!html.trim()) { toast(L("الصق الكود أولاً", "Paste some code first")); return; }
+  const btn = $("#cmp"); btn.disabled = true; const old = btn.innerHTML; btn.innerHTML = `<span class="spinner"></span> ${B("جارٍ الرندر…", "Rendering…")}`;
+  try {
+    const withVideo = $("#cmpVideo").checked;
+    if (withVideo) btn.innerHTML = `<span class="spinner"></span> ${B("جارٍ رندر الصور والفيديو…", "Rendering stills and video…")}`;
+    const r = await api("/api/compare", { html, options: options(), video: withVideo, example: state.example && $("#src").dataset.example === state.example ? state.example : "" });
+    state.kind = r.kind || state.kind;
+    $("#shotsCard").hidden = false;
+    $("#before").src = r.before; $("#after").src = r.after;
+    // inline MP4: no autoplay (reduced motion, and the user decides when to watch)
+    const v = $("#vid");
+    if (r.video) {
+      $("#vidFig").hidden = false; v.src = r.video; $("#vidDl").href = r.video;
+      $("#vidEngine").textContent = r.engine === "hyperframes" ? "HyperFrames" : r.engine === "remotion" ? "Remotion" : "headless Chrome";
+      if (r.engineNote) toast(r.engineNote);
+    } else { $("#vidFig").hidden = true; v.removeAttribute("src"); v.load(); if (withVideo) toast(L("لم يُنتج فيديو لهذا المشهد", "No video was produced for this scene")); }
+    const dot = (ok) => `<span class="dot" style="background:${ok ? "var(--ok)" : "var(--err)"}"></span>`;
+    if (r.kind === "remotion") {
+      const x = r.remotion, pct = (x.diffAfter * 100).toFixed(1);
+      $("#audit").innerHTML = `<div>${dot(x.joinedAfter)}${B(
+        `${x.joinedAfter ? "بعد الإصلاح يطابق النص المتصل ✓" : "بعد الإصلاح ما زال مختلفاً عن النص المتصل ✗"}، قطع الحبر: قبل ${toEastern(x.before.components)} ← بعد ${toEastern(x.after.components)} (المرجع ${toEastern(x.reference.components)})، الفرق عن المرجع ${toEastern(pct)}٪.`,
+        `${x.joinedAfter ? "After matches running text ✓" : "After still differs from running text ✗"} — ink pieces: before ${x.before.components} → after ${x.after.components} (reference ${x.reference.components}), ${pct}% off the reference.`)} <span class="chip"><bdi>${esc(x.id)} @ ${x.frame}/${x.durationInFrames}</bdi></span></div>`;
+    } else
+      $("#audit").innerHTML = r.joins.map((j) => `<div>${dot(j.joinedAfter)}«<bdi>${esc(j.text.slice(0, 40))}</bdi>» ${B(
+        `قطع الحبر قبل ${toEastern(j.before)} ← بعد ${toEastern(j.after ?? "؟")} (المرجع ${toEastern(j.reference)})، ${j.joinedAfter ? "الحروف متصلة ✓" : "ما زالت متقطعة ✗"}${j.joinedBefore ? " (كانت سليمة)" : ""}`,
+        `ink pieces before ${j.before} → after ${j.after ?? "?"} (reference ${j.reference}) — ${j.joinedAfter ? "joined ✓" : "still broken ✗"}${j.joinedBefore ? " (was fine)" : ""}`)}</div>`).join("") || `<div>${B("لا توجد عناوين مقسّمة حرفاً حرفاً في هذا المشهد.", "No per-letter titles in this scene.")}</div>`;
+    if (r.kind === "remotion" || r.joins.length) $("#audit").innerHTML += `<div>${B("الحكم من إطار واحد (المعروض أعلاه)؛ «دقّق ترتيب العرض عبر الإطارات» يفحص بقية الحركة.", "Verdict from one frame (the one shown above); “Audit layout over time” checks the rest of the motion.")}</div>`;
+    // hosts the scene loaded from (src/render.ts network): "runs on your machine" is about Harakah, not the scene's CDN links
+    if (r.network?.hosts?.length) $("#audit").innerHTML += `<div>${B(`حمّل المشهد من الإنترنت: <bdi dir='ltr'>${esc(r.network.hosts.join(", "))}</bdi>`, `The scene loaded from the internet: ${esc(r.network.hosts.join(", "))}`)}</div>`;
+    $("#shotsCard").scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (e) { toast(L("خطأ: ", "Error: ") + e.message); } finally { btn.disabled = false; btn.innerHTML = old; }
+}
+
+// ---- layout audit over time (HZ24): sampled frames, flagged boxes, scrubber ----
+const LAY_PROBLEM = {
+  ltr: ["يُعرض من اليسار لليمين", "laid out left-to-right"], flip: ["يتبدّل ترتيبه أثناء الحركة", "flips order mid-animation"],
+  mixed: ["بعض أجزائه معكوسة", "partly reversed"], collide: ["حروفه تتراكب", "letters collide"], swap: ["عناصره تتبادل أماكنها", "items swap places"],
+};
+const LAY_KIND = { letters: ["حروف", "letters"], words: ["كلمات", "words"], row: ["صف", "row"], items: ["عناصر", "items"], run: ["نص داخل سطر لاتيني", "run in LTR text"], list: ["قائمة لاتينية", "Latin list"], layers: ["طبقتان", "layers"] };
+const lay = { r: null, i: 0, focus: -1 };
+const fmtT = (r, t) => lang() === "en" ? (r.kind === "remotion" ? `frame ${Math.round(t * r.fps)}` : `${t.toFixed(2)}s`)
+  : (r.kind === "remotion" ? `الإطار ${toEastern(Math.round(t * r.fps))}` : `${toEastern(t.toFixed(2)).replace(".", "٫")} ث`);
+function layShow(i) {
+  const r = lay.r; if (!r || !r.timeline.length) return;
+  lay.i = Math.max(0, Math.min(r.timeline.length - 1, i));
+  const f = r.timeline[lay.i], vp = r.viewport || { width: 1280, height: 720 };
+  $("#layRange").value = String(lay.i);
+  $("#layImg").src = f.img || "";
+  const svg = $("#layBoxes"); svg.setAttribute("viewBox", `0 0 ${vp.width} ${vp.height}`);
+  const fsz = Math.round(Math.max(14, vp.width / 48));
+  svg.innerHTML = f.boxes.map((b) => b.rects.map(([x, y, w, h], k) => `<rect class="${lay.focus >= 0 && lay.focus !== b.finding ? "dim" : ""}" x="${x}" y="${y}" width="${w}" height="${h}" rx="3"/>${k === 0 ? `<text x="${x + 3}" y="${Math.max(fsz, y - 5)}" font-size="${fsz}"><tspan lang="ar">${toEastern(b.finding + 1)}</tspan><tspan lang="en">${b.finding + 1}</tspan></text>` : ""}`).join("")).join("");
+  const time = fmtT(r, f.t), n = f.boxes.length;
+  $("#layTime").textContent = time;
+  $("#layRange").setAttribute("aria-valuetext", `${time} · ${n ? L(`${toEastern(n)} مشكلة`, `${n} flagged`) : L("سليم", "clean")}`);
+  document.querySelectorAll(".lay-item").forEach((el) => el.setAttribute("aria-current", String(f.boxes.some((b) => String(b.finding) === el.dataset.f))));
+}
+function layJump(dir) {
+  const r = lay.r; if (!r) return;
+  const flagged = r.timeline.map((f, i) => (f.boxes.length ? i : -1)).filter((i) => i >= 0);
+  if (!flagged.length) return;
+  const next = dir > 0 ? flagged.find((i) => i > lay.i) ?? flagged[0] : [...flagged].reverse().find((i) => i < lay.i) ?? flagged[flagged.length - 1];
+  layShow(next);
+}
+function laySuggest(sg, kind) {
+  if (!sg) return "";
+  if (sg.kind === "reorder") return `<div class="sg">${B("اقتراح: ضع العنصر رقم i في الموضع المعكوس (x = (n − 1 − i) × w) أو ثبّت الحروف من اليمين.", "Suggestion: place item i at the mirrored slot (x = (n − 1 − i) × w), or anchor from the right.")}</div>`;
+  const badge = sg.verified ? `<span class="ok">${B("تم التحقق في كروم ✓", "verified in Chrome ✓")}</span>` : `<span>${B("غير مؤكد", "not verified")}</span>`;
+  const code = kind === "remotion" ? `dir="rtl"` : sg.css;
+  return `<div class="sg">${B("إصلاح مقترح", "Suggested fix")} ${badge}<code dir="ltr">${esc(code)}</code></div>`;
+}
+function renderLayout(r) {
+  lay.r = r; lay.focus = -1;
+  const sampledOnly = !r.coverage || r.coverage.total == null || r.coverage.sampled < r.coverage.total;
+  $("#layCard").hidden = false;
+  const n = r.timeline.length, bad = r.timeline.filter((f) => f.boxes.length).length;
+  $("#layRange").max = String(Math.max(0, n - 1));
+  $("#layTicks").innerHTML = r.timeline.map((f, i) => `<i class="${f.boxes.length ? "" : "ok"}" style="inset-inline-start:${n > 1 ? (i / (n - 1)) * 100 : 0}%"></i>`).join("");
+  const chip = (html, color) => `<span class="chip"${color ? ` style="color:${color}"` : ""}>${html}</span>`;
+  $("#laySum").innerHTML = chip(r.coverage ? coverageChip(r.coverage) : B(arFramesChecked(r.frames), `${r.frames} frames`)) + chip(B(`مشاكل الترتيب: ${toEastern(r.findings.length)}`, `${r.findings.length} layout finding(s)`), r.findings.length ? "var(--err)" : "var(--ok)") +
+    chip(B(`في ${arFrames(bad)}`, `in ${bad} frame(s)`)) + (r.after ? chip(B(`بعد الإصلاح التلقائي والمقترح: ${toEastern(r.after.findings.length)}`, `after auto + suggested fixes: ${r.after.findings.length}`), r.after.findings.length ? "var(--warn)" : "var(--ok)") : "") +
+    (r.kind === "remotion" ? chip(`<bdi>${esc(r.id)}</bdi>`) : "");
+  $("#layList").innerHTML = r.findings.length ? r.findings.map((f, i) => {
+    const p = LAY_PROBLEM[f.problem] || [f.problem, f.problem], k = LAY_KIND[f.kind] || [f.kind, f.kind];
+    return `<button class="lay-item" role="listitem" type="button" data-f="${i}"><div class="h"><span class="k"><span lang="ar">${toEastern(i + 1)}</span><span lang="en">${i + 1}</span></span><span class="code">${esc(f.code)}</span>${B(`${k[0]}: ${p[0]}`, `${k[1]}: ${p[1]}`)}</div>
+      ${f.text ? `<div>«<bdi>${esc(f.text.slice(0, 60))}</bdi>»</div>` : ""}<div class="w"><bdi>${esc(f.where)}</bdi><span class="sep" aria-hidden="true"></span>${B(arFrames(f.frames.length), `${f.frames.length} frame(s)`)}</div>${laySuggest(f.suggest, r.kind)}</button>`;
+  }).join("") : `<div class="empty"><div class="big">${(sampledOnly ? B("الترتيب سليم في كل الإطارات المفحوصة ✓", "Order is right in every sampled frame ✓") : B("الترتيب سليم في كل الإطارات ✓", "Order is right in every frame ✓"))}</div></div>`;
+  document.querySelectorAll(".lay-item").forEach((el) => (el.onclick = () => {
+    const fi = Number(el.dataset.f); lay.focus = lay.focus === fi ? -1 : fi;
+    const first = r.timeline.findIndex((f) => f.boxes.some((b) => b.finding === fi));
+    layShow(first >= 0 ? first : lay.i);
+  }));
+  $("#layHint").innerHTML = B("المربعات الحمراء: العناصر التي ترتيبها خاطئ في هذا الإطار. العلامات الحمراء على المسار: الإطارات المعلَّمة. انقر مشكلة لتمييزها والانتقال لأول إطار تظهر فيه." + (sampledOnly ? " مشكلة أقصر من الفاصل بين إطارين مفحوصين قد لا تظهر هنا؛ <bdi dir='ltr' style='white-space:nowrap'>harakah-fix audit --fps</bdi> يفحص إطارات أكثر." : ""), "Red boxes: elements whose order is wrong in this frame. Red ticks on the track: flagged frames. Click a finding to highlight it and jump to its first frame." + (sampledOnly ? " A problem shorter than the gap between two samples may not show here; <bdi dir='ltr' style='white-space:nowrap'>harakah-fix audit --fps</bdi> samples more." : ""));
+  const first = r.timeline.findIndex((f) => f.boxes.length);
+  layShow(first >= 0 ? first : 0);
+}
+async function layoutAudit() {
+  const html = $("#src").value;
+  if (!html.trim()) { toast(L("الصق الكود أولاً", "Paste some code first")); return; }
+  const btn = $("#lay"); btn.disabled = true; const old = btn.innerHTML; btn.innerHTML = `<span class="spinner"></span> ${B("جارٍ تدقيق الإطارات…", "Auditing frames…")}`;
+  try {
+    const r = await api("/api/layout", { html, options: options(), example: state.example && $("#src").dataset.example === state.example ? state.example : "" });
+    renderLayout(r);
+    $("#layCard").scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (e) { toast(L("خطأ: ", "Error: ") + e.message); } finally { btn.disabled = false; btn.innerHTML = old; }
+}
+$("#lay").onclick = layoutAudit;
+$("#layRange").oninput = () => layShow(Number($("#layRange").value));
+$("#layPrev").onclick = () => layJump(-1);
+$("#layNext").onclick = () => layJump(1);
+
+$("#run").onclick = () => (state.project ? runProject() : run());
+$("#cmp").onclick = compare;
+$("#copy").onclick = async () => { if (!$("#out").value) return; await navigator.clipboard.writeText($("#out").value).catch(() => { $("#out").select(); document.execCommand("copy"); }); toast(L("تم النسخ ✓", "Copied ✓")); };
+$("#dl").onclick = () => {
+  if (state.project) { if ($("#projZip").href) $("#projZip").click(); return; }
+  if (!$("#out").value) return;
+  const a = document.createElement("a");
+  const rem = state.kind === "remotion";
+  a.href = URL.createObjectURL(new Blob([$("#out").value], { type: rem ? "text/plain" : "text/html" }));
+  a.download = rem ? (state.example ? state.example.split("/").pop() : "Composition.tsx") : (state.example || "composition").replace(/\.html$/, "") + ".fixed.html";
+  a.click();
+};
+function renderDiff(d, helper) {
+  $("#diffCard").hidden = !d;
+  $("#helperDl").hidden = !helper;
+  if (!d) return;
+  const lines = d.split("\n").filter((l) => !/^=+$|^Index:/.test(l));
+  const add = lines.filter((l) => l.startsWith("+") && !l.startsWith("+++")).length, del = lines.filter((l) => l.startsWith("-") && !l.startsWith("---")).length;
+  $("#diffStat").innerHTML = `<span class="chip" style="color:var(--ok)">+${add}</span><span class="chip" style="color:var(--err)">−${del}</span>`;
+  $("#diff").innerHTML = lines.map((l) => `<span class="${l.startsWith("+++") || l.startsWith("---") ? "meta" : l.startsWith("+") ? "add" : l.startsWith("-") ? "del" : l.startsWith("@@") ? "hunk" : ""}">${esc(l) || " "}</span>`).join("");
+}
+
+// ---------- whole-project mode (folder or .zip) ----------
+const SKIP_DIR = /(^|\/)(node_modules|\.git|out|dist|build|\.next|\.cache|\.remotion|\.turbo|__MACOSX)(\/|$)/;
+const SRC_EXT = /\.(tsx?|jsx?|mjs|cjs|css|scss|json|md|mdx)$/i;
+async function filesToList(entries) {
+  const files = [];
+  for (const { path, file } of entries) {
+    const p = path.replace(/^\/+/, "");
+    if (SKIP_DIR.test(p) || !SRC_EXT.test(p) || file.size > 1 << 20 || /package-lock\.json$|pnpm-lock|yarn\.lock/.test(p)) continue;
+    files.push({ path: p, text: await file.text() });
+  }
+  return files;
+}
+function walkEntry(entry, prefix = "") {
+  return new Promise((resolve) => {
+    if (entry.isFile) return entry.file((f) => resolve([{ path: prefix + entry.name, file: f }]), () => resolve([]));
+    if (SKIP_DIR.test(prefix + entry.name)) return resolve([]);
+    const reader = entry.createReader(), all = [];
+    const next = () => reader.readEntries(async (batch) => {
+      if (!batch.length) return resolve((await Promise.all(all.map((e) => walkEntry(e, prefix + entry.name + "/")))).flat());
+      all.push(...batch); next();
+    }, () => resolve([]));
+    next();
+  });
+}
+// render props for project mode: same contract as `harakah-fix check --props … --composition …`
+function projRunOptions() {
+  const pr = state.project; if (!pr) return {};
+  const o = {};
+  const sel = $("#projProps").value;
+  if (sel === "@inline") { const t = $("#projPropsJson").value.trim(); if (t) o.props = t; }
+  else if (sel) o.propsFile = sel;
+  if ($("#projComp").value) o.composition = $("#projComp").value;
+  return o;
+}
+async function runProject(rerunOnly = false) {
+  const pr = state.project; if (!pr) return;
+  const btn = rerunOnly ? $("#projApply") : $("#run"); btn.disabled = true; const old = btn.innerHTML; btn.innerHTML = `<span class="spinner"></span> ${B("جارٍ فحص المشروع…", "Checking project…")}`;
+  try {
+    const opts = { ...options(), ...projRunOptions() };
+    if (opts.props) { try { const j = JSON.parse(opts.props); if (!j || typeof j !== "object" || Array.isArray(j)) throw new Error(); } catch { throw new Error(L("خصائص JSON غير صالحة: يجب أن تكون كائناً مثل { \"title\": \"…\" }", "Invalid props JSON: expected an object like { \"title\": \"…\" }")); } }
+    let r;
+    const fresh = async () => {
+      if (pr.zip) {
+        const res = await fetch(`/api/project?name=${encodeURIComponent(pr.name)}&options=${encodeURIComponent(JSON.stringify(opts))}`, { method: "POST", headers: { "content-type": "application/zip" }, body: pr.zip });
+        const j = await res.json(); if (!res.ok) throw new Error(j.error || res.statusText); return j;
+      }
+      return api("/api/project", { name: pr.name, files: pr.files, options: opts });
+    };
+    if (rerunOnly && pr.id) {
+      const res = await fetch(`/api/project/${pr.id}/rerun`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ options: opts }) });
+      r = await res.json();
+      if (res.status === 404) r = await fresh(); // stored upload expired (30 min): send it again
+      else if (!res.ok) throw new Error(r.error || res.statusText);
+    } else r = await fresh();
+    pr.id = r.id;
+    showRunControls(r);
+    state.kind = "remotion";
+    $("#kind").innerHTML = "Remotion · " + B("مشروع", "project");
+    document.querySelectorAll(".rem-only").forEach((e) => (e.hidden = false));
+    document.querySelectorAll(".html-only").forEach((e) => (e.hidden = true));
+    $("#cmp").hidden = true; $("#cmpVideo").closest("label").hidden = true;
+    $("#projName").textContent = r.name;
+    $("#projStat").innerHTML = `<span class="chip">${B(`${toEastern(r.files)} ملفاً`, `${r.files} files`)}</span><span class="chip">${B(`${toEastern(r.sources)} مكوّناً`, `${r.sources} components`)}</span><span class="chip" style="color:var(--ok)">${B(`تغيّر ${toEastern(r.changed.length + r.added.length)}`, `${r.changed.length + r.added.length} changed`)}</span>`;
+    const byFile = new Map(r.results.map((x) => [x.file, x]));
+    const touched = new Set([...r.changed, ...r.added]);
+    const names = [...new Set([...touched, ...r.results.map((x) => x.file)])].sort();
+    $("#projTree").innerHTML = names.map((f) => { const x = byFile.get(f), e = x ? x.issues.filter((i) => i.severity === "error").length : 0;
+      return `<li class="${touched.has(f) ? "ch" : ""}"><span>${r.added.includes(f) ? "+" : touched.has(f) ? "~" : "·"}</span><span class="p" title="${esc(f)}">${esc(f)}</span>${e ? `<span class="b err">${B(e === 1 ? "خطأ واحد" : e === 2 ? "خطآن" : `${toEastern(e)} أخطاء`, `${e} err`)}</span>` : "<span></span>"}${touched.has(f) ? `<span class="b fix">${r.added.includes(f) ? B("أُضيف", "added") : B("أُصلح", "fixed")}</span>` : "<span></span>"}</li>`; }).join("") || `<li>${B("لا تغييرات", "No changes")}</li>`;
+    $("#projZip").href = r.download.zip; $("#projZip").download = r.download.zip.split("/").pop();
+    $("#projPatch").href = r.download.patch; $("#projPatch").download = r.download.patch.split("/").pop();
+    $("#projPatch").hidden = !r.patch;
+    $("#projHint").innerHTML = pr.zip ? B("المشروع المصلَّح يحتوي كل ملفاتك (عدا <bdi>node_modules</bdi>). أو طبّق التغييرات: <bdi dir=\"ltr\">git apply harakah.patch</bdi>", "The fixed zip keeps all your files (minus node_modules). Or apply the patch: <bdi>git apply harakah.patch</bdi>")
+      : B("من المجلد نُرسل ملفات الكود فقط (لا صور ولا فيديو)، لذلك الأسهل أن تطبّق التغييرات داخل مشروعك: <bdi dir=\"ltr\">git apply harakah.patch</bdi>", "Folder mode sends source files only (no images/video), so applying the patch in your project is easiest: <bdi>git apply harakah.patch</bdi>");
+    // issues grouped by file
+    const all = r.results.flatMap((x) => x.issues.map((i) => ({ ...i, file: x.file })));
+    renderIssues(all, r.summary, all.filter((i) => i.fixable), r.results);
+    renderDiff(r.patch, false);
+    $("#outLabel").textContent = "harakah.patch";
+    $("#out").value = r.patch || "";
+    const parts = [];
+    if (r.props.length) parts.push(B("نص عربي يصل عبر الخصائص (props) بين الملفات:", "Arabic that arrives through props across files:") + "<ul>" + r.props.map((p) => `<li><bdi dir="ltr">${esc(p.component)} (${esc(p.file)})</bdi> ← <bdi dir="ltr">${p.props.map(esc).join(", ")}</bdi> <span class="hint">${esc((p.reasons || []).slice(0, 2).join(" · "))}</span></li>`).join("") + "</ul>");
+    if (r.i18n?.length) parts.push(B(`نص عربي يصل عبر ملفات الترجمة: <bdi dir="ltr">${esc(r.i18n.join(", "))}</bdi>`, `Arabic that arrives through translation files: ${esc(r.i18n.join(", "))}`));
+    if (r.styles?.length) parts.push(B("أنماط من ملفات أخرى تستخدمها مكوّنات عربية:", "Styles from other files used by Arabic components:") + "<ul>" + r.styles.map((st) => `<li><bdi dir="ltr">${esc(st.name)} (${esc(st.file)})</bdi> ${st.exclusive ? B("عربي فقط ← أُصلح في مكانه", "Arabic-only → fixed where declared") : B(`مشترك مع <bdi dir="ltr">${esc(st.latinUsers.join(", "))}</bdi> ← بقي كما هو، وأُضيف تعديل عربي حيث يُستخدم`, `shared with ${esc(st.latinUsers.join(", "))} → kept; Arabic overrides where it is used`)}</li>`).join("") + "</ul>");
+    if (r.helper?.path) parts.push(B(`أُضيف المساعد <bdi>${esc(r.helper.path)}</bdi> داخل المشروع.`, `Vendored the helper at ${esc(r.helper.path)}.`));
+    $("#assets").innerHTML = parts.map((p) => `<div>${p}</div>`).join("");
+  } catch (e) { toast(L("خطأ: ", "Error: ") + e.message); } finally { btn.disabled = false; btn.innerHTML = old; }
+}
+function showRunControls(r) {
+  const comp = $("#projComp"), props = $("#projProps");
+  const keepC = comp.value, keepP = props.value;
+  const opt = (v, ar, en) => `<option value="${esc(v)}" data-ar="${esc(ar)}" data-en="${esc(en)}">${esc(L(ar, en))}</option>`;
+  comp.innerHTML = opt("", "كل التركيبات", "All compositions") + (r.compositions || []).map((id) => `<option value="${esc(id)}">${esc(id)}</option>`).join("");
+  props.innerHTML = opt("", "بدون (defaultProps فقط)", "None (defaultProps only)") +
+    (r.propsFiles || []).map((f) => opt(f.path, f.path + (f.arabic ? " · فيه عربي" : ""), f.path + (f.arabic ? " · has Arabic" : ""))).join("") +
+    opt("@inline", "JSON مكتوب هنا…", "Inline JSON…");
+  if ([...comp.options].some((o) => o.value === keepC)) comp.value = keepC;
+  if ([...props.options].some((o) => o.value === keepP)) props.value = keepP;
+  $("#projPropsJson").hidden = props.value !== "@inline";
+  $("#projRun").hidden = !(r.compositions || []).length && !(r.propsFiles || []).length;
+  const run = r.run || {};
+  const ar = (r.propsFiles || []).filter((f) => f.arabic);
+  $("#projRunHint").innerHTML = run.props
+    ? B(`فُحص المشروع بخصائص <bdi dir="ltr">${esc(run.props === "inline" ? "JSON" : run.props)}</bdi>${run.composition?.length ? ` لتركيبة <bdi dir="ltr">${esc(run.composition.join(", "))}</bdi>` : ""}. مفاتيح فيها عربي: <bdi dir="ltr">${esc(run.arabicKeys.join(", ") || "—")}</bdi>`,
+        `Checked with ${esc(run.props === "inline" ? "inline JSON" : run.props)}${run.composition?.length ? ` for ${esc(run.composition.join(", "))}` : ""}. Keys with Arabic: ${esc(run.arabicKeys.join(", ") || "none")}`)
+    : ar.length ? B(`<bdi dir="ltr">${esc(ar[0].path)}</bdi> فيه نص عربي. اختره لتفحص المشروع كما سيُرندر بـ <bdi dir="ltr">--props</bdi>.`, `${esc(ar[0].path)} contains Arabic. Pick it to check the project as it will render with --props.`) : "";
+}
+$("#projProps").onchange = () => { $("#projPropsJson").hidden = $("#projProps").value !== "@inline"; if ($("#projProps").value === "@inline") $("#projPropsJson").focus(); };
+$("#projApply").onclick = () => runProject(true);
+function openProject(p) {
+  state.project = p; state.example = "";
+  $("#proj").hidden = false; $("#drop").hidden = true;
+  runProject();
+}
+function closeProject() {
+  $("#projComp").innerHTML = ""; $("#projProps").innerHTML = ""; $("#projPropsJson").value = ""; $("#projRun").hidden = true;
+  state.project = null; $("#proj").hidden = true; $("#drop").hidden = false; $("#cmp").hidden = false; $("#cmpVideo").closest("label").hidden = false;
+  $("#diffCard").hidden = true; $("#out").value = ""; $("#assets").innerHTML = "";
+}
+$("#projClose").onclick = closeProject;
+$("#dir").onchange = async (e) => {
+  const list = [...e.target.files].map((f) => ({ path: f.webkitRelativePath || f.name, file: f }));
+  if (!list.length) return;
+  const files = await filesToList(list);
+  if (!files.some((f) => /\.(t|j)sx$/i.test(f.path))) return toast(L("لا توجد ملفات .tsx/.jsx في هذا المجلد", "No .tsx/.jsx files in this folder"));
+  openProject({ name: list[0].path.split("/")[0], files });
+  e.target.value = "";
+};
+const openZip = (f) => openProject({ name: f.name, zip: f });
+$("#zip").onchange = (e) => { const f = e.target.files[0]; if (f) openZip(f); e.target.value = ""; };
+
+const loadText = (t, name = "", fileName = "") => { $("#src").value = t; $("#src").dataset.example = name; state.example = name || fileName; run(); };
+$("#file").onchange = async (e) => { const f = e.target.files[0]; if (!f) return; if (/\.zip$/i.test(f.name)) return openZip(f); if (state.project) closeProject(); loadText(await f.text(), "", f.name); };
+const drop = $("#drop");
+["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
+async function onDrop(e) {
+  const items = [...(e.dataTransfer.items || [])].map((i) => i.webkitGetAsEntry && i.webkitGetAsEntry()).filter(Boolean);
+  if (items.some((x) => x.isDirectory) || items.length > 1) {
+    const list = (await Promise.all(items.map((x) => walkEntry(x)))).flat();
+    const files = await filesToList(list);
+    if (!files.some((f) => /\.(t|j)sx$/i.test(f.path))) return toast(L("لا توجد ملفات .tsx/.jsx في هذا المجلد", "No .tsx/.jsx files in this folder"));
+    return openProject({ name: items.length === 1 ? items[0].name : "project", files });
+  }
+  const f = e.dataTransfer.files[0]; if (!f) return;
+  if (/\.zip$/i.test(f.name)) return openZip(f);
+  if (state.project) closeProject();
+  loadText(await f.text(), "", f.name);
+}
+drop.addEventListener("drop", onDrop);
+const projBox = $("#proj");
+["dragenter", "dragover"].forEach((ev) => projBox.addEventListener(ev, (e) => { e.preventDefault(); projBox.classList.add("over"); }));
+["dragleave", "drop"].forEach((ev) => projBox.addEventListener(ev, (e) => { e.preventDefault(); projBox.classList.remove("over"); }));
+projBox.addEventListener("drop", onDrop);
+
+api("/api/meta").then((m) => {
+  $("#ver").textContent = "harakah-fix v" + m.version;
+  $("#example").innerHTML += `<optgroup label="HTML · HyperFrames / GSAP">` + m.examples.map((x) => `<option value="${esc(x)}">${esc(x.replace(/\.html$/, ""))}</option>`).join("") + `</optgroup>` +
+    `<optgroup label="Remotion · TSX">` + (m.remotionExamples || []).map((x) => `<option value="${esc(x)}">${esc(x.replace(/^remotion\//, "").replace(/\.tsx$/, ""))}</option>`).join("") + `</optgroup>`;
+});
+$("#example").onchange = async () => { const v = $("#example").value; if (!v) return; if (state.project) closeProject(); const r = await api("/api/example/" + encodeURIComponent(v)); loadText(r.html, r.name); };
+</script>
+</body>
+</html>

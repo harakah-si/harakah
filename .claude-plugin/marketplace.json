@@ -1,0 +1,12 @@
+{
+  "name": "harakah",
+  "description": "Harakah: Arabic motion-graphics fixer",
+  "owner": { "name": "Harakah" },
+  "plugins": [
+    {
+      "name": "harakah",
+      "source": "./integrations/claude-code/plugin",
+      "description": "Checks Arabic in Remotion/HyperFrames/GSAP compositions as Claude writes them, fixes it, and refuses to render broken Arabic."
+    }
+  ]
+}

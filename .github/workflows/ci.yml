@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer push to a PR supersedes the older run. On main every commit gets its own group (its SHA), because
+# GitHub cancels an older *pending* run in a group even without cancel-in-progress, and quick pushes left
+# commits with no verdict (3a881f6).
+concurrency:
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    # pinned: ubuntu-latest moves to a new image on its own schedule; renders depend on the image's Chrome and fonts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            fixtures/remotion/package-lock.json
+
+      # Chrome renders the before/after join audits; ffmpeg builds the side-by-side compares.
+      - name: Install Chrome and ffmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          echo "HARAKAH_CHROME=$(command -v google-chrome || command -v chromium || command -v chromium-browser)" >> "$GITHUB_ENV"
+
+      - name: Install
+        run: |
+          npm ci --no-audit --no-fund
+          npm ci --no-audit --no-fund --prefix fixtures/remotion
+
+      - name: Type-check and build
+        run: npm run build
+
+      - name: Test (includes real Chrome and Remotion renders)
+        run: npm test
+
+      - name: Pack check (npm pack, install in a temp project, smoke-test every bin; publishes nothing)
+        run: npm run pack:check
+
+      - name: Upload compare artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: harakah-out
+          path: |
+            out/
+            fixtures/remotion/out/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  vscode:
+    # The extension in a real VS Code (pinned in integrations/vscode/test/run.mjs): diagnostics on open, the
+    # template quick fixes, preview diff, apply as one undoable edit. Electron needs a display: xvfb.
+    name: vscode (real editor)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Cache the VS Code download
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .vscode-test
+          key: vscode-test-${{ runner.os }}-${{ hashFiles('integrations/vscode/test/run.mjs') }}
+
+      - name: Install
+        run: |
+          npm ci --no-audit --no-fund
+          command -v xvfb-run || { sudo apt-get update && sudo apt-get install -y --no-install-recommends xvfb; }
+
+      - name: Extension in VS Code
+        run: xvfb-run -a npm run test:vscode

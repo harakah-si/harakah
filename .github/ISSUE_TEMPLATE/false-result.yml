@@ -1,0 +1,52 @@
+name: Wrong result · نتيجة خاطئة
+description: Harakah flagged correct Arabic (false positive), missed broken Arabic (false negative), or its fix broke something.
+labels: ["false-result"]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What went wrong? · ما المشكلة؟
+      options:
+        - False positive · بلّغ عن مشكلة غير موجودة
+        - False negative · لم يكتشف نصًا مكسورًا
+        - The fix broke the composition · الإصلاح كسر شيئًا
+    validations:
+      required: true
+  - type: dropdown
+    id: stack
+    attributes:
+      label: Stack
+      options: [Remotion, HyperFrames, GSAP / SplitText, Plain HTML/CSS, Other]
+    validations:
+      required: true
+  - type: input
+    id: rule
+    attributes:
+      label: Rule code (if any) · رمز القاعدة
+      placeholder: HZ01
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal composition · أصغر مثال يعيد المشكلة
+      description: The smallest HTML or .tsx that shows the problem. Please don't paste proprietary fonts.
+      render: tsx
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Harakah output
+      description: Output of `npx harakah-fix check <file> --json` (or the diff from `fix --dry-run`).
+      render: json
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected · المتوقع
+      description: A screenshot of the render helps a lot.
+  - type: input
+    id: version
+    attributes:
+      label: Versions
+      placeholder: harakah-fixer 0.3.0, Node 22.12, Remotion 4.0.x / HyperFrames 0.8.x, Chrome 1xx
+    validations:
+      required: true
