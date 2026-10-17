@@ -1187,7 +1187,12 @@ addEventListener("resize", () => requestAnimationFrame(runScroll));
     $("[lang=ar]", flip).textContent = fixed ? "اعرض الخطأ" : "أصلح الكلمة";
     $("[lang=en]", flip).textContent = fixed ? "Show the bug" : "Fix the word";
   }
-  const go = (fn) => (document.startViewTransition && !still() ? document.startViewTransition(() => { fn(); render(); }) : (fn(), render()));
+  // a second tap mid-transition aborts the first (its ready/finished promises reject with AbortError): expected, not an error
+  const go = (fn) => {
+    if (!document.startViewTransition || still()) { fn(); render(); return; }
+    const t = document.startViewTransition(() => { fn(); render(); });
+    t.ready.catch(() => {}); t.finished.catch(() => {});
+  };
   tabs.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b && b.dataset.t !== tool) go(() => { tool = b.dataset.t; fixed = false; }); });
   tabs.addEventListener("keydown", (e) => {
     const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key]; if (!d) return;
