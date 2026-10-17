@@ -191,7 +191,8 @@ const wordCheck = () => {
   for (const r of runs) if (r !== word && r !== "لا" && !word.includes(r)) out.push(`code has Arabic ${JSON.stringify(r)} that isn't the stage word ${JSON.stringify(word)}`);
   return out;
 };
-const overflow = () => document.documentElement.scrollWidth - document.documentElement.clientWidth;
+// sideways overflow of the page, or of the nav bar (its controls can run off-screen without widening the page)
+const overflow = () => Math.max(document.documentElement.scrollWidth - document.documentElement.clientWidth, ...[...document.querySelectorAll("nav .wrap")].map((n) => n.scrollWidth - n.clientWidth));
 // text in the demo/code areas that a fixed or sticky element (not its own container) is drawn over
 const occlusion = () => {
   const AREAS = "#vt-panel, #vt-code, .vt-top, .reel, .pv, .term, .rj-code, .rj-head, .cta .cmd";
@@ -251,7 +252,7 @@ const proseOrder = () => {
 // 15 and 15 Pro Max widths, the same guards, and its own screenshots of every demo state and the proof card.
 const IPHONES = [[375, 667, 2], [393, 852, 3], [430, 932, 3]];
 const RUNS = args.includes("--no-chrome") ? [] : [{ make: chromeDriver, code: [[390, 844], [1280, 800]], occ: [[390, 844], [360, 780]], over: [[360, 780], [390, 844]] }];
-if (!args.includes("--no-webkit")) RUNS.push({ make: webkitDriver, code: [...IPHONES, [1280, 800]], occ: [[393, 852, 3]], over: IPHONES });
+if (!args.includes("--no-webkit")) RUNS.push({ make: webkitDriver, code: [...IPHONES, [1280, 800]], occ: [[393, 852, 3]], over: [[320, 568, 2], ...IPHONES] });
 
 for (const R of RUNS) {
   const d = await R.make(), E = d.name;
