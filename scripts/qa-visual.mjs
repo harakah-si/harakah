@@ -6,6 +6,7 @@
 //     left-to-right order on a line (bidi scrambling), or an Arabic island in it swallowed code punctuation, or it
 //     has ligatures on (coding fonts draw --> as an arrow and turn a comment's closing */ into /*)
 //   · a fixed/sticky element covers text in the demo and code areas at sampled scroll positions (390×844)
+//   · any text is drawn over the sticky nav, or shows through it (see-through bar), at those scroll positions
 //   · a page scrolls sideways at 360px or 390px wide
 //   · the demo stage shows an Arabic word that isn't the Arabic in the code sample under it
 //   · a demo code sample doesn't fit its box on a phone 360px or wider (lines would break mid-token or scroll)
@@ -223,6 +224,29 @@ const occlusion = () => {
   return [...new Set(out)];
 };
 
+// the sticky nav: nothing is drawn over it, and nothing shows through it (an 82% background let the demo's button read
+// through the bar while scrolling). Text under the bar's box must be hidden by an opaque bar that sits on top.
+const headerCheck = () => {
+  const nav = document.querySelector("nav"); if (!nav) return [];
+  const nr = nav.getBoundingClientRect(); if (nr.bottom <= 0) return [];
+  const out = [], bg = getComputedStyle(nav).backgroundColor, m = bg.match(/[\d.]+/g) || [];
+  const alpha = /^rgba|\/|^color\(/.test(bg) ? parseFloat(bg.includes("/") ? bg.split("/")[1] : m[3] ?? "1") : 1;
+  if (bg === "transparent" || alpha < 0.99) out.push(`nav background is see-through (${bg})`);
+  const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n; const r = document.createRange();
+  while ((n = w.nextNode())) {
+    if (!n.textContent.trim() || nav.contains(n) || !n.parentElement.getClientRects().length) continue;
+    r.selectNodeContents(n);
+    for (const rc of r.getClientRects()) {
+      if (rc.width < 2 || rc.bottom <= nr.top + 1 || rc.top >= nr.bottom - 1 || rc.right < 0 || rc.left > innerWidth) continue;
+      const y = (Math.max(rc.top, nr.top) + Math.min(rc.bottom, nr.bottom)) / 2;
+      for (const fx of [0.1, 0.5, 0.9]) {
+        const hit = document.elementFromPoint(rc.left + rc.width * fx, y);
+        if (hit && !nav.contains(hit)) { out.push(`"${n.textContent.trim().slice(0, 40)}" is drawn over the nav (${hit.tagName.toLowerCase()}.${hit.className})`); break; }
+      }
+    }
+  }
+  return [...new Set(out)];
+};
 // demo code samples fit their box (no sideways scroll inside it): checked from 360px up
 const codeFit = () => [...document.querySelectorAll(".vt-code")].filter((el) => el.getClientRects().length && el.scrollWidth - el.clientWidth > 1)
   .map((el) => `#${el.id} is ${el.scrollWidth - el.clientWidth}px wider than its box: "${[...el.textContent.split("\n")].sort((a, b) => b.length - a.length)[0].trim().slice(0, 50)}"`);
@@ -252,7 +276,7 @@ const proseOrder = () => {
 // 15 and 15 Pro Max widths, the same guards, and its own screenshots of every demo state and the proof card.
 const IPHONES = [[375, 667, 2], [393, 852, 3], [430, 932, 3]];
 const RUNS = args.includes("--no-chrome") ? [] : [{ make: chromeDriver, code: [[390, 844], [1280, 800]], occ: [[390, 844], [360, 780]], over: [[360, 780], [390, 844]] }];
-if (!args.includes("--no-webkit")) RUNS.push({ make: webkitDriver, code: [...IPHONES, [1280, 800]], occ: [[393, 852, 3]], over: [[320, 568, 2], ...IPHONES] });
+if (!args.includes("--no-webkit")) RUNS.push({ make: webkitDriver, code: [...IPHONES, [1280, 800]], occ: [[320, 568, 2], [393, 852, 3], [430, 932, 3]], over: [[320, 568, 2], ...IPHONES] });
 
 for (const R of RUNS) {
   const d = await R.make(), E = d.name;
@@ -293,6 +317,7 @@ for (const R of RUNS) {
       for (let y = 0; y < H; y += Math.round(vp[1] * 0.4)) {
         await d.ev((y) => window.scrollTo({ top: y, behavior: "instant" }), y); await sleep(40);
         for (const m of await d.ev(occlusion)) fail(`${E} ${P.id} ${vp[0]}px ${state.join("/")} scrollY=${y}`, m);
+        for (const m of await d.ev(headerCheck)) fail(`${E} ${P.id} ${vp[0]}px ${state.join("/")} scrollY=${y} header`, m);
       }
     }
   }
