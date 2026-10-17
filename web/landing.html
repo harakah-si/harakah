@@ -651,7 +651,7 @@ footer .wrap{align-items:center}
       <div class="hsteps">
         <div class="hstep" data-step="0"><span class="k"><span data-n="1" data-pad="2"></span> · <span lang="ar">فحص</span><span lang="en">DETECT</span></span><h3><span lang="ar">تفحص</span><span lang="en">Detect</span></h3><p lang="ar">قواعد تغطي تقسيم الحروف والاتجاه والأرقام والخطوط والتشكيل، وتتبّع النص العربي حتى لو انتقل بين المكوّنات عبر الـ<bdi dir="ltr">props</bdi>.</p><p lang="en">Rules for splitting, direction, digits, fonts and diacritics — and it follows Arabic through component props.</p></div>
         <div class="hstep" data-step="1"><span class="k"><span data-n="2" data-pad="2"></span> · <span lang="ar">إصلاح</span><span lang="en">FIX</span></span><h3><span lang="ar">تصلّح</span><span lang="en">Fix</span></h3><p lang="ar">تعدّل الكود عبر الـ<bdi dir="ltr">AST</bdi>، فلا تلمس شيئاً غير المطلوب، وتترك تعليقاً عند كل سطر تغيّره. وإذا شغّلتها مرة ثانية، لا تضيف أي تعديل جديد.</p><p lang="en">Edits go through the AST, touch nothing else, and leave a comment on every line they change. Safe to re-run: a second pass changes nothing.</p></div>
-        <div class="hstep" data-step="2"><span class="k"><span data-n="3" data-pad="2"></span> · <span lang="ar">تأكيد</span><span lang="en">PROVE</span></span><h3><span lang="ar">تتأكد</span><span lang="en">Prove</span></h3><p lang="ar">ترندر كل مشهد قبل الإصلاح وبعده، وتعدّ الأجزاء المنفصلة في «سلام على أهل الشام» وتقارنها بالنص الصحيح: <span data-n="18"></span> قبل، و<span data-n="12"></span> بعد، والمرجع <span data-n="12"></span>.</p><p lang="en">It renders every scene before and after and counts the separate shapes in «سلام على أهل الشام» against the correctly joined text: 18 before, 12 after, reference 12.</p></div>
+        <div class="hstep" data-step="2"><span class="k"><span data-n="3" data-pad="2"></span> · <span lang="ar">تأكيد</span><span lang="en">PROVE</span></span><h3><span lang="ar">تتأكد</span><span lang="en">Prove</span></h3><p lang="ar">ترندر كل مشهد قبل الإصلاح وبعده، وتعدّ الأجزاء المنفصلة في «السلام عليكم» وتقارنها بالنص الصحيح: <span data-n="12"></span> قبل، و<span data-n="6"></span> بعد، والمرجع <span data-n="6"></span>.</p><p lang="en">It renders every scene before and after and counts the separate shapes in «السلام عليكم» against the correctly joined text: 12 before, 6 after, reference 6.</p></div>
       </div>
       <div class="hstick">
         <div class="term" role="img" aria-label="Terminal: harakah-fix check, fix and compare on fixtures/remotion">
@@ -660,7 +660,8 @@ footer .wrap{align-items:center}
         </div>
         <div class="pv" aria-hidden="true">
           <div class="pv-word keep broken" id="pv-word" lang="ar" dir="rtl"></div>
-          <div class="pv-meter"><div><small><span lang="ar">قبل</span><span lang="en">before</span></small><b class="bad" data-n="18"></b><em><span data-n="1057"></span>px</em></div><div><small><span lang="ar">بعد</span><span lang="en">after</span></small><b class="good" id="pv-after">–</b><em id="pv-after-w">&nbsp;</em></div><div><small><span lang="ar">المرجع</span><span lang="en">ref</span></small><b data-n="12"></b><em><span data-n="855"></span>px</em></div></div>
+          <div class="pv-meter"><div><small><span lang="ar">قبل</span><span lang="en">before</span></small><b class="bad" data-n="12"></b><em><span data-n="778"></span>px</em></div><div><small><span lang="ar">بعد</span><span lang="en">after</span></small><b class="good" id="pv-after">–</b><em id="pv-after-w">&nbsp;</em></div><div><small><span lang="ar">المرجع</span><span lang="en">reference</span></small><b data-n="6"></b><em><span data-n="542"></span>px</em></div></div>
+          <p class="pv-key"><span lang="ar">الرقم الكبير: عدد القطع المنفصلة في الرندر، وكلما قلّ كانت الحروف متصلة. تحته: عرض الجملة.</span><span lang="en">Big number: separate pieces in the render (fewer = joined). Below it: the phrase's width.</span></p>
         </div>
       </div>
     </div>
@@ -1091,7 +1092,7 @@ addEventListener("resize", () => requestAnimationFrame(runScroll));
 /* ---------- how it works: sticky terminal streams the real harakah-fix output ---------- */
 (() => {
   const out = $("#term"), pw = $("#pv-word"), after = $("#pv-after"), afterW = $("#pv-after-w");
-  const PHRASE = "سلام على أهل الشام";
+  const PHRASE = "السلام عليكم";
   const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
   const T = window.HZ_TERM; // [[class, text], …] per step, verbatim from data/*.txt
   const typing = () => !still() && !SHOT;
@@ -1103,8 +1104,8 @@ addEventListener("resize", () => requestAnimationFrame(runScroll));
     else { pw.className = "pv-word keep broken"; pw.innerHTML = HZ.graphemes(PHRASE).map((c) => `<span>${c === " " ? "&nbsp;" : c}</span>`).join(""); }
   }
   function meter(done) {
-    if (done) after.dataset.n = "12"; else delete after.dataset.n; after.textContent = done ? fmt(12) : "–";
-    afterW.innerHTML = done ? `<span data-n="855">${fmt(855)}</span>px` : "&nbsp;";
+    if (done) after.dataset.n = "6"; else delete after.dataset.n; after.textContent = done ? fmt(6) : "–";
+    afterW.innerHTML = done ? `<span data-n="542">${fmt(542)}</span>px` : "&nbsp;";
   }
   // each step clears the screen and shows that command's real output (like running it fresh)
   async function show(i) {

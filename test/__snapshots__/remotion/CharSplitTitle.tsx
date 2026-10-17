@@ -9,7 +9,7 @@ const { fontFamily } = loadFont("normal", { weights: ["700"], subsets: ["arabic"
 export const CharSplitTitle: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const text = "سلام على أهل الشام";
+  const text = "السلام عليكم";
   return (
     <AbsoluteFill dir="rtl" lang="ar" /* harakah: Arabic is RTL */ style={{ backgroundColor: "#0e0f12", justifyContent: "center", alignItems: "center" }}>
       <div style={{ display: "flex", fontFamily, fontSize: 104, fontWeight: 800, color: "#f3efe7" }}>

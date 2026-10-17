@@ -8,7 +8,7 @@ const { fontFamily } = loadFont("normal", { weights: ["800"], subsets: ["latin"]
 export const CharSplitTitle: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const text = "سلام على أهل الشام";
+  const text = "السلام عليكم";
   return (
     <AbsoluteFill style={{ backgroundColor: "#0e0f12", justifyContent: "center", alignItems: "center" }}>
       <div style={{ display: "flex", fontFamily, fontSize: 104, fontWeight: 800, color: "#f3efe7" }}>

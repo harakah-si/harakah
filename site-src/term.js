@@ -33,7 +33,7 @@ window.HZ_TERM = [
     ["m", "· bundling before / after…"],
     ["m", "codemod: 53 change(s) in 8 file(s)"],
     ["", "CharSplitTitle @ frame 68/90"],
-    ["", "  ink pieces/width: before 18/1057px, after 12/855px, running-text reference 12/855px; pixel diff vs reference: after 0.0%, before 100.0%"],
+    ["", "  ink pieces/width: before 12/778px, after 6/542px, running-text reference 6/542px; pixel diff vs reference: after 0.0%, before 100.0%"],
     ["o", "  → JOINED ✓ (after matches running text)"],
     ["", "PropsTitle @ frame 56/75"],
     ["", "  ink pieces/width: before 31/950px, after 27/809px, running-text reference 27/809px; pixel diff vs reference: after 0.0%, before 95.3%"],

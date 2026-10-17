@@ -287,7 +287,7 @@ addEventListener("resize", () => requestAnimationFrame(runScroll));
 /* ---------- how it works: sticky terminal streams the real harakah-fix output ---------- */
 (() => {
   const out = $("#term"), pw = $("#pv-word"), after = $("#pv-after"), afterW = $("#pv-after-w");
-  const PHRASE = "سلام على أهل الشام";
+  const PHRASE = "السلام عليكم";
   const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
   const T = window.HZ_TERM; // [[class, text], …] per step, verbatim from data/*.txt
   const typing = () => !still() && !SHOT;
@@ -299,8 +299,8 @@ addEventListener("resize", () => requestAnimationFrame(runScroll));
     else { pw.className = "pv-word keep broken"; pw.innerHTML = HZ.graphemes(PHRASE).map((c) => `<span>${c === " " ? "&nbsp;" : c}</span>`).join(""); }
   }
   function meter(done) {
-    if (done) after.dataset.n = "12"; else delete after.dataset.n; after.textContent = done ? fmt(12) : "–";
-    afterW.innerHTML = done ? `<span data-n="855">${fmt(855)}</span>px` : "&nbsp;";
+    if (done) after.dataset.n = "6"; else delete after.dataset.n; after.textContent = done ? fmt(6) : "–";
+    afterW.innerHTML = done ? `<span data-n="542">${fmt(542)}</span>px` : "&nbsp;";
   }
   // each step clears the screen and shows that command's real output (like running it fresh)
   async function show(i) {
