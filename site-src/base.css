@@ -201,3 +201,6 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
   .final .cta{flex-direction:column}
 }
 .hero>*,.spec>*,.s-head>*,.rem>*,.duo>*,.steps>*{min-width:0}
+/* Alexandria's Arabic reaches well past its em box (win ascent 1.17, descent .57): two-line Arabic headings need the room,
+   or one line's ك/ل run into the line above's descenders («نفس الكود، كلمة مختلفة تماماً» did on phones) */
+[data-lang=ar] h2{line-height:1.42}[data-lang=ar] .final h2{line-height:1.28}[data-lang=ar] h3{line-height:1.5}
