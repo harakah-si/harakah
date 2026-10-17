@@ -246,7 +246,7 @@ Details: [`integrations/claude-code/README.md`](../integrations/claude-code/READ
 
 `harakah-fix gate <target> --github` prints one workflow command per problem: `::error file=…,line=…,title=HZ02 …::message` for what blocks (errors, and warnings with `--strict`), `::warning` for other warnings, and `::error` for each check that couldn't run. Notes aren't annotated. Errors come first, because GitHub shows only the first ten annotations of each level per step. Paths are relative to the working directory. Remotion layout findings belong to a composition, not a file, so they're annotated on the project folder with the composition id in the message. With `GITHUB_STEP_SUMMARY` set (always, in a workflow), it also appends a job summary: the verdict, a table of every blocking problem (file:line, rule, auto/manual), what couldn't be checked, and the fix command. With `--json`, stdout stays JSON and only the summary is written. Exit codes are those of `gate` (0/1/2).
 
-The workflow to copy is `integrations/github-actions/harakah.yml` (shipped in the npm package): `npx -y -p harakah-fixer@0.4 harakah-fix gate . --github` on `pull_request` and pushes to `main`, plus commented-out steps for `--layout` (Chrome is installed on GitHub's Ubuntu runners) and for uploading `compare` renders as evidence when it fails.
+The workflow to copy is `integrations/github-actions/harakah.yml` (shipped in the npm package): `npx -y -p harakah-fixer@0.5 harakah-fix gate . --github` on `pull_request` and pushes to `main`, plus commented-out steps for `--layout` (Chrome is installed on GitHub's Ubuntu runners) and for uploading `compare` renders as evidence when it fails.
 
 ## Web UI (local; public mode for hosting)
 

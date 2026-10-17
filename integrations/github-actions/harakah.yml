@@ -25,17 +25,17 @@ jobs:
       # seconds, no browser. Exit 1: Arabic would render broken. Exit 2: something couldn't be checked.
       # Pin the version you tested with; --strict also blocks on warnings.
       - name: Arabic gate
-        run: npx -y -p harakah-fixer@0.4 harakah-fix gate . --github
+        run: npx -y -p harakah-fixer@0.5 harakah-fix gate . --github
 
       # Optional: also render HTML scenes in Chrome (installed on GitHub's Ubuntu runners) and check the Arabic reading
       # order at sampled frames. Slower. Add --offline to refuse CDN requests while rendering.
       # - name: Arabic gate with layout audit
-      #   run: npx -y -p harakah-fixer@0.4 harakah-fix gate . --github --layout
+      #   run: npx -y -p harakah-fixer@0.5 harakah-fix gate . --github --layout
 
       # Optional: when the gate fails, render before/after evidence for one scene and attach it to the run.
       # - name: Before/after evidence
       #   if: failure()
-      #   run: npx -y -p harakah-fixer@0.4 harakah-fix compare path/to/scene.html -o harakah-evidence
+      #   run: npx -y -p harakah-fixer@0.5 harakah-fix compare path/to/scene.html -o harakah-evidence
       # - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       #   if: failure()
       #   with:
