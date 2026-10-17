@@ -75,10 +75,11 @@ li h2:before{content:counter(s,decimal-leading-zero);font:500 13px/1 var(--mono)
 [data-lang=ar] li h2:before{content:"٠" counter(s,arabic-indic);font:500 15px/1 var(--text)}
 li p{margin:10px 0 0;color:var(--mute)}
 .cmd{display:flex;align-items:center;gap:10px;direction:ltr;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:6px 6px 6px 16px;margin-top:10px}
-.cmd code{flex:1;min-width:0;overflow-wrap:anywhere;font:500 14px/1.6 var(--mono);padding:6px 0}
+.cmd code{flex:1;min-width:0;text-align:left;overflow-wrap:anywhere;font:500 14px/1.6 var(--mono);padding:6px 0}
 .cmd button{all:unset;cursor:pointer;flex:0 0 auto;font:600 13px/1 var(--text);padding:10px 14px;border-radius:9px;background:var(--acc);color:var(--on-acc)}
 .cmd button.done{background:var(--ok)}
 code.i{white-space:nowrap;font:500 .88em var(--mono);background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;direction:ltr;unicode-bidi:isolate}
+pre,code{direction:ltr;unicode-bidi:isolate}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .note{border:1px solid var(--line);border-inline-start:3px solid var(--acc);border-radius:14px;background:var(--bg2);padding:14px 18px;margin:-16px 0 32px;color:var(--ink);font-size:16px}
 .note a{color:var(--acc)}

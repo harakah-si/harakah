@@ -5,6 +5,11 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)");
 const SHOT = root.classList.contains("shot");
 const still = () => reduce.matches || SHOT; // finished states, no loops
 const mobile = () => matchMedia("(max-width:640px)").matches;
+// Arabic inside code samples: each Arabic run (words and the spaces between them, never across a line or a tag) becomes
+// its own RTL island, so the code around it keeps its left-to-right order. (Matching quoted strings instead ran from one
+// quote to the next across lines and flipped whole lines of the HyperFrames sample.)
+const AR_RUN = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+(?:[ \u00A0]+[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+)*/g;
+const isoAr = (html) => html.replace(AR_RUN, '<bdi dir="rtl">$&</bdi>');
 
 /* ---------- digits: Eastern ١٢٣ with Arabic separators (٬ ٫) by default in Arabic ---------- */
 const nf = (opts = {}) => {
@@ -288,7 +293,7 @@ addEventListener("resize", () => requestAnimationFrame(runScroll));
   const typing = () => !still() && !SHOT;
   let cur = -1, token = 0;
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-  const line = ([c, t]) => (c ? `<span class="${c}">${esc(t)}</span>` : esc(t));
+  const line = ([c, t]) => (c ? `<span class="${c}">${isoAr(esc(t))}</span>` : isoAr(esc(t)));
   function preview(fixed) {
     if (fixed) { pw.className = "pv-word keep fixed"; pw.innerHTML = PHRASE.split(" ").map((w) => HZ.splitArabic(w).map((c, i) => `<span style="--i:${i}">${c}</span>`).join("")).join(" "); }
     else { pw.className = "pv-word keep broken"; pw.innerHTML = HZ.graphemes(PHRASE).map((c) => `<span>${c === " " ? "&nbsp;" : c}</span>`).join(""); }
@@ -327,13 +332,13 @@ addEventListener("resize", () => requestAnimationFrame(runScroll));
 
 /* ---------- remotion: view-transition tabs ---------- */
 (() => {
-  const WORD = "الحكايات";
+  const WORD = "الحكايات", REMOTION_TITLE = "سنة من الحكايات"; // the Remotion tab shows real renders of fixtures/remotion YearInReview
   const SHIM = '\n\n<span class="c">// + harakah-fix fix --write injects its runtime shim:</span>\n<span class="a">&lt;script&gt;/* ZWJ-pads each letter box, keeps لا */&lt;/script&gt;</span>\n<span class="c">// same elements, same timeline</span>';
   const TOOLS = {
-    HTML: { bad: '<span class="c">// before</span>\nel.innerHTML = [...text]\n  .map((ch) =&gt; `&lt;span class="ch"&gt;${ch}&lt;/span&gt;`)\n  .join("")', good: '<span class="c">// after: your code is unchanged</span>\nel.innerHTML = [...text]\n  .map((ch) =&gt; `&lt;span class="ch"&gt;${ch}&lt;/span&gt;`)\n  .join("")' + SHIM },
-    GSAP: { bad: '<span class="c">// before</span>\n<span class="k">const</span> split = <span class="d">SplitText.create</span>("#title",\n  { type: "words,chars" });\ngsap.from(split.chars, { y: 80, stagger: 0.04 });', good: '<span class="c">// after: your code is unchanged</span>\n<span class="k">const</span> split = SplitText.create("#title",\n  { type: "words,chars" });\ngsap.from(split.chars, { y: 80, stagger: 0.04 });' + SHIM + '\n\n<span class="c">// compare: "الموسم" ink pieces 6 → 3 (reference 3) ✓</span>' },
-    HyperFrames: { bad: '<span class="c">&lt;!-- before --&gt;</span>\n&lt;div id="root" dir="rtl" data-composition-id="main"&gt;\n  &lt;h1 id="title"&gt;الموسم الجديد&lt;/h1&gt;\n&lt;/div&gt;\n&lt;script&gt;\n  tl.from(<span class="d">split.chars</span>, …);\n  window.__timelines["main"] = tl;\n&lt;/script&gt;', good: '<span class="c">&lt;!-- after: same composition --&gt;</span>\n&lt;div id="root" dir="rtl" data-composition-id="main"&gt;\n  &lt;h1 id="title"&gt;الموسم الجديد&lt;/h1&gt;\n&lt;/div&gt;\n&lt;script&gt;\n  tl.from(split.chars, …);\n  window.__timelines["main"] = tl;\n&lt;/script&gt;' + SHIM },
-    Remotion: { bad: '<span class="c">// before · CharSplitTitle.tsx</span>\n<span class="k">const</span> text = "سلام على أهل الشام";\n{text.<span class="d">split("")</span>.map((char, i) =&gt; {\n  <span class="k">const</span> s = spring({ frame: frame - i * 2, fps });', good: '<span class="c">// after · harakah-fix codemod (real diff)</span>\n<span class="k">import</span> { splitArabic } <span class="k">from</span> "../harakah-arabic";\n<span class="k">const</span> text = "سلام على أهل الشام";\n{<span class="c">/* harakah: was text.split("") */</span> <span class="a">splitArabic(text)</span>.map((char, i) =&gt; {\n  <span class="k">const</span> s = spring({ frame: frame - i * 2, fps });\n\n<span class="c">// or the component:</span>\n&lt;ArabicText text="قصص تستحق أن تُروى" preset="rise" stagger={2} /&gt;' },
+    HTML: { bad: '<span class="c">// before</span>\n<span class="k">const</span> text = "الحكايات";\nel.innerHTML = [...text]\n  .map((ch) =&gt; `&lt;span class="ch"&gt;${ch}&lt;/span&gt;`)\n  .join("")', good: '<span class="c">// after: your code is unchanged</span>\n<span class="k">const</span> text = "الحكايات";\nel.innerHTML = [...text]\n  .map((ch) =&gt; `&lt;span class="ch"&gt;${ch}&lt;/span&gt;`)\n  .join("")' + SHIM },
+    GSAP: { bad: '<span class="c">// before · &lt;h1 id="title"&gt;الحكايات&lt;/h1&gt;</span>\n<span class="k">const</span> split = <span class="d">SplitText.create</span>("#title",\n  { type: "words,chars" });\ngsap.from(split.chars, { y: 80, stagger: 0.04 });', good: '<span class="c">// after: your code is unchanged · &lt;h1 id="title"&gt;الحكايات&lt;/h1&gt;</span>\n<span class="k">const</span> split = SplitText.create("#title",\n  { type: "words,chars" });\ngsap.from(split.chars, { y: 80, stagger: 0.04 });' + SHIM + '\n\n<span class="c">// compare: "الحكايات" ink pieces 11 → 8 (reference 8) ✓</span>' },
+    HyperFrames: { bad: '<span class="c">&lt;!-- before --&gt;</span>\n&lt;div id="root" dir="rtl" data-composition-id="main"&gt;\n  &lt;h1 id="title"&gt;الحكايات&lt;/h1&gt;\n&lt;/div&gt;\n&lt;script&gt;\n  tl.from(<span class="d">split.chars</span>, …);\n  window.__timelines["main"] = tl;\n&lt;/script&gt;', good: '<span class="c">&lt;!-- after: same composition --&gt;</span>\n&lt;div id="root" dir="rtl" data-composition-id="main"&gt;\n  &lt;h1 id="title"&gt;الحكايات&lt;/h1&gt;\n&lt;/div&gt;\n&lt;script&gt;\n  tl.from(split.chars, …);\n  window.__timelines["main"] = tl;\n&lt;/script&gt;' + SHIM },
+    Remotion: { bad: '<span class="c">// before · YearInReview.tsx</span>\n<span class="k">const</span> title = "سنة من الحكايات";\n{title.<span class="d">split("")</span>.map((ch, i) =&gt; {\n  <span class="k">const</span> s = spring({ frame: frame - 24 - i * 2, fps });', good: '<span class="c">// after · harakah-fix codemod (real diff)</span>\n<span class="k">import</span> { formatDigits, splitArabic, withArabicSeparators } <span class="k">from</span> "../harakah-arabic";\n<span class="k">const</span> title = "سنة من الحكايات";\n{<span class="c">/* harakah: was title.split("") */</span> <span class="a">splitArabic(title)</span>.map((ch, i) =&gt; {\n  <span class="k">const</span> s = spring({ frame: frame - 24 - i * 2, fps });\n\n<span class="c">// or the component:</span>\n&lt;ArabicText text="سنة من الحكايات" preset="rise" stagger={2} /&gt;' },
   };
   const names = Object.keys(TOOLS);
   let tool = "Remotion", fixed = false;
@@ -342,12 +347,15 @@ addEventListener("resize", () => requestAnimationFrame(runScroll));
   function render() {
     $$("button", tabs).forEach((b) => { const on = b.dataset.t === tool; b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1; });
     panel.setAttribute("aria-labelledby", `vt-tab-${tool}`);
-    code.innerHTML = TOOLS[tool][fixed ? "good" : "bad"].replace(/"([^"<]*[\u0600-\u06FF][^"<]*)"/g, '"<bdi dir="rtl">$1</bdi>"');
+    code.innerHTML = isoAr(TOOLS[tool][fixed ? "good" : "bad"]);
+    // data-word: the Arabic the stage shows, which must also be the Arabic in the code under it (scripts/qa-visual.mjs)
     if (tool === "Remotion") {
-      view.innerHTML = `<img class="vt-img" src="/demo/remotion/${fixed ? "after" : "before"}.png" alt="${fixed ? "Remotion render after Harakah: joined Arabic · بعد الإصلاح" : "Remotion render before: broken Arabic letters · قبل الإصلاح"}" width="1280" height="720" decoding="async">`;
+      view.dataset.word = REMOTION_TITLE;
+      view.innerHTML = `<img class="vt-img" src="/demo/remotion/${fixed ? "after" : "before"}.png" alt="${fixed ? `Remotion render after Harakah: «${REMOTION_TITLE}» joined · بعد الإصلاح` : `Remotion render before: «${REMOTION_TITLE}» in broken letters · قبل الإصلاح`}" width="1280" height="720" decoding="async">`;
     } else {
+      view.dataset.word = WORD;
       const parts = fixed ? HZ.splitArabic(WORD) : HZ.graphemes(WORD);
-      view.innerHTML = `<div class="vt-word keep ${fixed ? "fixed" : "broken"}" lang="ar" dir="rtl" role="img" aria-label="${fixed ? "الحكايات · joined" : "الحكايات · split into isolated letters"}">${parts.map((c) => `<span aria-hidden="true">${c}</span>`).join("")}</div>`;
+      view.innerHTML = `<div class="vt-word keep ${fixed ? "fixed" : "broken"}" lang="ar" dir="rtl" role="img" aria-label="${fixed ? `${WORD} · joined` : `${WORD} · split into isolated letters`}">${parts.map((c) => `<span aria-hidden="true">${c}</span>`).join("")}</div>`;
     }
     state.className = "vt-state " + (fixed ? "ok" : "bad"); state.textContent = fixed ? "joined ✓" : "split ✗";
     flip.setAttribute("aria-pressed", String(fixed));

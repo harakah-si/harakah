@@ -124,6 +124,7 @@
 .pv-meter b{font:700 34px/1 var(--display);font-variant-numeric:tabular-nums}
 .pv-meter em{font:500 11px/1 var(--mono);font-style:normal;color:var(--mute)}
 .pv-meter .bad{color:var(--err)}.pv-meter .good{color:var(--ok)}
+.pv-key{margin:-4px 0 0;font:400 12px/1.6 var(--text);color:var(--faint)}
 
 /* remotion: view-transition tabs */
 .vt-top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap}
@@ -147,6 +148,11 @@
 ::view-transition-group(*){animation-duration:.5s;animation-timing-function:cubic-bezier(.16,1,.3,1)}
 ::view-transition-old(vt-code){animation:.22s ease both vtout}::view-transition-new(vt-code){animation:.4s .08s cubic-bezier(.16,1,.3,1) both vtin}
 @keyframes vtout{to{opacity:0;transform:translateY(-6px)}}@keyframes vtin{from{opacity:0;transform:translateY(8px)}}
+
+/* code never takes the page's direction: every sample reads left to right like the source, and Arabic inside it is an
+   isolated RTL run (isoAr in app.js wraps each run in <bdi dir=rtl>) */
+pre,code,.code,.term-out,.rj-code,.vt-code{direction:ltr;text-align:left;unicode-bidi:isolate}
+pre bdi[dir=rtl],code bdi[dir=rtl],.code bdi[dir=rtl]{unicode-bidi:isolate}
 
 /* footer settings */
 footer .wrap{align-items:center}
