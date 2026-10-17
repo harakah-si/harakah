@@ -247,6 +247,36 @@ const headerCheck = () => {
   }
   return [...new Set(out)];
 };
+// Safari 26 (iOS) paints the strip behind the clock / Dynamic Island in the colour of the fixed or sticky box it finds
+// at the top edge, and otherwise lets the page show through it. Emulators can't show that strip, so this repeats
+// WebKit's own lookup (LocalFrameView::fixedContainerEdges): hit-test the middle of the top edge 4px down, ignoring
+// pointer-events (a pseudo-element counts as its host), walk up to the first fixed/sticky box; transparent ones are
+// skipped by retrying with pointer-events honoured. A sticky nav at the top must be what it finds, with an opaque colour.
+const topTint = () => {
+  const nav = document.querySelector("nav"); if (!nav) return ["the landing has no <nav>"];
+  const pos = getComputedStyle(nav).position, nr = nav.getBoundingClientRect();
+  if ((pos !== "sticky" && pos !== "fixed") || nr.top > 4 || nr.bottom < 8) return [`the nav isn't pinned to the top edge (position ${pos}, top ${Math.round(nr.top)}px)`];
+  const alpha = (c) => { if (c === "transparent") return 0; const m = c.match(/\(([^)]+)\)/); if (!m) return 1; const p = m[1].split(/[\s,/]+/).filter(Boolean); return p.length > 3 ? parseFloat(p[3]) : 1; };
+  const find = (ignorePE) => {
+    let st; if (ignorePE) { st = document.createElement("style"); st.textContent = "*,*::before,*::after{pointer-events:auto!important}"; document.head.append(st); }
+    const hit = document.elementFromPoint(innerWidth / 2, 4); st?.remove();
+    let retry = false;
+    for (let el = hit; el; el = el.parentElement) {
+      const cs = getComputedStyle(el); if (cs.position !== "fixed" && cs.position !== "sticky") continue;
+      const rc = el.getBoundingClientRect();
+      if (cs.visibility === "hidden" || +cs.opacity < 0.1 || (!alpha(cs.backgroundColor) && cs.backgroundImage === "none" && !el.firstElementChild)
+        || rc.height > innerHeight * 1.05 || parseInt(cs.zIndex) < 0) { retry = cs.pointerEvents === "none"; continue; } // hidden, taller than the screen, or below the page
+      if (rc.width < innerWidth * 0.9) continue;
+      return { el, hit, retry };
+    }
+    return { el: null, hit, retry };
+  };
+  let r = find(true); if (!r.el && r.retry) r = find(false);
+  const name = (e) => e ? e.tagName.toLowerCase() + (e.className && typeof e.className === "string" ? "." + e.className.split(" ")[0] : "") : "nothing";
+  if (r.el !== nav) return [`Safari's status-bar tint finds ${name(r.el)} at the top edge (hit ${name(r.hit)}), not the sticky nav: page content shows behind the clock`];
+  const bg = getComputedStyle(nav).backgroundColor;
+  return alpha(bg) >= 0.99 ? [] : [`the nav Safari tints the status bar from is see-through (${bg})`];
+};
 // demo code samples fit their box (no sideways scroll inside it): checked from 360px up
 const codeFit = () => [...document.querySelectorAll(".vt-code")].filter((el) => el.getClientRects().length && el.scrollWidth - el.clientWidth > 1)
   .map((el) => `#${el.id} is ${el.scrollWidth - el.clientWidth}px wider than its box: "${[...el.textContent.split("\n")].sort((a, b) => b.length - a.length)[0].trim().slice(0, 50)}"`);
@@ -308,20 +338,35 @@ for (const R of RUNS) {
       document.body.append(pill); const r = (0, eval)(`(${occ})`)(); pill.remove(); return r.length;
     }, occlusion.toString());
     if (!caught) fail(`${E} self-test`, "a fixed pill over the code box was not detected: the occlusion probe is broken");
+    // and the status-bar probe: a full-screen overlay above the nav (the grain layer that once sat at z-index 50) is reported
+    const tint = await d.ev((tt) => {
+      const st = Object.assign(document.createElement("style"), { textContent: "body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:99;opacity:.06;background:#888}" });
+      document.head.append(st); const r = (0, eval)(`(${tt})`)(); st.remove(); return r.length;
+    }, topTint.toString());
+    if (!tint) fail(`${E} self-test`, "an overlay above the nav was not detected: the status-bar probe is broken");
   }
-  for (const P of PAGES.filter((p) => p.landing)) for (const vp of R.occ) {
-    await d.open(P.url, vp);
+  for (const P of PAGES.filter((p) => p.landing)) for (const vp of R.occ) for (const theme of E === "webkit" ? ["dark", "light"] : ["dark"]) {
+    await d.open(P.url, vp, theme);
     for (const state of [["Remotion", false], ["HyperFrames", true], ["GSAP", true]]) {
       await demoState(d, ...state);
       const H = await d.ev(() => document.documentElement.scrollHeight);
       for (let y = 0; y < H; y += Math.round(vp[1] * 0.4)) {
         await d.ev((y) => window.scrollTo({ top: y, behavior: "instant" }), y); await sleep(40);
-        for (const m of await d.ev(occlusion)) fail(`${E} ${P.id} ${vp[0]}px ${state.join("/")} scrollY=${y}`, m);
-        for (const m of await d.ev(headerCheck)) fail(`${E} ${P.id} ${vp[0]}px ${state.join("/")} scrollY=${y} header`, m);
+        for (const m of await d.ev(occlusion)) fail(`${E} ${P.id} ${vp[0]}px ${theme} ${state.join("/")} scrollY=${y}`, m);
+        for (const m of await d.ev(headerCheck)) fail(`${E} ${P.id} ${vp[0]}px ${theme} ${state.join("/")} scrollY=${y} header`, m);
+        for (const m of await d.ev(topTint)) fail(`${E} ${P.id} ${vp[0]}px ${theme} ${state.join("/")} scrollY=${y} status bar`, m);
       }
     }
   }
   lap(`${E}: floating UI over demo/code text`);
+  // the theme toggle repaints the browser bars too: picking light on a dark phone (and back) updates theme-color
+  for (const P of PAGES.filter((p) => p.landing)) {
+    await d.open(P.url, R.occ[1]);
+    for (const t of ["light", "dark", "system"]) {
+      const r = await d.ev((t) => { document.querySelector(`#theme [data-v="${t}"]`).click(); const bg = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim(); return { bg, metas: [...document.querySelectorAll('meta[name="theme-color"]')].filter((m) => !m.media || matchMedia(m.media).matches).map((m) => m.content) }; }, t);
+      if (!r.metas.length || r.metas.some((c) => c.toLowerCase() !== r.bg.toLowerCase())) fail(`${E} ${P.id} theme ${t}`, `the active theme-color ${r.metas.join(", ") || "(none)"} doesn't match the page background ${r.bg}`);
+    }
+  }
   // 3: no sideways scrolling on narrow phones, in every page and demo state
   for (const vp of R.over) for (const P of PAGES) {
     await d.open(P.url, vp);
@@ -382,9 +427,10 @@ async function chromeShots(d) {
 // WebKit/iPhone: each demo state with its code box just under the nav, and the proof card before and after the compare step
 async function webkitShots(d) {
   const dir = path.join(SHOTS, "webkit"); fs.mkdirSync(dir, { recursive: true });
-  for (const vp of IPHONES) for (const P of PAGES) {
-    await d.open(P.url, vp);
-    const tag = `${P.id}_${vp[0]}`;
+  for (const vp of IPHONES) for (const P of PAGES) for (const theme of ["dark", "light"]) {
+    if (theme === "light" && vp[0] !== 393) continue; // light theme: one iPhone width
+    await d.open(P.url, vp, theme);
+    const tag = `${P.id}_${vp[0]}${theme === "light" ? "_light" : ""}`;
     if (!P.landing) { await d.shot(path.join(dir, `${tag}_top.png`)); continue; }
     for (const tab of TABS) for (const fixed of [false, true]) {
       await demoState(d, tab, fixed);
@@ -401,4 +447,4 @@ if (SHOTS) console.log(`screenshots → ${SHOTS}`);
 
 server.close(); if (!PREBUILT) fs.rmSync(SITE, { recursive: true, force: true });
 if (fails.length) { console.error(`\nqa-visual: ${fails.length} problem(s)`); process.exit(1); }
-console.log(`qa-visual (${RUNS.map((r) => (r.make === chromeDriver ? "Chrome" : "WebKit/iPhone")).join(" + ")}): code reads left to right and fits on phones, stage words match their code, English prose keeps its order around Arabic, nothing floats over demo text, no sideways scroll ✓`);
+console.log(`qa-visual (${RUNS.map((r) => (r.make === chromeDriver ? "Chrome" : "WebKit/iPhone")).join(" + ")}): code reads left to right and fits on phones, stage words match their code, English prose keeps its order around Arabic, nothing floats over demo text or the nav, the status bar tints from the nav in both themes, no sideways scroll ✓`);
