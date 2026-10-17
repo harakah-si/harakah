@@ -11,6 +11,10 @@
 //   · the demo stage shows an Arabic word that isn't the Arabic in the code sample under it
 //   · a demo code sample doesn't fit its box on a phone 360px or wider (lines would break mid-token or scroll)
 //   · English prose with Arabic in it draws its own characters out of order (e.g. «…»: 12 flipping around the Arabic)
+//   · a font that draws ZWJ-padded letter boxes doesn't map U+200D and U+200C itself (Safari then draws each letter box
+//     in a fallback font: the "joined" word on a real iPhone came out in two fonts), checked against the served files
+//   · the joined demo word (every tab's after state, both languages, both themes) differs from the same word set as
+//     plain text in the same box: ink overlap below 0.97, in Chrome and in WebKit
 // Every demo tab × before/after state is checked on the Arabic and English landing; /tool/ in both languages and 404 too.
 //
 //   npm run qa:visual                        guards only
@@ -18,8 +22,7 @@
 //   node scripts/qa-visual.mjs --site DIR    check an already built site/ instead of building one
 //   node scripts/qa-visual.mjs --no-webkit   Chrome only (--no-chrome: WebKit only)
 // Needs Chrome (HARAKAH_CHROME=… or auto-detected, same as the renderer), a built dist/ (npm run build) and Playwright's
-// WebKit (npx playwright-core install --with-deps webkit). Linux WebKit draws ZWJ-padded letters as tofu with fonts that
-// don't map U+200D (Alexandria), which iOS doesn't: the screenshots stand in a ZWJ-mapped copy of it (QA only, see zwjFont).
+// WebKit (npx playwright-core install --with-deps webkit). Both engines get exactly the fonts the site serves.
 import fs from "node:fs";
 import http from "node:http";
 import os from "node:os";
@@ -27,6 +30,8 @@ import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import puppeteer from "puppeteer-core";
+import { PNG } from "pngjs";
+import { mapsJoiners } from "./font-cmap.mjs";
 import { CHROME } from "../dist/render.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -79,55 +84,24 @@ async function chromeDriver() {
     },
     ev: (fn, arg) => page.evaluate(fn, arg),
     shot: (file) => page.screenshot({ path: file }),
+    png: async (sel) => Buffer.from(await (await page.$(sel)).screenshot()),
     close: () => browser.close(),
   };
-}
-// Linux WebKit only: Alexandria has no cmap entry for U+200D, and WebKitGTK/WPE then draws each ZWJ-padded letter box as
-// tofu (iOS CoreText and Chrome join them). For screenshots, serve a copy whose cmap also maps ZWJ/ZWNJ to the font's
-// empty zero-width glyph (uni200B): the best cmap subtable is rewritten as one format-12 table appended to the file. The
-// shipped font is untouched.
-function zwjFont(buf) {
-  const u16 = (o) => buf.readUInt16BE(o), u32 = (o) => buf.readUInt32BE(o);
-  const T = {}; for (let i = 0; i < u16(4); i++) { const r = 12 + i * 16; T[buf.toString("latin1", r, r + 4)] = { rec: r, off: u32(r + 8), len: u32(r + 12) }; }
-  const { post, cmap } = T; if (!post || !cmap || u32(post.off) !== 0x20000) return buf;
-  const ng = u16(post.off + 32), names = []; // post v2 glyph names → glyph id of uni200B
-  for (let p = post.off + 34 + ng * 2; p < post.off + post.len; p += 1 + buf[p]) names.push(buf.toString("latin1", p + 1, p + 1 + buf[p]));
-  let zw = -1; for (let g = 0; g < ng && zw < 0; g++) if (names[u16(post.off + 34 + g * 2) - 258] === "uni200B") zw = g;
-  if (zw < 0) return buf;
-  const recs = [...Array(u16(cmap.off + 2))].map((_, i) => ({ pid: u16(cmap.off + 4 + i * 8), eid: u16(cmap.off + 6 + i * 8), off: u32(cmap.off + 8 + i * 8) }));
-  const best = recs.find((r) => r.pid === 3 && r.eid === 10) || recs.find((r) => r.pid === 3 && r.eid === 1); if (!best) return buf;
-  const map = new Map(), b = cmap.off + best.off;
-  if (u16(b) === 4) {
-    const n = u16(b + 6) / 2, E = b + 14, S = E + n * 2 + 2, D = S + n * 2, R = D + n * 2;
-    for (let i = 0; i < n; i++) for (let c = u16(S + i * 2); c <= u16(E + i * 2) && c !== 0xffff; c++) {
-      const ro = u16(R + i * 2), gi = ro ? u16(R + i * 2 + ro + (c - u16(S + i * 2)) * 2) : c, g = gi ? (gi + u16(D + i * 2)) & 0xffff : 0;
-      if (g) map.set(c, g);
-    }
-  } else if (u16(b) === 12) { for (let i = 0; i < u32(b + 12); i++) { const o = b + 16 + i * 12; for (let c = u32(o); c <= u32(o + 4); c++) map.set(c, u32(o + 8) + c - u32(o)); } }
-  else return buf;
-  map.set(0x200c, zw); map.set(0x200d, zw);
-  const groups = []; for (const c of [...map.keys()].sort((x, y) => x - y)) { const g = map.get(c), l = groups.at(-1); if (l && c === l[1] + 1 && g === l[2] + c - l[0]) l[1] = c; else groups.push([c, c, g]); }
-  const t = Buffer.alloc(12 + 16 + groups.length * 12); // cmap header + one (3,10) record, then the format-12 subtable
-  t.writeUInt16BE(1, 2); t.writeUInt16BE(3, 4); t.writeUInt16BE(10, 6); t.writeUInt32BE(12, 8);
-  t.writeUInt16BE(12, 12); t.writeUInt32BE(16 + groups.length * 12, 16); t.writeUInt32BE(groups.length, 24);
-  groups.forEach(([x, y, g], i) => { t.writeUInt32BE(x, 28 + i * 12); t.writeUInt32BE(y, 32 + i * 12); t.writeUInt32BE(g, 36 + i * 12); });
-  const at = Math.ceil(buf.length / 4) * 4, out = Buffer.concat([buf, Buffer.alloc(at - buf.length), t, Buffer.alloc((4 - (t.length % 4)) % 4)]);
-  out.writeUInt32BE(at, cmap.rec + 8); out.writeUInt32BE(t.length, cmap.rec + 12);
-  return out;
 }
 async function webkitDriver() {
   let webkit, devices;
   try { ({ webkit, devices } = await import("playwright-core")); } catch { throw new Error("WebKit pass needs playwright-core (npm ci) and its WebKit (npx playwright-core install --with-deps webkit), or run with --no-webkit"); }
   const browser = await webkit.launch();
-  const UA = devices["iPhone 15"].userAgent, font = zwjFont(fs.readFileSync(path.join(SITE, "fonts", "Alexandria.ttf")));
+  const UA = devices["iPhone 15"].userAgent;
   let ctx = null, page = null;
   return {
     name: "webkit",
-    async open(url, vp, theme = "dark") {
+    async open(url, vp, theme = "dark", opts = {}) {
       await ctx?.close(); // a fresh context: clean storage, the viewport and theme of this run
       const mobile = vp[0] < 800;
       ctx = await browser.newContext({ viewport: { width: vp[0], height: vp[1] }, deviceScaleFactor: vp[2] ?? (mobile ? 3 : 2), isMobile: mobile, hasTouch: mobile, colorScheme: theme, ...(mobile ? { userAgent: UA } : {}) });
-      if (SHOTS) await ctx.route("**/fonts/Alexandria.ttf", (r) => r.fulfill({ body: font, contentType: "font/ttf" }));
+      // self-test only: serve another file in place of the site's display font (the unpatched Alexandria)
+      if (opts.fontSwap) await ctx.route(opts.fontSwap.match, (r) => r.fulfill({ body: opts.fontSwap.body, contentType: "font/ttf" }));
       page = await ctx.newPage();
       page.on("pageerror", (e) => fail("js webkit", e.message));
       await page.goto(BASE + url, { waitUntil: "load" });
@@ -136,6 +110,7 @@ async function webkitDriver() {
     },
     ev: (fn, arg) => page.evaluate(fn, arg),
     shot: (file) => page.screenshot({ path: file }),
+    png: (sel) => page.locator(sel).screenshot(),
     close: () => browser.close(),
   };
 }
@@ -302,6 +277,57 @@ const proseOrder = () => {
   return out;
 };
 
+// fonts that draw ZWJ-padded text: for every element holding U+200D, the @font-face sources of each family in its stack
+// up to the first generic family. A family with no @font-face (a system font) can't be checked, so it's reported.
+const joinerFonts = () => {
+  const GENERIC = /^(serif|sans-serif|monospace|cursive|fantasy|system-ui|ui-\w+|math|emoji|fangsong)$/;
+  const faces = [];
+  for (const sh of document.styleSheets) { let rules; try { rules = sh.cssRules; } catch { continue; } for (const r of rules) if (r instanceof CSSFontFaceRule) faces.push(r); }
+  const out = new Map(), w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n;
+  while ((n = w.nextNode())) {
+    if (!n.textContent.includes("\u200d")) continue;
+    const el = n.parentElement, name = `${el.tagName.toLowerCase()}.${(el.closest("[class]")?.className || "").split(" ")[0]}`;
+    for (const fam of getComputedStyle(el).fontFamily.split(",").map((f) => f.trim().replace(/^["']|["']$/g, ""))) {
+      if (GENERIC.test(fam)) break;
+      const fs = faces.filter((f) => f.style.getPropertyValue("font-family").trim().replace(/^["']|["']$/g, "") === fam);
+      const urls = fs.flatMap((f) => [...f.style.getPropertyValue("src").matchAll(/url\(["']?([^"')]+)/g)].map((m) => new URL(m[1], location.href).pathname));
+      const k = `${fam}|${urls.join(",")}`; if (!out.has(k)) out.set(k, { fam, urls, el: name });
+    }
+  }
+  return [...out.values()];
+};
+// ink overlap of two screenshots of the same box: pixels away from the box's most common colour count as ink
+function inkIoU(a, b) {
+  const A = PNG.sync.read(Buffer.from(a)), B = PNG.sync.read(Buffer.from(b));
+  const bg = (img) => { const m = new Map(); for (let i = 0; i < img.data.length; i += 4) { const k = img.data.readUInt32BE(i); m.set(k, (m.get(k) || 0) + 1); } const k = [...m].sort((x, y) => y[1] - x[1])[0][0]; return [k >>> 24, (k >>> 16) & 255, (k >>> 8) & 255]; };
+  const c = bg(B), W = Math.max(A.width, B.width), H = Math.max(A.height, B.height);
+  // boxes of different sizes (a split word is wider) are compared right-aligned, the way an RTL word sits
+  const ink = (img, x, y) => { x -= W - img.width; if (x < 0 || y >= img.height) return false; const i = (y * img.width + x) * 4;
+    return Math.max(Math.abs(img.data[i] - c[0]), Math.abs(img.data[i + 1] - c[1]), Math.abs(img.data[i + 2] - c[2])) > 64; };
+  let and = 0, or = 0;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const p = ink(A, x, y), q = ink(B, x, y); if (p && q) and++; if (p || q) or++; }
+  return or ? and / or : 0;
+}
+// the demo word as the stage draws it vs the same word as one plain text run in the same box
+async function stageInk(d) {
+  const ok = await d.ev(() => { const w = document.querySelector("#vt-view .vt-word"); if (!w) return false; w.scrollIntoView({ block: "center", behavior: "instant" }); return true; });
+  if (!ok) return null;
+  // the flip runs a view transition (snapshots cross-fading over the stage) and scrolling the demo in can start its
+  // reveal fade: wait until nothing on, around or inside the stage has been animating for a while
+  await d.ev(async () => {
+    const v = document.querySelector("#vt-view");
+    const vt = () => document.getAnimations().some((a) => a.playState === "running" && (String(a.effect?.pseudoElement || "").startsWith("::view-transition")
+      || (a.effect?.target && (a.effect.target.contains(v) || v.contains(a.effect.target)))));
+    for (let quiet = 0, t = 0; quiet < 6 && t < 100; t++) { await new Promise((r) => setTimeout(r, 50)); quiet = vt() ? 0 : quiet + 1; }
+  });
+  await sleep(200); const split = await d.png("#vt-view");
+  await d.ev(() => { const w = document.querySelector("#vt-view .vt-word"); w.dataset.qaHtml = w.innerHTML; w.textContent = document.querySelector("#vt-view").dataset.word; });
+  await sleep(200); const plain = await d.png("#vt-view");
+  await d.ev(() => { const w = document.querySelector("#vt-view .vt-word"); w.innerHTML = w.dataset.qaHtml; delete w.dataset.qaHtml; });
+  return inkIoU(split, plain);
+}
+const INK_MIN = 0.97, inkScores = [];
+
 // Chrome: phone + desktop and the full screenshot matrix. WebKit (Safari's engine) with iPhone emulation: iPhone SE,
 // 15 and 15 Pro Max widths, the same guards, and its own screenshots of every demo state and the proof card.
 const IPHONES = [[375, 667, 2], [393, 852, 3], [430, 932, 3]];
@@ -327,6 +353,52 @@ for (const R of RUNS) {
     }
   }
   lap(`${E}: code direction/order/fit + stage words + prose order`);
+  // 6: fonts behind ZWJ-padded letter boxes map U+200D/U+200C (the served files), first proving the check: the
+  // unpatched Alexandria must be reported
+  if (mapsJoiners(fs.readFileSync(path.join(ROOT, "assets", "fonts", "Alexandria.ttf")))) fail(`${E} self-test`, "the unpatched Alexandria passed the U+200D/U+200C check: the cmap reader is broken");
+  for (const P of PAGES.filter((p) => p.landing)) {
+    await d.open(P.url, R.occ[1]); await demoState(d, "HTML", true);
+    const used = await d.ev(joinerFonts);
+    if (!used.length) fail(`${E} ${P.id}`, "no ZWJ-padded text found on the landing: the font check saw nothing");
+    for (const u of used) {
+      if (!u.urls.length) { fail(`${E} ${P.id}`, `${u.el} draws ZWJ-padded letters in "${u.fam}", which the site doesn't serve: its joiners can't be checked`); continue; }
+      for (const url of u.urls) {
+        const f = path.join(SITE, decodeURIComponent(url));
+        if (!fs.existsSync(f)) fail(`${E} ${P.id}`, `${u.el}: font ${url} ("${u.fam}") isn't in the built site`);
+        else if (!mapsJoiners(fs.readFileSync(f))) fail(`${E} ${P.id}`, `${u.el} draws ZWJ-padded letters in ${url} ("${u.fam}"), which doesn't map U+200D and U+200C: Safari draws those letter boxes in a fallback font`);
+      }
+    }
+  }
+  // 7: the joined demo word looks like the plain word (ink overlap), every tab's after state × language × theme.
+  // Self-test first: the "before" state (and in WebKit, the after state drawn with the unpatched Alexandria) must fail.
+  {
+    const vp = R.occ[1];
+    await d.open("/", vp); await demoState(d, "HTML", false);
+    const before = await stageInk(d);
+    if (!(before < INK_MIN)) fail(`${E} self-test`, `the broken "before" word scored ${before?.toFixed(3)} against the plain word: the ink probe is broken`);
+    if (E === "webkit") {
+      const served = (await d.ev(joinerFonts)).flatMap((u) => u.urls).find((u) => /Alexandria/i.test(u));
+      if (served) {
+        await d.open("/", vp, "dark", { fontSwap: { match: `**${served}`, body: fs.readFileSync(path.join(ROOT, "assets", "fonts", "Alexandria.ttf")) } });
+        await demoState(d, "HTML", true);
+        const unpatched = await stageInk(d);
+        if (!(unpatched < INK_MIN)) fail(`${E} self-test`, `the joined word drawn with the unpatched Alexandria scored ${unpatched?.toFixed(3)}: the probe can't see the Safari fallback bug`);
+        console.log(`  ${E} self-test: before ${before.toFixed(3)}, unpatched Alexandria ${unpatched?.toFixed(3)} (both must be < ${INK_MIN})`);
+      } else fail(`${E} self-test`, "no served Alexandria found behind the ZWJ-padded text");
+    } else console.log(`  ${E} self-test: before ${before.toFixed(3)} (must be < ${INK_MIN})`);
+    for (const P of PAGES.filter((p) => p.landing)) for (const theme of ["dark", "light"]) {
+      await d.open(P.url, vp, theme);
+      for (const tab of TABS.filter((t) => t !== "Remotion")) { // the Remotion tab shows a rendered PNG
+        await demoState(d, tab, true);
+        const s = await stageInk(d);
+        inkScores.push(`${E} ${P.id} ${theme} ${tab} ${s?.toFixed(3)}`);
+        if (s === null) fail(`${E} ${P.id} ${theme} ${tab} after`, "no demo word on the stage");
+        else if (s < INK_MIN) fail(`${E} ${P.id} ${theme} ${tab} after`, `joined word ink overlap with the plain word is ${s.toFixed(3)} (< ${INK_MIN}): it doesn't render joined`);
+      }
+    }
+    console.log(`  ${E} ink overlap (joined vs plain): ${inkScores.filter((x) => x.startsWith(E)).map((x) => x.split(" ").slice(1).join(" ")).join(" · ")}`);
+  }
+  lap(`${E}: joiner fonts + joined word ink`);
   // 2: floating UI over demo/code text, scrolled through the whole landing on a phone. First prove the probe works:
   // a pill pinned over the code box (like the one the user saw) has to be reported.
   {
@@ -447,4 +519,4 @@ if (SHOTS) console.log(`screenshots → ${SHOTS}`);
 
 server.close(); if (!PREBUILT) fs.rmSync(SITE, { recursive: true, force: true });
 if (fails.length) { console.error(`\nqa-visual: ${fails.length} problem(s)`); process.exit(1); }
-console.log(`qa-visual (${RUNS.map((r) => (r.make === chromeDriver ? "Chrome" : "WebKit/iPhone")).join(" + ")}): code reads left to right and fits on phones, stage words match their code, English prose keeps its order around Arabic, nothing floats over demo text or the nav, the status bar tints from the nav in both themes, no sideways scroll ✓`);
+console.log(`qa-visual (${RUNS.map((r) => (r.make === chromeDriver ? "Chrome" : "WebKit/iPhone")).join(" + ")}): code reads left to right and fits on phones, stage words match their code, English prose keeps its order around Arabic, nothing floats over demo text or the nav, the status bar tints from the nav in both themes, no sideways scroll, ZWJ-padded letters use fonts that map U+200D/U+200C and the joined demo word matches the plain word (ink ≥ 0.97) ✓`);
