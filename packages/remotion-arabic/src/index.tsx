@@ -10,10 +10,15 @@
  * لماذا: تقسيم النص بـ split('') مع inline-block يضع كل حرف في صندوق مستقل فيظهر بشكله المنفصل.
  * الدالة splitArabic() تعيد الحروف مع واصل صفري (ZWJ) وتُبقي «لا» حرفاً واحداً، فتبقى الكلمة متصلة.
  *
+ * Safari / WebKit (the Remotion Player on iPhone, iPad and Mac Safari) draws a letter + ZWJ in a fallback font when
+ * the font has no cmap entry for U+200D (Alexandria, IBM Plex Sans Arabic, Cairo, Tajawal…). There, after mount,
+ * <ArabicText> switches each Arabic word to the clip method: every letter box shows the whole word, clipped to that
+ * letter's slice, so the word is shaped once by the font. Renders (Chromium) keep the ZWJ boxes, unchanged.
+ *
  * Self-contained (no dependency on harakah-fix) so it can be vendored as a single file.
  */
 import React from "react";
-import { continueRender, delayRender, Easing, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { continueRender, delayRender, Easing, getRemotionEnvironment, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 
 const ZWJ = "\u200D";
 const TRANSPARENT = /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E4\u06E7\u06E8\u06EA-\u06ED]/;
@@ -247,6 +252,56 @@ export interface ArabicTextProps {
   tokenStyle?: React.CSSProperties;
   className?: string;
   as?: "div" | "h1" | "h2" | "h3" | "p" | "span";
+  /**
+   * How letter boxes keep their joins. "auto" (default): ZWJ padding, and in Safari/WebKit outside a render the
+   * clip method (the whole word in every box, clipped to the letter's slice), which works with fonts that have no
+   * U+200D. "zwj" / "clip" force one. طريقة وصل الحروف: تلقائي (الافتراضي)، أو zwj، أو clip.
+   */
+  joinMode?: JoinMode;
+}
+export type JoinMode = "auto" | "zwj" | "clip";
+
+/** Safari / WebKit, where a letter + ZWJ is drawn in a fallback font if the font has no U+200D. */
+export function needsClipJoin(ua: string = typeof navigator === "undefined" ? "" : navigator.userAgent || ""): boolean {
+  return /AppleWebKit\//.test(ua) && !/(Chrome|Chromium|Edg|OPR|Android)\//.test(ua);
+}
+
+type Slice = { s: number; e: number; W: number; pl: number; pt: number };
+const PURE_ARABIC = /^[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E4\u06E7\u06E8\u06EA-\u06ED\u0620-\u064A\u066E-\u06D3\u06FA-\u06FF\u0750-\u077F\u08A0-\u08C9\u0640]+$/;
+const FONT_PROPS = ["fontFamily", "fontSize", "fontWeight", "fontStyle", "fontStretch", "fontVariationSettings", "fontFeatureSettings", "fontKerning", "fontVariantLigatures", "fontVariantNumeric", "fontSynthesis", "fontOpticalSizing", "letterSpacing", "wordSpacing", "textRendering"] as const;
+const SR_ONLY: React.CSSProperties = { position: "absolute", width: 1, height: 1, margin: -1, padding: 0, overflow: "hidden", clip: "rect(0 0 0 0)", clipPath: "inset(50%)", whiteSpace: "nowrap", border: 0 };
+
+// Measure each token's slice of the plain word (Range on a hidden copy with the token box's computed font), tiled at
+// the midpoints between neighbouring glyph runs so the slices recompose the word exactly.
+function measureWord(first: HTMLElement, toks: string[]): Slice[] | null {
+  const word = toks.join("");
+  const m = document.createElement("span");
+  m.setAttribute("aria-hidden", "true");
+  m.style.cssText = "position:fixed;left:0;top:0;visibility:hidden;z-index:-1;white-space:pre;direction:rtl;unicode-bidi:isolate;pointer-events:none;padding:0;border:0;margin:0;transform:none";
+  const cs = getComputedStyle(first);
+  for (const k of FONT_PROPS) try { (m.style as unknown as Record<string, string>)[k] = (cs as unknown as Record<string, string>)[k]; } catch { /* unsupported */ }
+  m.lang = "ar";
+  m.textContent = word;
+  document.body.appendChild(m);
+  try {
+    const t = m.firstChild as Text, mr = m.getBoundingClientRect(), W = mr.width, r = document.createRange();
+    if (!(W > 0)) return null;
+    let o = 0;
+    const sl: { i: number; l: number; r: number }[] = [];
+    for (let i = 0; i < toks.length; i++) {
+      r.setStart(t, o); r.setEnd(t, o + toks[i].length); o += toks[i].length;
+      const b = r.getBoundingClientRect();
+      if (!(b.width > 0)) return null;
+      sl.push({ i, l: b.left - mr.left, r: b.right - mr.left });
+    }
+    const byX = [...sl].sort((a, b) => a.l - b.l), out: Slice[] = new Array(toks.length);
+    const pl = parseFloat(cs.paddingLeft) || 0, pt = parseFloat(cs.paddingTop) || 0;
+    byX.forEach((q, n) => {
+      const s = n ? (byX[n - 1].r + q.l) / 2 : 0, e = n < byX.length - 1 ? (q.r + byX[n + 1].l) / 2 : W;
+      out[q.i] = { s, e, W, pl, pt };
+    });
+    return out;
+  } finally { m.remove(); }
 }
 
 const PRESETS: Record<Preset, (p: number) => React.CSSProperties> = {
@@ -264,7 +319,7 @@ const PRESETS: Record<Preset, (p: number) => React.CSSProperties> = {
  */
 export const ArabicText: React.FC<ArabicTextProps> = ({
   text, by = "letter", delay = 0, stagger, duration = 18, preset = "rise", animate, springy = false,
-  digits = "eastern", style, tokenStyle, className, as = "div",
+  digits = "eastern", style, tokenStyle, className, as = "div", joinMode = "auto",
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -283,23 +338,68 @@ export const ArabicText: React.FC<ArabicTextProps> = ({
   });
   let n = 0;
   const single = tokens.length === 1;
+  // Clip method (Safari/WebKit): decided after mount, so server output, the first paint and renders stay ZWJ boxes.
+  const root = React.useRef<HTMLElement | null>(null);
+  const [clip, setClip] = React.useState(false);
+  const [slices, setSlices] = React.useState<Record<number, Slice[]>>({});
+  const [epoch, setEpoch] = React.useState(0);
+  const clipWords = by === "letter" && !single ? words.map((w, wi) => (w.tokens.length >= 2 && PURE_ARABIC.test(w.tokens.join("").replace(/\u200D/g, "")) ? wi : -1)).filter((wi) => wi >= 0) : [];
+  const fontKey = [style, tokenStyle].map((x) => (x ? [x.fontFamily, x.fontSize, x.fontWeight, x.fontStyle, x.letterSpacing, x.fontVariationSettings, x.fontFeatureSettings].join("|") : "")).join("/");
+  const textKey = words.map((w) => w.tokens.join("")).join(" ");
+  React.useLayoutEffect(() => {
+    const on = joinMode === "clip" || (joinMode === "auto" && needsClipJoin() && !getRemotionEnvironment().isRendering);
+    setClip(on);
+    if (!on) return;
+    const bump = () => setEpoch((e) => e + 1);
+    const fonts = typeof document !== "undefined" ? (document.fonts as unknown as EventTarget & { ready?: Promise<unknown> }) : null;
+    fonts?.addEventListener?.("loadingdone", bump);
+    fonts?.ready?.then(bump, () => {});
+    window.addEventListener("resize", bump);
+    return () => { fonts?.removeEventListener?.("loadingdone", bump); window.removeEventListener("resize", bump); };
+  }, [joinMode]);
+  React.useLayoutEffect(() => {
+    if (!clip || !root.current || !clipWords.length) { if (Object.keys(slices).length) setSlices({}); return; }
+    const next: Record<number, Slice[]> = {};
+    for (const wi of clipWords) {
+      const first = root.current.querySelector(`[data-hz-word="${wi}"] > [data-hz-tok]`) as HTMLElement | null;
+      const sl = first && measureWord(first, words[wi].tokens.map((t) => t.replace(/\u200D/g, "")));
+      if (sl) next[wi] = sl;
+    }
+    if (JSON.stringify(next) !== JSON.stringify(slices)) setSlices(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clip, textKey, fontKey, epoch]);
   return (
-    <Tag dir="rtl" lang="ar" className={className} style={{ direction: "rtl", ...style }}>
+    <Tag ref={root} dir="rtl" lang="ar" className={className} style={{ direction: "rtl", ...style }}>
       {parts.map((part, pi) => {
         if (part === " ") return <React.Fragment key={`s${pi}`}>{" "}</React.Fragment>;
-        const w = words[part as number];
+        const wi = part as number, w = words[wi], sl = clip ? slices[wi] : undefined;
+        const word = sl ? w.tokens.join("").replace(/\u200D/g, "") : "";
         const inner = w.tokens.map((t, k) => {
           const local = frame - delay - n++ * gap;
           const p = springy
             ? spring({ frame: local, fps, durationInFrames: duration, config: { damping: 200 } })
             : interpolate(local, [0, duration], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: Easing.bezier(0.2, 0.8, 0.2, 1) });
+          const motion = animate ? animate(p, w.start + k, t) : PRESETS[preset](p);
+          if (sl) {
+            // the box keeps the letter's slice width; a hidden strut holds the line height and baseline, and the
+            // whole word (aria-hidden) is offset and clipped to the slice; the first box carries the readable copy
+            const q = sl[k], plain = t.replace(/\u200D/g, ""), pad = "-0.8em", last = q.e >= q.W - 0.01, firstX = q.s <= 0.01;
+            const inset = `inset(${pad} ${last ? pad : `${q.W - q.e}px`} ${pad} ${firstX ? pad : `${q.s}px`})`;
+            return (
+              <span key={k} data-hz-tok="" style={{ display: "inline-block", whiteSpace: "pre", ...tokenStyle, ...motion, position: "relative", boxSizing: "content-box", width: q.e - q.s }}>
+                <span aria-hidden="true" style={{ display: "inline", visibility: "hidden" }}>{plain}</span>
+                <span aria-hidden="true" style={{ display: "inline", position: "absolute", left: q.pl - q.s, top: q.pt, width: q.W, whiteSpace: "pre", direction: "rtl", unicodeBidi: "isolate", pointerEvents: "none", userSelect: "none", WebkitUserSelect: "none", margin: 0, padding: 0, border: 0, clipPath: inset, WebkitClipPath: inset }}>{word}</span>
+                {k === 0 ? <span style={SR_ONLY}>{word}</span> : null}
+              </span>
+            );
+          }
           return (
-            <span key={k} style={{ display: "inline-block", whiteSpace: single ? "normal" : "pre", ...tokenStyle, ...(animate ? animate(p, w.start + k, t) : PRESETS[preset](p)) }}>
+            <span key={k} data-hz-tok="" style={{ display: "inline-block", whiteSpace: single ? "normal" : "pre", ...tokenStyle, ...motion }}>
               {t}
             </span>
           );
         });
-        return single || w.tokens.length === 1 ? <React.Fragment key={`w${pi}`}>{inner}</React.Fragment> : <span key={`w${pi}`} style={{ display: "inline-block", whiteSpace: "nowrap" }}>{inner}</span>;
+        return single || w.tokens.length === 1 ? <React.Fragment key={`w${pi}`}>{inner}</React.Fragment> : <span key={`w${pi}`} data-hz-word={wi} style={{ display: "inline-block", whiteSpace: "nowrap" }}>{inner}</span>;
       })}
     </Tag>
   );

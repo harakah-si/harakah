@@ -66,6 +66,10 @@ jobs:
       # text at rest and mid-stagger (scripts/qa-shim.mjs)
       - name: Runtime shim ink matrix
         run: npm run qa:shim
+      # <ArabicText> in the Remotion Player: WebKit switches to the clip method and matches plain text, Chrome keeps
+      # the ZWJ boxes (scripts/qa-player.mjs)
+      - name: Remotion Player ink matrix
+        run: npm run qa:player
 
       - name: Upload compare artifacts on failure
         if: failure()

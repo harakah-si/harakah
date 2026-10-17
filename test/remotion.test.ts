@@ -6,7 +6,7 @@ import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { transformSource, fixCssText } from "../src/remotion/codemod.ts";
 import { fixRemotion } from "../src/remotion/project.ts";
-import { splitArabic, formatDigits, isolateLatin } from "../packages/remotion-arabic/src/index.tsx";
+import { splitArabic, formatDigits, isolateLatin, needsClipJoin } from "../packages/remotion-arabic/src/index.tsx";
 
 const FIX = path.resolve("fixtures/remotion");
 const BROKEN = fs.readdirSync(path.join(FIX, "src/broken")).filter((f) => f.endsWith(".tsx")).sort();
@@ -214,4 +214,20 @@ export const A = ({ n }: { n: number }) => <div dir="rtl" lang="ar" style={{ fon
   assert.doesNotMatch(transformSource(titleOnly, { helperImport: "./harakah-arabic" }).code, /withArabicSeparators/);
   // western digits → no wrap
   assert.doesNotMatch(transformSource(shows, { helperImport: "./harakah-arabic", digits: "western" }).code, /withArabicSeparators/);
+});
+
+test("ArabicText clip method: Safari/WebKit user agents (every iOS browser) switch, Chromium/Android/Edge/Opera don't", () => {
+  const yes = [
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/129.0 Mobile/15E148 Safari/604.1",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15",
+  ];
+  const no = [
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0 Mobile Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0 Safari/537.36 Edg/141.0",
+    "Mozilla/5.0 (X11; Linux x86_64; rv:131.0) Gecko/20100101 Firefox/131.0", "",
+  ];
+  for (const ua of yes) assert.equal(needsClipJoin(ua), true, ua);
+  for (const ua of no) assert.equal(needsClipJoin(ua), false, ua);
 });
