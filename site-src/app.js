@@ -54,6 +54,9 @@ seg("#digits", root.dataset.digits, (v) => { localStorage.setItem("hz-digits", v
 const setPalette = (v) => { localStorage.setItem("hz-palette", v); root.dataset.palette = v; segSync("[data-pal]", v); emit("palette"); };
 $$("[data-pal] button").forEach((b) => b.addEventListener("click", () => setPalette(b.dataset.v)));
 segSync("[data-pal]", root.dataset.palette);
+// browser bars (Chrome on Android, older Safari) follow the page colour the visitor picked, not only the OS setting
+const barTint = () => { const c = getComputedStyle(root).getPropertyValue("--bg").trim(); if (c) $$('meta[name="theme-color"]').forEach((m) => m.setAttribute("content", c)); };
+listeners.theme.push(barTint); listeners.palette.push(barTint); barTint();
 paintNumbers();
 
 /* ---------- demo reel (from the live page) ---------- */

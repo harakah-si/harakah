@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a1411">
 <title>Run Harakah on your computer · شغّل حركة على جهازك</title>
 <meta name="description" content="Harakah runs on your computer: one npx command checks your motion code and fixes broken Arabic letters before you render. Free and open source. · حركة تعمل على جهازك: أمر npx واحد يفحص كود الموشن ويصلّح الحروف العربية المقطّعة قبل الرندر. مجانية وأوبن سورس.">
 <link rel="canonical" href="{{ORIGIN}}/tool/">
@@ -38,6 +39,7 @@
   document.title = l === "ar" ? "شغّل حركة على جهازك · Harakah" : "Run Harakah on your computer · حركة";
   var t = s && s.getItem("hz-theme");
   d.dataset.theme = t === "light" || t === "dark" ? t : (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+  document.querySelector('meta[name="theme-color"]').content = d.dataset.theme === "light" ? "#f3efe6" : "#0a1411";
 })();
 </script>
 <style>
