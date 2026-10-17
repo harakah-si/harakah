@@ -77,7 +77,7 @@
             <div class="rj-meter" aria-hidden="true"><div><small><span lang="ar">حروف منفصلة</span><span lang="en">isolated forms</span></small><b id="rj-n"></b></div><div><small><span lang="ar">الهدف</span><span lang="en">target</span></small><b data-n="0"></b></div></div>
           </div>
           <div class="rj-box keep" id="rj-box" lang="ar" dir="rtl">
-            <p class="sr-only"><span lang="ar">إذا قسّمت «الحكايات» حرفاً حرفاً، تظهر حروفها مقطّعة ومقلوبة، ومع حركة تعود كلمة واحدة متصلة.</span><span lang="en">«الحكايات» split letter by letter shows isolated, reversed letters; after Harakah it is one joined word again.</span></p>
+            <p class="sr-only"><span lang="ar">إذا قسّمت «الحكايات» حرفاً حرفاً، تظهر حروفها مقطّعة ومقلوبة، ومع حركة تعود كلمة واحدة متصلة.</span><span lang="en">«<bdi>الحكايات</bdi>» split letter by letter shows isolated, reversed letters; after Harakah it is one joined word again.</span></p>
             <div class="rj-m rj-mb" aria-hidden="true"></div><div class="rj-m rj-mj" aria-hidden="true"></div>
             <div class="rj-pcs" aria-hidden="true"></div>
             <div class="rj-final" aria-hidden="true">الحكايات</div>
@@ -115,7 +115,7 @@
       <div class="hsteps">
         <div class="hstep" data-step="0"><span class="k"><span data-n="1" data-pad="2"></span> · <span lang="ar">فحص</span><span lang="en">DETECT</span></span><h3><span lang="ar">تفحص</span><span lang="en">Detect</span></h3><p lang="ar">قواعد تغطي تقسيم الحروف والاتجاه والأرقام والخطوط والتشكيل، وتتبّع النص العربي حتى لو انتقل بين المكوّنات عبر الـ<bdi dir="ltr">props</bdi>.</p><p lang="en">Rules for splitting, direction, digits, fonts and diacritics — and it follows Arabic through component props.</p></div>
         <div class="hstep" data-step="1"><span class="k"><span data-n="2" data-pad="2"></span> · <span lang="ar">إصلاح</span><span lang="en">FIX</span></span><h3><span lang="ar">تصلّح</span><span lang="en">Fix</span></h3><p lang="ar">تعدّل الكود عبر الـ<bdi dir="ltr">AST</bdi>، فلا تلمس شيئاً غير المطلوب، وتترك تعليقاً عند كل سطر تغيّره. وإذا شغّلتها مرة ثانية، لا تضيف أي تعديل جديد.</p><p lang="en">Edits go through the AST, touch nothing else, and leave a comment on every line they change. Safe to re-run: a second pass changes nothing.</p></div>
-        <div class="hstep" data-step="2"><span class="k"><span data-n="3" data-pad="2"></span> · <span lang="ar">تأكيد</span><span lang="en">PROVE</span></span><h3><span lang="ar">تتأكد</span><span lang="en">Prove</span></h3><p lang="ar">ترندر كل مشهد قبل الإصلاح وبعده، وتعدّ الأجزاء المنفصلة في «السلام عليكم» وتقارنها بالنص الصحيح: <span data-n="12"></span> قبل، و<span data-n="6"></span> بعد، والمرجع <span data-n="6"></span>.</p><p lang="en">It renders every scene before and after and counts the separate shapes in «السلام عليكم» against the correctly joined text: 12 before, 6 after, reference 6.</p></div>
+        <div class="hstep" data-step="2"><span class="k"><span data-n="3" data-pad="2"></span> · <span lang="ar">تأكيد</span><span lang="en">PROVE</span></span><h3><span lang="ar">تتأكد</span><span lang="en">Prove</span></h3><p lang="ar">ترندر كل مشهد قبل الإصلاح وبعده، وتعدّ الأجزاء المنفصلة في «السلام عليكم»: <span data-n="12"></span> قبل الإصلاح، و<span data-n="6"></span> بعده، وهو نفس عددها في النص الصحيح.</p><p lang="en">It renders every scene before and after and counts the separate pieces in «<bdi>السلام عليكم</bdi>»: 12 before, 6 after, the same as the correctly joined text.</p></div>
       </div>
       <div class="hstick">
         <div class="term" role="img" aria-label="Terminal: harakah-fix check, fix and compare on fixtures/remotion">
@@ -124,8 +124,7 @@
         </div>
         <div class="pv" aria-hidden="true">
           <div class="pv-word keep broken" id="pv-word" lang="ar" dir="rtl"></div>
-          <div class="pv-meter"><div><small><span lang="ar">قبل</span><span lang="en">before</span></small><b class="bad" data-n="12"></b><em><span data-n="778"></span>px</em></div><div><small><span lang="ar">بعد</span><span lang="en">after</span></small><b class="good" id="pv-after">–</b><em id="pv-after-w">&nbsp;</em></div><div><small><span lang="ar">المرجع</span><span lang="en">reference</span></small><b data-n="6"></b><em><span data-n="542"></span>px</em></div></div>
-          <p class="pv-key"><span lang="ar">الرقم الكبير: عدد القطع المنفصلة في الرندر، وكلما قلّ كانت الحروف متصلة. تحته: عرض الجملة.</span><span lang="en">Big number: separate pieces in the render (fewer = joined). Below it: the phrase's width.</span></p>
+          <div class="pv-meter"><p class="pv-cap"><span lang="ar">الأجزاء المنفصلة في الرندر</span><span lang="en">Separate pieces in the render</span><span class="pv-state bad" id="pv-state"><span lang="ar">مقطّعة</span><span lang="en">split</span> ✗</span></p><div><small><span lang="ar">قبل</span><span lang="en">before</span></small><b class="bad" data-n="12"></b></div><div><small><span lang="ar">بعد</span><span lang="en">after</span></small><b class="good wait" id="pv-after">–</b></div><div><small><span lang="ar">الهدف</span><span lang="en">target</span></small><b data-n="6"></b></div></div>
         </div>
       </div>
     </div>

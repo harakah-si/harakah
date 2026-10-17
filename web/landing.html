@@ -71,7 +71,7 @@
 :root[data-palette=inkpetra][data-theme=light]{--bg:#f3efe7;--bg2:#ece6dc;--card:#ebe4d8;--line:#dcd3c5;--ink:#141310;--mute:#5f5850;--acc:#b83616;--on-acc:#ffffff;--acc2:#b0703f;--acc3:#7d5a6b;--ok:#0f6b3f;--err:#a6311f;--faint:#6b645c;--acc-t:#b83616}
 :root[data-palette=mosaic][data-theme=light]{--acc-t:#755310}
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%} /* iOS: never inflate code or labels after a rotation */
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--text);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 body{transition:background .3s var(--ease),color .3s var(--ease)}
 body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.06;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
@@ -384,13 +384,16 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .pv-word.fixed{color:var(--acc)}
 .pv-word.fixed span{animation:rise .6s var(--ease) both;animation-delay:calc(var(--i)*40ms)}
 @keyframes rise{from{opacity:0;transform:translateY(.3em)}}
-.pv-meter{display:flex;gap:28px;border-top:1px solid var(--line);padding-top:12px} /* reads in the page's direction: قبل first on the right in Arabic */
-.pv-meter div{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+/* three equal columns in the page's direction (قبل on the right in Arabic) under one caption that says what they count */
+.pv-meter{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 16px;border-top:1px solid var(--line);padding-top:14px}
+.pv-cap{grid-column:1/-1;margin:0;display:flex;justify-content:space-between;align-items:center;gap:12px;font:500 12px/1.4 var(--mono);color:var(--mute)}
+.pv-cap [lang=ar]{font:500 14px/1.4 var(--text)}
+.pv-state{flex:0 0 auto;font:500 11.5px/1 var(--mono);padding:6px 9px;border-radius:99px;border:1px solid currentColor}
+.pv-state.bad{color:var(--err)}.pv-state.ok{color:var(--ok)}
+.pv-meter div{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
 .pv-meter small{font:500 10.5px/1 var(--mono);color:var(--mute);letter-spacing:.08em;text-transform:uppercase}
 .pv-meter b{font:700 34px/1 var(--display);font-variant-numeric:tabular-nums}
-.pv-meter em{font:500 11px/1 var(--mono);font-style:normal;color:var(--mute);direction:ltr;unicode-bidi:isolate}
-.pv-meter .bad{color:var(--err)}.pv-meter .good{color:var(--ok)}
-.pv-key{margin:-4px 0 0;font:400 12px/1.6 var(--text);color:var(--faint)}
+.pv-meter .bad{color:var(--err)}.pv-meter .good{color:var(--ok)}.pv-meter .good.wait{color:var(--faint)}
 
 /* remotion: view-transition tabs */
 .vt-top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap}
@@ -406,9 +409,9 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .vt-word.broken{display:flex;direction:ltr;gap:.05em;color:var(--mute)}
 .vt-word.fixed{color:var(--acc)}
 .vt-img{width:100%;height:auto;border-radius:14px;border:1px solid var(--line);display:block;view-transition-name:vt-word}
-.vt-state{position:absolute;top:18px;inset-inline-start:20px;direction:ltr;font:500 12px/1 var(--mono);padding:7px 10px;border-radius:99px;border:1px solid currentColor;view-transition-name:vt-state}
+.vt-state{position:absolute;top:18px;inset-inline-start:20px;font:500 12px/1 var(--mono);padding:7px 10px;border-radius:99px;border:1px solid currentColor;view-transition-name:vt-state}
 .vt-state.bad{color:var(--err)}.vt-state.ok{color:var(--ok)}
-.vt-code{margin:0;border:0;border-radius:0;background:var(--bg2);padding:26px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere;view-transition-name:vt-code}
+.vt-code{margin:0;border:0;border-radius:0;background:var(--bg2);padding:26px;font-size:13px;white-space:pre;overflow-x:auto;overflow-wrap:normal;view-transition-name:vt-code} /* samples are laid out to fit; a very narrow phone scrolls the box instead of breaking lines mid-token */
 .vt-flip{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:999px;background:var(--acc);color:var(--on-acc);font:600 15px/1 var(--text)}
 .vt-flip .arr{display:inline-block}[dir=ltr] .vt-flip .arr{transform:scaleX(-1)} /* points forward in either language */
 .vt-note{color:var(--mute);font-size:14px;margin:14px 0 0}
@@ -531,7 +534,7 @@ footer .wrap{align-items:center}
 .cmd .copy.done{background:var(--ok);border-color:var(--ok);color:var(--on-acc)}
 .flinks{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
 .flinks a:hover{color:var(--ink)}
-.hstep .k [lang=ar],.pv-meter small [lang=ar]{font-family:var(--text);letter-spacing:0;text-transform:none;font-size:13px}
+.hstep .k [lang=ar],.pv-meter small [lang=ar],.vt-state [lang=ar],.pv-state [lang=ar]{font-family:var(--text);letter-spacing:0;text-transform:none;font-size:13px}
 @media (pointer:coarse){.ico{width:40px;height:40px}.cmd .copy{padding:13px 16px}.flinks a{display:inline-block;padding:10px 4px;min-width:28px;text-align:center}} /* footer links: the X link was a 9×21px target */
 @media (max-width:640px){
   .cta .cmd{width:100%;padding:6px 6px 6px 12px}
@@ -618,7 +621,7 @@ footer .wrap{align-items:center}
             <div class="rj-meter" aria-hidden="true"><div><small><span lang="ar">حروف منفصلة</span><span lang="en">isolated forms</span></small><b id="rj-n"></b></div><div><small><span lang="ar">الهدف</span><span lang="en">target</span></small><b data-n="0"></b></div></div>
           </div>
           <div class="rj-box keep" id="rj-box" lang="ar" dir="rtl">
-            <p class="sr-only"><span lang="ar">إذا قسّمت «الحكايات» حرفاً حرفاً، تظهر حروفها مقطّعة ومقلوبة، ومع حركة تعود كلمة واحدة متصلة.</span><span lang="en">«الحكايات» split letter by letter shows isolated, reversed letters; after Harakah it is one joined word again.</span></p>
+            <p class="sr-only"><span lang="ar">إذا قسّمت «الحكايات» حرفاً حرفاً، تظهر حروفها مقطّعة ومقلوبة، ومع حركة تعود كلمة واحدة متصلة.</span><span lang="en">«<bdi>الحكايات</bdi>» split letter by letter shows isolated, reversed letters; after Harakah it is one joined word again.</span></p>
             <div class="rj-m rj-mb" aria-hidden="true"></div><div class="rj-m rj-mj" aria-hidden="true"></div>
             <div class="rj-pcs" aria-hidden="true"></div>
             <div class="rj-final" aria-hidden="true">الحكايات</div>
@@ -656,7 +659,7 @@ footer .wrap{align-items:center}
       <div class="hsteps">
         <div class="hstep" data-step="0"><span class="k"><span data-n="1" data-pad="2"></span> · <span lang="ar">فحص</span><span lang="en">DETECT</span></span><h3><span lang="ar">تفحص</span><span lang="en">Detect</span></h3><p lang="ar">قواعد تغطي تقسيم الحروف والاتجاه والأرقام والخطوط والتشكيل، وتتبّع النص العربي حتى لو انتقل بين المكوّنات عبر الـ<bdi dir="ltr">props</bdi>.</p><p lang="en">Rules for splitting, direction, digits, fonts and diacritics — and it follows Arabic through component props.</p></div>
         <div class="hstep" data-step="1"><span class="k"><span data-n="2" data-pad="2"></span> · <span lang="ar">إصلاح</span><span lang="en">FIX</span></span><h3><span lang="ar">تصلّح</span><span lang="en">Fix</span></h3><p lang="ar">تعدّل الكود عبر الـ<bdi dir="ltr">AST</bdi>، فلا تلمس شيئاً غير المطلوب، وتترك تعليقاً عند كل سطر تغيّره. وإذا شغّلتها مرة ثانية، لا تضيف أي تعديل جديد.</p><p lang="en">Edits go through the AST, touch nothing else, and leave a comment on every line they change. Safe to re-run: a second pass changes nothing.</p></div>
-        <div class="hstep" data-step="2"><span class="k"><span data-n="3" data-pad="2"></span> · <span lang="ar">تأكيد</span><span lang="en">PROVE</span></span><h3><span lang="ar">تتأكد</span><span lang="en">Prove</span></h3><p lang="ar">ترندر كل مشهد قبل الإصلاح وبعده، وتعدّ الأجزاء المنفصلة في «السلام عليكم» وتقارنها بالنص الصحيح: <span data-n="12"></span> قبل، و<span data-n="6"></span> بعد، والمرجع <span data-n="6"></span>.</p><p lang="en">It renders every scene before and after and counts the separate shapes in «السلام عليكم» against the correctly joined text: 12 before, 6 after, reference 6.</p></div>
+        <div class="hstep" data-step="2"><span class="k"><span data-n="3" data-pad="2"></span> · <span lang="ar">تأكيد</span><span lang="en">PROVE</span></span><h3><span lang="ar">تتأكد</span><span lang="en">Prove</span></h3><p lang="ar">ترندر كل مشهد قبل الإصلاح وبعده، وتعدّ الأجزاء المنفصلة في «السلام عليكم»: <span data-n="12"></span> قبل الإصلاح، و<span data-n="6"></span> بعده، وهو نفس عددها في النص الصحيح.</p><p lang="en">It renders every scene before and after and counts the separate pieces in «<bdi>السلام عليكم</bdi>»: 12 before, 6 after, the same as the correctly joined text.</p></div>
       </div>
       <div class="hstick">
         <div class="term" role="img" aria-label="Terminal: harakah-fix check, fix and compare on fixtures/remotion">
@@ -665,8 +668,7 @@ footer .wrap{align-items:center}
         </div>
         <div class="pv" aria-hidden="true">
           <div class="pv-word keep broken" id="pv-word" lang="ar" dir="rtl"></div>
-          <div class="pv-meter"><div><small><span lang="ar">قبل</span><span lang="en">before</span></small><b class="bad" data-n="12"></b><em><span data-n="778"></span>px</em></div><div><small><span lang="ar">بعد</span><span lang="en">after</span></small><b class="good" id="pv-after">–</b><em id="pv-after-w">&nbsp;</em></div><div><small><span lang="ar">المرجع</span><span lang="en">reference</span></small><b data-n="6"></b><em><span data-n="542"></span>px</em></div></div>
-          <p class="pv-key"><span lang="ar">الرقم الكبير: عدد القطع المنفصلة في الرندر، وكلما قلّ كانت الحروف متصلة. تحته: عرض الجملة.</span><span lang="en">Big number: separate pieces in the render (fewer = joined). Below it: the phrase's width.</span></p>
+          <div class="pv-meter"><p class="pv-cap"><span lang="ar">الأجزاء المنفصلة في الرندر</span><span lang="en">Separate pieces in the render</span><span class="pv-state bad" id="pv-state"><span lang="ar">مقطّعة</span><span lang="en">split</span> ✗</span></p><div><small><span lang="ar">قبل</span><span lang="en">before</span></small><b class="bad" data-n="12"></b></div><div><small><span lang="ar">بعد</span><span lang="en">after</span></small><b class="good wait" id="pv-after">–</b></div><div><small><span lang="ar">الهدف</span><span lang="en">target</span></small><b data-n="6"></b></div></div>
         </div>
       </div>
     </div>
@@ -820,6 +822,9 @@ const mobile = () => matchMedia("(max-width:640px)").matches;
 // quote to the next across lines and flipped whole lines of the HyperFrames sample.)
 const AR_RUN = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+(?:[ \u00A0]+[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]+)*/g;
 const isoAr = (html) => html.replace(AR_RUN, '<bdi dir="rtl">$&</bdi>');
+// state chip (demo stage, proof card): the word in the page's language, the mark outside it in the chip's own font (an
+// Arabic text font draws ✓ like a ٧)
+const chip = (ok) => (ok ? '<span lang="ar">متّصلة</span><span lang="en">joined</span> ✓' : '<span lang="ar">مقطّعة</span><span lang="en">split</span> ✗');
 
 /* ---------- digits: Eastern ١٢٣ with Arabic separators (٬ ٫) by default in Arabic ---------- */
 const nf = (opts = {}) => {
@@ -1096,7 +1101,7 @@ addEventListener("resize", () => requestAnimationFrame(runScroll));
 
 /* ---------- how it works: sticky terminal streams the real harakah-fix output ---------- */
 (() => {
-  const out = $("#term"), pw = $("#pv-word"), after = $("#pv-after"), afterW = $("#pv-after-w");
+  const out = $("#term"), pw = $("#pv-word"), after = $("#pv-after"), pvState = $("#pv-state");
   const PHRASE = "السلام عليكم";
   const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
   const T = window.HZ_TERM; // [[class, text], …] per step, verbatim from data/*.txt
@@ -1105,12 +1110,14 @@ addEventListener("resize", () => requestAnimationFrame(runScroll));
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const line = ([c, t]) => (c ? `<span class="${c}">${isoAr(esc(t))}</span>` : isoAr(esc(t)));
   function preview(fixed) {
+    pvState.className = "pv-state " + (fixed ? "ok" : "bad");
+    pvState.innerHTML = chip(fixed);
     if (fixed) { pw.className = "pv-word keep fixed"; pw.innerHTML = PHRASE.split(" ").map((w) => HZ.splitArabic(w).map((c, i) => `<span style="--i:${i}">${c}</span>`).join("")).join(" "); }
     else { pw.className = "pv-word keep broken"; pw.innerHTML = HZ.graphemes(PHRASE).map((c) => `<span>${c === " " ? "&nbsp;" : c}</span>`).join(""); }
   }
   function meter(done) {
     if (done) after.dataset.n = "6"; else delete after.dataset.n; after.textContent = done ? fmt(6) : "–";
-    afterW.innerHTML = done ? `<span data-n="542">${fmt(542)}</span>px` : "&nbsp;";
+    after.classList.toggle("wait", !done); // a muted dash until the compare step has run, never a green minus
   }
   // each step clears the screen and shows that command's real output (like running it fresh)
   async function show(i) {
@@ -1143,12 +1150,13 @@ addEventListener("resize", () => requestAnimationFrame(runScroll));
 /* ---------- remotion: view-transition tabs ---------- */
 (() => {
   const WORD = "الحكايات", REMOTION_TITLE = "سنة من الحكايات"; // the Remotion tab shows real renders of fixtures/remotion YearInReview
-  const SHIM = '\n\n<span class="c">// + harakah-fix fix --write injects its runtime shim:</span>\n<span class="a">&lt;script&gt;/* ZWJ-pads each letter box, keeps لا */&lt;/script&gt;</span>\n<span class="c">// same elements, same timeline</span>';
+  // samples are laid out to fit a phone: ≤38 columns, so nothing wraps from 360px up (scripts/qa-visual.mjs checks it)
+  const SHIM = '\n\n<span class="c">// harakah-fix fix --write adds\n// one runtime shim:</span>\n<span class="a">&lt;script&gt;\n  /* ZWJ-pads letters, keeps لا */\n&lt;/script&gt;</span>\n<span class="c">// same elements, same timeline</span>';
   const TOOLS = {
-    HTML: { bad: '<span class="c">// before</span>\n<span class="k">const</span> text = "الحكايات";\nel.innerHTML = [...text]\n  .map((ch) =&gt; `&lt;span class="ch"&gt;${ch}&lt;/span&gt;`)\n  .join("")', good: '<span class="c">// after: your code is unchanged</span>\n<span class="k">const</span> text = "الحكايات";\nel.innerHTML = [...text]\n  .map((ch) =&gt; `&lt;span class="ch"&gt;${ch}&lt;/span&gt;`)\n  .join("")' + SHIM },
-    GSAP: { bad: '<span class="c">// before\n// page: &lt;h1 id="title"&gt;الحكايات&lt;/h1&gt;</span>\n<span class="k">const</span> split = <span class="d">SplitText.create</span>("#title",\n  { type: "words,chars" });\ngsap.from(split.chars, { y: 80, stagger: 0.04 });', good: '<span class="c">// after: your code is unchanged\n// page: &lt;h1 id="title"&gt;الحكايات&lt;/h1&gt;</span>\n<span class="k">const</span> split = SplitText.create("#title",\n  { type: "words,chars" });\ngsap.from(split.chars, { y: 80, stagger: 0.04 });' + SHIM + '\n\n<span class="c">// compare: "الحكايات" ink pieces 11 → 8 (reference 8) ✓</span>' },
-    HyperFrames: { bad: '<span class="c">&lt;!-- before --&gt;</span>\n&lt;div id="root" dir="rtl" data-composition-id="main"&gt;\n  &lt;h1 id="title"&gt;الحكايات&lt;/h1&gt;\n&lt;/div&gt;\n&lt;script&gt;\n  tl.from(<span class="d">split.chars</span>, …);\n  window.__timelines["main"] = tl;\n&lt;/script&gt;', good: '<span class="c">&lt;!-- after: same composition --&gt;</span>\n&lt;div id="root" dir="rtl" data-composition-id="main"&gt;\n  &lt;h1 id="title"&gt;الحكايات&lt;/h1&gt;\n&lt;/div&gt;\n&lt;script&gt;\n  tl.from(split.chars, …);\n  window.__timelines["main"] = tl;\n&lt;/script&gt;' + SHIM },
-    Remotion: { bad: '<span class="c">// before · YearInReview.tsx</span>\n<span class="k">const</span> title = "سنة من الحكايات";\n{title.<span class="d">split("")</span>.map((ch, i) =&gt; {\n  <span class="k">const</span> s = spring({ frame: frame - 24 - i * 2, fps });', good: '<span class="c">// after · harakah-fix codemod (real diff)</span>\n<span class="k">import</span> { formatDigits, splitArabic, withArabicSeparators } <span class="k">from</span> "../harakah-arabic";\n<span class="k">const</span> title = "سنة من الحكايات";\n{<span class="c">/* harakah: was title.split("") */</span> <span class="a">splitArabic(title)</span>.map((ch, i) =&gt; {\n  <span class="k">const</span> s = spring({ frame: frame - 24 - i * 2, fps });\n\n<span class="c">// or the component:</span>\n&lt;ArabicText text="سنة من الحكايات" preset="rise" stagger={2} /&gt;' },
+    HTML: { bad: '<span class="c">// before</span>\n<span class="k">const</span> text = "الحكايات";\nel.innerHTML = [...text]\n  .map((ch) =&gt; `&lt;span&gt;${ch}&lt;/span&gt;`)\n  .join("");', good: '<span class="c">// after: your code is unchanged</span>\n<span class="k">const</span> text = "الحكايات";\nel.innerHTML = [...text]\n  .map((ch) =&gt; `&lt;span&gt;${ch}&lt;/span&gt;`)\n  .join("");' + SHIM },
+    GSAP: { bad: '<span class="c">// before\n// page: &lt;h1 id="title"&gt;الحكايات&lt;/h1&gt;</span>\n<span class="k">const</span> split = <span class="d">SplitText.create</span>(\n  "#title", { type: "words,chars" });\ngsap.from(split.chars, {\n  y: 80, stagger: 0.04,\n});', good: '<span class="c">// after: your code is unchanged\n// page: &lt;h1 id="title"&gt;الحكايات&lt;/h1&gt;</span>\n<span class="k">const</span> split = SplitText.create(\n  "#title", { type: "words,chars" });\ngsap.from(split.chars, {\n  y: 80, stagger: 0.04,\n});' + SHIM + '\n\n<span class="c">// harakah-fix compare, "الحكايات":\n// ink pieces 11 → 8 (reference 8) ✓</span>' },
+    HyperFrames: { bad: '<span class="c">&lt;!-- before --&gt;</span>\n&lt;div id="root" dir="rtl"\n     data-composition-id="main"&gt;\n  &lt;h1 id="title"&gt;الحكايات&lt;/h1&gt;\n&lt;/div&gt;\n&lt;script&gt;\n  tl.from(<span class="d">split.chars</span>, …);\n  window.__timelines["main"] = tl;\n&lt;/script&gt;', good: '<span class="c">&lt;!-- after: same composition --&gt;</span>\n&lt;div id="root" dir="rtl"\n     data-composition-id="main"&gt;\n  &lt;h1 id="title"&gt;الحكايات&lt;/h1&gt;\n&lt;/div&gt;\n&lt;script&gt;\n  tl.from(split.chars, …);\n  window.__timelines["main"] = tl;\n&lt;/script&gt;' + SHIM },
+    Remotion: { bad: '<span class="c">// before · YearInReview.tsx</span>\n<span class="k">const</span> title = "سنة من الحكايات";\n{title.<span class="d">split("")</span>.map((ch, i) =&gt; {\n  <span class="k">const</span> s = spring({\n    frame: frame - 24 - i * 2, fps,\n  });\n  …\n})}', good: '<span class="c">// after · harakah-fix codemod</span>\n<span class="k">import</span> {\n  formatDigits, splitArabic,\n  withArabicSeparators,\n} <span class="k">from</span> "../harakah-arabic";\n<span class="k">const</span> title = "سنة من الحكايات";\n{<span class="c">/* harakah: was title.split("") */</span>\n <span class="a">splitArabic(title)</span>.map((ch, i) =&gt; {\n  <span class="k">const</span> s = spring({\n    frame: frame - 24 - i * 2, fps,\n  });\n  …\n})}\n\n<span class="c">// or the component:</span>\n&lt;ArabicText text="سنة من الحكايات"\n  preset="rise" stagger={2} /&gt;' },
   };
   const names = Object.keys(TOOLS);
   let tool = "Remotion", fixed = false;
@@ -1167,7 +1175,7 @@ addEventListener("resize", () => requestAnimationFrame(runScroll));
       const parts = fixed ? HZ.splitArabic(WORD) : HZ.graphemes(WORD);
       view.innerHTML = `<div class="vt-word keep ${fixed ? "fixed" : "broken"}" lang="ar" dir="rtl" role="img" aria-label="${fixed ? `${WORD} · joined` : `${WORD} · split into isolated letters`}">${parts.map((c) => `<span aria-hidden="true">${c}</span>`).join("")}</div>`;
     }
-    state.className = "vt-state " + (fixed ? "ok" : "bad"); state.textContent = fixed ? "joined ✓" : "split ✗";
+    state.className = "vt-state " + (fixed ? "ok" : "bad"); state.innerHTML = chip(fixed);
     flip.setAttribute("aria-pressed", String(fixed));
     $("[lang=ar]", flip).textContent = fixed ? "اعرض الخطأ" : "أصلح الكلمة";
     $("[lang=en]", flip).textContent = fixed ? "Show the bug" : "Fix the word";

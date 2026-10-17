@@ -118,13 +118,16 @@
 .pv-word.fixed{color:var(--acc)}
 .pv-word.fixed span{animation:rise .6s var(--ease) both;animation-delay:calc(var(--i)*40ms)}
 @keyframes rise{from{opacity:0;transform:translateY(.3em)}}
-.pv-meter{display:flex;gap:28px;border-top:1px solid var(--line);padding-top:12px} /* reads in the page's direction: قبل first on the right in Arabic */
-.pv-meter div{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+/* three equal columns in the page's direction (قبل on the right in Arabic) under one caption that says what they count */
+.pv-meter{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 16px;border-top:1px solid var(--line);padding-top:14px}
+.pv-cap{grid-column:1/-1;margin:0;display:flex;justify-content:space-between;align-items:center;gap:12px;font:500 12px/1.4 var(--mono);color:var(--mute)}
+.pv-cap [lang=ar]{font:500 14px/1.4 var(--text)}
+.pv-state{flex:0 0 auto;font:500 11.5px/1 var(--mono);padding:6px 9px;border-radius:99px;border:1px solid currentColor}
+.pv-state.bad{color:var(--err)}.pv-state.ok{color:var(--ok)}
+.pv-meter div{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
 .pv-meter small{font:500 10.5px/1 var(--mono);color:var(--mute);letter-spacing:.08em;text-transform:uppercase}
 .pv-meter b{font:700 34px/1 var(--display);font-variant-numeric:tabular-nums}
-.pv-meter em{font:500 11px/1 var(--mono);font-style:normal;color:var(--mute);direction:ltr;unicode-bidi:isolate}
-.pv-meter .bad{color:var(--err)}.pv-meter .good{color:var(--ok)}
-.pv-key{margin:-4px 0 0;font:400 12px/1.6 var(--text);color:var(--faint)}
+.pv-meter .bad{color:var(--err)}.pv-meter .good{color:var(--ok)}.pv-meter .good.wait{color:var(--faint)}
 
 /* remotion: view-transition tabs */
 .vt-top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap}
@@ -140,9 +143,9 @@
 .vt-word.broken{display:flex;direction:ltr;gap:.05em;color:var(--mute)}
 .vt-word.fixed{color:var(--acc)}
 .vt-img{width:100%;height:auto;border-radius:14px;border:1px solid var(--line);display:block;view-transition-name:vt-word}
-.vt-state{position:absolute;top:18px;inset-inline-start:20px;direction:ltr;font:500 12px/1 var(--mono);padding:7px 10px;border-radius:99px;border:1px solid currentColor;view-transition-name:vt-state}
+.vt-state{position:absolute;top:18px;inset-inline-start:20px;font:500 12px/1 var(--mono);padding:7px 10px;border-radius:99px;border:1px solid currentColor;view-transition-name:vt-state}
 .vt-state.bad{color:var(--err)}.vt-state.ok{color:var(--ok)}
-.vt-code{margin:0;border:0;border-radius:0;background:var(--bg2);padding:26px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere;view-transition-name:vt-code}
+.vt-code{margin:0;border:0;border-radius:0;background:var(--bg2);padding:26px;font-size:13px;white-space:pre;overflow-x:auto;overflow-wrap:normal;view-transition-name:vt-code} /* samples are laid out to fit; a very narrow phone scrolls the box instead of breaking lines mid-token */
 .vt-flip{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:999px;background:var(--acc);color:var(--on-acc);font:600 15px/1 var(--text)}
 .vt-flip .arr{display:inline-block}[dir=ltr] .vt-flip .arr{transform:scaleX(-1)} /* points forward in either language */
 .vt-note{color:var(--mute);font-size:14px;margin:14px 0 0}
@@ -265,7 +268,7 @@ footer .wrap{align-items:center}
 .cmd .copy.done{background:var(--ok);border-color:var(--ok);color:var(--on-acc)}
 .flinks{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
 .flinks a:hover{color:var(--ink)}
-.hstep .k [lang=ar],.pv-meter small [lang=ar]{font-family:var(--text);letter-spacing:0;text-transform:none;font-size:13px}
+.hstep .k [lang=ar],.pv-meter small [lang=ar],.vt-state [lang=ar],.pv-state [lang=ar]{font-family:var(--text);letter-spacing:0;text-transform:none;font-size:13px}
 @media (pointer:coarse){.ico{width:40px;height:40px}.cmd .copy{padding:13px 16px}.flinks a{display:inline-block;padding:10px 4px;min-width:28px;text-align:center}} /* footer links: the X link was a 9×21px target */
 @media (max-width:640px){
   .cta .cmd{width:100%;padding:6px 6px 6px 12px}
