@@ -401,7 +401,7 @@ function checkLayoutOrder(ctx: Ctx, arTexts: Text[], majority: (b: Element) => b
       apply = () => { r.attribs.style = setInline(r.attribs.style, "flex-direction", "row"); };
     } else if (dir !== "rtl" && rev) {
       sev = "info";
-      msg = { en: `Row of Arabic items ${label} fakes RTL with direction: ltr + row-reverse. It looks right, but keyboard/screen-reader order is reversed and it breaks when the page direction changes. Fix: dir="rtl" + flex-direction: row.`, ar: `صف عناصر عربية ${label} يحاكي الاتجاه من اليمين بـ ltr مع row-reverse: الشكل صحيح لكن ترتيب لوحة المفاتيح وقارئ الشاشة معكوس. الإصلاح: dir="rtl" مع flex-direction: row.` };
+      msg = { en: `Row of Arabic items ${label} fakes RTL with direction: ltr + row-reverse. It looks right, but keyboard/screen-reader order is reversed and it breaks when the page direction changes. Fix: dir="rtl" + flex-direction: row.`, ar: `صف عناصر عربية ${label} يحاكي الاتجاه من اليمين بـ ltr مع row-reverse: الشكل يبدو صحيحاً، وترتيب لوحة المفاتيح وقارئ الشاشة معكوس. الإصلاح: dir="rtl" مع flex-direction: row.` };
       apply = () => { r.attribs.dir = "rtl"; r.attribs.style = setInline(setInline(r.attribs.style, "direction", "rtl"), "flex-direction", "row"); };
     }
     if (msg) add(ctx, "HZ22", { el: r, severity: sev, count: kids.length, message: msg, apply });
@@ -758,8 +758,8 @@ function checkText(ctx: Ctx) {
     }
     for (const [decl, g] of groups) {
       let message = msg(g.v, g.els.length, cssPath(decl));
-      if (g.rtl) message = { en: `${message.en} (This is the project's own RTL value, from \`${g.rtl}\`: softer, but still not 0.)`, ar: `${message.ar} (هذه قيمة المشروع للعربية من \`${g.rtl}\`: أخف لكنها ليست صفراً.)` };
-      else if (g.pending) message = { en: `${message.en} (The project's \`${g.pending.sel}\` sets ${g.pending.v}, but only once <html> is RTL, and nothing here makes it so.)`, ar: `${message.ar} (قاعدة المشروع \`${g.pending.sel}\` تضبطها على ${g.pending.v} لكن فقط عندما يكون <html> باتجاه rtl، ولا شيء هنا يفعل ذلك.)` };
+      if (g.rtl) message = { en: `${message.en} (This is the project's own RTL value, from \`${g.rtl}\`: softer, but still not 0.)`, ar: `${message.ar} (هذه قيمة المشروع للعربية من \`${g.rtl}\`: أخف، وما زالت أكبر من صفر.)` };
+      else if (g.pending) message = { en: `${message.en} (The project's \`${g.pending.sel}\` sets ${g.pending.v}, but only once <html> is RTL, and nothing here makes it so.)`, ar: `${message.ar} (قاعدة المشروع \`${g.pending.sel}\` تضبطها على ${g.pending.v} فقط عندما يكون <html> باتجاه rtl، ولا شيء هنا يجعله كذلك.)` };
       // a HyperFrames composition renders in Chromium 137+, which keeps Arabic letters joined under letter-spacing
       const video = code === "HZ07" && ctx.isHF;
       if (video) message = { en: `${message.en} ${VIDEO_TRACKING.en}`, ar: `${message.ar} ${VIDEO_TRACKING.ar}` };
@@ -896,7 +896,7 @@ function checkText(ctx: Ctx) {
           el: g.target, severity: remote || embedded ? "error" : "warning", count: 1,
           message: {
             en: `Thmanyah font "${f}"${remote ? " is loaded from a web URL (hosting/redistribution is prohibited by its license)" : embedded ? " is embedded as data: (embedding is prohibited)" : file ? " is loaded from a font file in the project: fine for local renders, but never commit, upload or share that file (its license prohibits redistribution)" : ""}. Use it for LOCAL renders only (src: local('Thmanyah Sans')); for hosted/cloud renders swap to an OFL font (--replace-proprietary).`,
-            ar: `خط ثمانية "${f}"${remote ? " يُحمَّل من رابط على الويب (الترخيص يمنع الاستضافة وإعادة التوزيع)" : embedded ? " مضمّن كبيانات (التضمين ممنوع)" : file ? " يُحمَّل من ملف داخل المشروع: لا بأس في الرندر المحلي، لكن لا ترفع الملف ولا تشاركه (الترخيص يمنع إعادة التوزيع)" : ""}. استخدمه في الرندر المحلي فقط؛ للرندر السحابي استبدله بخط OFL (--replace-proprietary).`,
+            ar: `خط ثمانية "${f}"${remote ? " يُحمَّل من رابط على الويب (الترخيص يمنع الاستضافة وإعادة التوزيع)" : embedded ? " مضمّن كبيانات (التضمين ممنوع)" : file ? " يُحمَّل من ملف داخل المشروع: لا بأس في الرندر المحلي، بشرط ألا ترفع الملف أو تشاركه (الترخيص يمنع إعادة التوزيع)" : ""}. استخدمه في الرندر المحلي فقط؛ للرندر السحابي استبدله بخط OFL (--replace-proprietary).`,
           },
           fixable: !!repl, apply: repl,
         });

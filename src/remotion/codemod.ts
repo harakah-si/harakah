@@ -448,7 +448,7 @@ function pass(src: string, o: Required<CodemodOptions>): { edits: Edit[]; report
           ? `Per-character split ${s.how} → splitArabic() (${kind}). These plain spans still join in Chrome's render, but the letters can come apart in other browsers (Safari previews of Remotion Studio or Player) and do as soon as a span gets a transform, inline-block or padding.`
           : `Per-character split ${s.how} → splitArabic() (${kind}).`,
         plain
-          ? `تقسيم الحروف ${s.how} ← splitArabic() (${kindAr}). الحروف هنا متصلة في رندر Chrome، لكنها قد تظهر مقطّعة في متصفحات أخرى (مثل معاينة Safari في Remotion Studio أو Player)، وتتقطّع فعلاً بمجرد أن تضيف transform أو inline-block أو padding للحرف.`
+          ? `تقسيم الحروف ${s.how} ← splitArabic() (${kindAr}). الحروف هنا متصلة في رندر Chrome، وقد تظهر مقطّعة في متصفحات أخرى (مثل معاينة Safari في Remotion Studio أو Player)، وتتقطّع فعلاً بمجرد أن تضيف transform أو inline-block أو padding للحرف.`
           : `تقسيم الحروف ${s.how} ← splitArabic() (${kindAr}).`)) continue;
       if (plain) edits[edits.length - 1].change!.severity = "warning";
       needHelper.add("splitArabic");

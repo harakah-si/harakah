@@ -89,9 +89,9 @@ export async function doctor(o: { cwd?: string } = {}): Promise<DoctorCheck[]> {
       const joins = s.joined < s.split;
       out.push(joins
         ? { id: "chrome", ok: true, required: true, en: `Chrome starts and joins Arabic (${s.version}; «سلام عليكم»: ${s.joined} ink pieces joined vs ${s.split} split) · ${CHROME}`, ar: `كروم يعمل ويربط الحروف العربية (قطع الحبر في «سلام عليكم»: ${ar(s.joined)} متصلة مقابل ${ar(s.split)} منفصلة)` }
-        : { id: "chrome", ok: false, required: true, en: `Chrome starts but doesn't join Arabic letters (${s.joined} pieces joined vs ${s.split} split): renders would be wrong · ${CHROME}`, ar: `كروم يعمل لكنه لا يربط الحروف العربية (قطع الحبر: ${ar(s.joined)} متصلة مقابل ${ar(s.split)} منفصلة)، فسيظهر الرندر مكسوراً`, fix: "Use a current Google Chrome or Chromium build (HARAKAH_CHROME=…); a stripped build without HarfBuzz shaping can't render Arabic." });
+        : { id: "chrome", ok: false, required: true, en: `Chrome starts but doesn't join Arabic letters (${s.joined} pieces joined vs ${s.split} split): renders would be wrong · ${CHROME}`, ar: `كروم يعمل، ولا يربط الحروف العربية (قطع الحبر: ${ar(s.joined)} متصلة مقابل ${ar(s.split)} منفصلة)، فسيظهر الرندر مكسوراً`, fix: "Use a current Google Chrome or Chromium build (HARAKAH_CHROME=…); a stripped build without HarfBuzz shaping can't render Arabic." });
     } catch (e: any) {
-      out.push({ id: "chrome", ok: false, required: true, en: `Chrome found but failed to start (${source}: ${CHROME}): ${String(e?.message ?? e).split("\n")[0]}`, ar: "كروم موجود لكنه لم يبدأ", fix: `${chromeFix} On Linux servers, install Chrome's system libraries (e.g. \`npx puppeteer browsers install chrome --install-deps\`).` });
+      out.push({ id: "chrome", ok: false, required: true, en: `Chrome found but failed to start (${source}: ${CHROME}): ${String(e?.message ?? e).split("\n")[0]}`, ar: "كروم موجود، وفشل تشغيله", fix: `${chromeFix} On Linux servers, install Chrome's system libraries (e.g. \`npx puppeteer browsers install chrome --install-deps\`).` });
     }
   }
   const mode = remotionChromeMode(CHROME);
