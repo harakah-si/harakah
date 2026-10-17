@@ -2,6 +2,10 @@
 
 Released to npm as [`harakah-fixer`](https://www.npmjs.com/package/harakah-fixer). Full options and behaviour: [docs/REFERENCE.md](docs/REFERENCE.md).
 
+## Unreleased
+
+- **One-line per-letter maps in JSX are flagged and fixed.** `text.split("").map((ch) => <span>{ch}</span>)` (also `split('')`, `[...text]`, `Array.from(text)`) went unflagged when the spans had no transform, because plain inline spans still join in Chrome's render. They are now rewritten to `splitArabic()` as a warning: other browsers' previews can shape each span alone, and the first transform, inline-block or padding breaks the word in Chrome too.
+
 ## v0.4.2 · 2026-10-15
 
 - **Claude Code render gate checks the right folder** when the `cd` path is single-quoted, or when options come before the HyperFrames folder (`hyperframes render --out ./dist ./scenes`). Before, it could check the wrong folder and let a broken render through.

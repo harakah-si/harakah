@@ -81,7 +81,7 @@ export function fontsLoadedIn(text: string): string[] {
   return [...out];
 }
 
-export interface Change { code: string; line: number; en: string; ar: string }
+export interface Change { code: string; line: number; en: string; ar: string; /** overrides the rule's severity (plain inline letter spans: a warning) */ severity?: "error" | "warning" | "info" }
 export interface CodemodResult {
   code: string;
   changed: boolean;
@@ -358,7 +358,9 @@ function pass(src: string, o: Required<CodemodOptions>): { edits: Edit[]; report
     });
   };
   // .map((c) => <span style={{ opacity }}>{c}</span>) in a block container: plain inline boxes keep Chrome's shaping
-  // across the span boundaries (measured: same width as running text), so the letters still join
+  // across the span boundaries (measured: same width as running text), so the letters join in the render. Still
+  // fixed, as a warning: other browsers (Safari previews of Studio / Player) may shape each span alone, and the first transform,
+  // inline-block or padding added to the span breaks the word in Chrome too. splitArabic() renders the same in Chrome.
   const INLINE_TAGS = /^(span|b|i|em|strong|small|mark|u|s|sup|sub)$/;
   const SAFE_STYLE = /^(opacity|color|textShadow|background|backgroundColor|WebkitTextFillColor|textDecoration|textDecorationColor)$/;
   const plainInlineMap = (splitNode: Node) => {
@@ -420,7 +422,7 @@ function pass(src: string, o: Required<CodemodOptions>): { edits: Edit[]; report
     if (notText(s.target) || numericString(s.target) || rejoined(s.node)) continue;
     const ct = constText(s.target);
     if (ct !== undefined && !hasArabicLetter(ct)) continue; // digits/punctuation only: nothing to join
-    if (plainInlineMap(s.node)) continue;
+    const plain = plainInlineMap(s.node);
     if (arabicGuarded(s.node)) continue;
     let stringy = Node.isStringLiteral(s.target) || Node.isNoSubstitutionTemplateLiteral(s.target) || Node.isTemplateExpression(s.target) || (hasI18n && i18nAr(s.target).length > 0);
     let unknown = false;
@@ -439,11 +441,18 @@ function pass(src: string, o: Required<CodemodOptions>): { edits: Edit[]; report
     })();
     if (stringy || (unknown && (consumedByMap || assignedThenMapped) && /text|title|label|word|str|line|caption|headline|name|heading|copy|kicker/i.test(s.target.getText()))) {
       const arg = s.target.getText() + (o.split === "word" ? `, "word"` : "");
+      const kind = o.split === "word" ? "per-word" : "ZWJ-padded graphemes, لا kept, diacritics attached";
+      const kindAr = o.split === "word" ? "كلمة كلمة" : "حروف متصلة بواصل صفري مع «لا» والتشكيل";
       if (!edit(s.node, `/* harakah: was ${short(s.node.getText().replace(/\*\//g, ""), 30)} */ splitArabic(${arg})`, "HZ02",
-        `Per-character split ${s.how} → splitArabic() (${o.split === "word" ? "per-word" : "ZWJ-padded graphemes, لا kept, diacritics attached"}).`,
-        `تقسيم الحروف ${s.how} ← splitArabic() (${o.split === "word" ? "كلمة كلمة" : "حروف متصلة بواصل صفري مع «لا» والتشكيل"}).`)) continue;
+        plain
+          ? `Per-character split ${s.how} → splitArabic() (${kind}). These plain spans still join in Chrome's render, but the letters can come apart in other browsers (Safari previews of Remotion Studio or Player) and do as soon as a span gets a transform, inline-block or padding.`
+          : `Per-character split ${s.how} → splitArabic() (${kind}).`,
+        plain
+          ? `تقسيم الحروف ${s.how} ← splitArabic() (${kindAr}). الحروف هنا متصلة في رندر Chrome، لكنها قد تظهر مقطّعة في متصفحات أخرى (مثل معاينة Safari في Remotion Studio أو Player)، وتتقطّع فعلاً بمجرد أن تضيف transform أو inline-block أو padding للحرف.`
+          : `تقسيم الحروف ${s.how} ← splitArabic() (${kindAr}).`)) continue;
+      if (plain) edits[edits.length - 1].change!.severity = "warning";
       needHelper.add("splitArabic");
-      if (o.split !== "word") {
+      if (o.split !== "word" && !plain) {
         const host = s.node.getFirstAncestor((a) => Node.isJsxElement(a));
         const open = host && Node.isJsxElement(host) ? host.getOpeningElement().getText() : "";
         if (host && !/display\s*:\s*["'`](inline-)?flex|whiteSpace\s*:\s*["'`]nowrap|flex|nowrap/.test(open) && !(o.wrapWords && (consumedByMap || assignedThenMapped))) {
@@ -1272,7 +1281,7 @@ export function transformSource(src: string, options: CodemodOptions = {}): Code
 export function toIssues(r: CodemodResult, fixedNow: boolean): Issue[] {
   const mk = (c: Change, fixable: boolean): Issue => {
     const meta = RULES[c.code];
-    let severity: Issue["severity"] = fixable ? meta.severity : meta.severity === "error" ? "warning" : meta.severity;
+    let severity: Issue["severity"] = c.severity ?? (fixable ? meta.severity : meta.severity === "error" ? "warning" : meta.severity);
     let message = { en: c.en, ar: c.ar };
     // Chromium 137+ (Remotion's renderer) ignores letter-spacing between Arabic letters: joins hold in the video
     if (c.code === "HZ07" && r.video !== false) { severity = "info"; message = { en: `${c.en} ${VIDEO_TRACKING.en}`, ar: `${c.ar} ${VIDEO_TRACKING.ar}` }; }

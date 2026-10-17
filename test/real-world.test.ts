@@ -40,9 +40,13 @@ test("real-world: non-text splits are not per-letter Arabic splits", () => {
   }
 });
 
-test("real-world: opacity/color-only letter spans inside a plain block are left alone (they shape-join in Chrome)", () => {
+test("real-world: opacity/color-only letter spans inside a plain block are fixed as a warning (they join in Chrome, not everywhere)", () => {
   const plain = T(H + `export const A = ({ f }: { f: number }) => <AbsoluteFill dir="rtl" lang="ar"><p>{"مرحبا".split("").map((c, i) => <span key={i} style={{ opacity: f > i ? 1 : 0.2 }}>{c}</span>)}</p></AbsoluteFill>;`);
-  assert.ok(!codes(plain).includes("HZ02"), plain.code);
+  const hz02 = plain.changes.filter((c) => c.code === "HZ02");
+  assert.equal(hz02.length, 1, plain.code);
+  assert.equal(hz02[0].severity, "warning", "joins in Chrome's render today: a warning, not an error");
+  assert.match(plain.code, /splitArabic\("مرحبا"\)\.map/);
+  assert.ok(!plain.reports.some((r) => r.code === "HZ02"), "plain inline spans add no line-break opportunities: no wrap note");
   const boxed = T(H + `export const A = ({ f }: { f: number }) => <AbsoluteFill dir="rtl" lang="ar"><p>{"مرحبا".split("").map((c, i) => <span key={i} style={{ display: "inline-block", opacity: f }}>{c}</span>)}</p></AbsoluteFill>;`);
   assert.ok(codes(boxed).includes("HZ02"), "inline-block per-letter boxes still break joining");
   const flexHost = T(H + `export const A = ({ f }: { f: number }) => <AbsoluteFill dir="rtl" lang="ar"><div style={{ display: "flex" }}>{"مرحبا".split("").map((c, i) => <span key={i} style={{ opacity: f }}>{c}</span>)}</div></AbsoluteFill>;`);
@@ -206,4 +210,30 @@ test("CSS custom properties: var() resolves through :root and ancestors, with fa
   const r = fix(html);
   assert.match(r.html, /<p class="kicker" lang="en" dir="ltr">LATIN<\/p>/, "Latin use of the same tokens untouched");
   assert.deepEqual(r.remaining.filter((i) => ["HZ06", "HZ07", "HZ08", "HZ17"].includes(i.code)), []);
+});
+
+// harakah.si review: the one-line `text.split("").map(ch => <span>{ch}</span>)` in JSX (the pattern the site and the
+// launch video show) went unflagged when the spans had no transform. Every spelling, in children and in a prop.
+test("real-world: one-line per-letter maps in JSX are flagged and fixed (split(\"\"), split(''), [...text], Array.from)", async () => {
+  const { toIssues } = await import("../src/remotion/codemod.ts");
+  const HR = H.replace('{ AbsoluteFill }', '{ AbsoluteFill, useCurrentFrame }');
+  const splits = ['text.split("")', "text.split('')", "[...text]", "Array.from(text)"];
+  const spans = { plain: "<span key={i}>{ch}</span>", opacity: "<span key={i} style={{ opacity: f > i ? 1 : 0.3 }}>{ch}</span>", boxed: '<span key={i} style={{ display: "inline-block", opacity: f }}>{ch}</span>' };
+  for (const sp of splits) for (const [kind, span] of Object.entries(spans)) {
+    const children = HR + `export const Title = ({ text = "الحكايات" }: { text?: string }) => { const f = useCurrentFrame(); return <AbsoluteFill><h1 style={{ fontSize: 120 }}>{${sp}.map((ch, i) => ${span})}</h1></AbsoluteFill>; };`;
+    const prop = HR + `const Row = ({ items }: { items: React.ReactNode[] }) => <h1>{items}</h1>;\nexport const Title = ({ text = "الحكايات" }: { text?: string }) => { const f = useCurrentFrame(); return <AbsoluteFill dir="rtl" lang="ar"><Row items={${sp}.map((ch, i) => ${span})} /></AbsoluteFill>; };`;
+    for (const [where, src] of [["children", children], ["prop", prop]]) {
+      const r = T(src);
+      const label = `${sp} · ${kind} · ${where}`;
+      assert.ok(r.changes.some((c) => c.code === "HZ02"), `${label}: not flagged\n${r.code}`);
+      assert.match(r.code, /splitArabic\(text\)\.map/, label);
+      assert.ok(!r.code.includes(`{${sp}.map`) && !r.code.includes(`={${sp}.map`), `${label}: split left in place`);
+      const issue = toIssues(r, false).find((i) => i.code === "HZ02")!;
+      assert.equal(issue.fixable, true, label);
+      assert.equal(issue.severity, kind === "boxed" ? "error" : (where === "children" ? "warning" : "error"), label);
+      // running the fixer again changes nothing
+      const again = T(r.code);
+      assert.equal(again.changed, false, `${label}: second pass changed the file\n${again.code}`);
+    }
+  }
 });
