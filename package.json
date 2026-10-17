@@ -1,6 +1,6 @@
 {
   "name": "harakah-fixer",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "Find and fix broken Arabic in motion graphics before you render: Remotion codemod, HyperFrames/GSAP/HTML fixer, render gate, MCP server and Claude Code plugin. كشف وإصلاح النص العربي في الموشن جرافيك.",
   "keywords": [
     "arabic",

@@ -361,6 +361,25 @@ Per-letter boxes (`inline-block`) are atomic for the bidi algorithm: they line u
 - **Letters prepended one by one** (a manual RTL "fix"): `fix` lists the containers that script writes to in `window.__harakahNoDir` (`["#outputJS"]`, or `1` when it can't tell). The shim pads those in reverse DOM order and never flips their direction; if the line around them has become RTL it pins them to `dir="ltr"` so they still read correctly. HZ15 tells the author to append in reading order instead.
 - Elements with an explicit `dir` are never changed.
 
+### The runtime shim in Safari / WebKit (any font)
+Safari, and every iOS browser, picks one font for a letter and the ZWJ that pads it. If the web font has no cmap entry for U+200D (Alexandria, IBM Plex Sans Arabic, Cairo, Tajawal, Readex Pro…), WebKit draws the padded box in a fallback font: mixed fonts and broken joins. CSS `unicode-range` and font stacks don't help. Chrome and Firefox ignore the font's cmap for ZWJ, so padding works there with any font.
+
+So in WebKit the shim (0.5+) uses the **clip method** for Arabic-only words:
+- Every letter element stays the same element (GSAP, Motion and HyperFrames timelines still target it). It becomes `inline-block` if it was inline, `position: relative`, and gets an explicit width: its slice of the word.
+- Inside it: a `visibility: hidden` strut with the letter (line height, baseline), an `aria-hidden` layer with the **whole word** as plain text, offset and `clip-path`ed to the slice, and, in the word's first letter only, one visually hidden copy of the word for screen readers.
+- Slices are measured per grapheme with `Range` on a hidden copy with the element's computed font, and tiled at the midpoints between glyphs, so at rest they recompose the word exactly. They are re-measured when fonts load and on resize (`window.__harakahRelayout()` forces it).
+- لا stays in the lam box; harakat in their own boxes (a split by code point) fold into the letter before them. Mixed Latin/Arabic groups and Latin words keep the ZWJ path.
+- `window.__harakahSplit = "clip"` forces the clip method in any browser, `"zwj"` forces padding. The default is clip in WebKit and ZWJ elsewhere, so Chromium renders (HyperFrames, Remotion) are unchanged.
+
+Known limits of the clip method:
+- `textContent` of a clipped letter includes the word copies (the accessible name is right; code that reads `textContent` sees more).
+- While letters move apart, a glyph part that overhangs its slice (a long tail, a dot or haraka over the neighbour) is shown by the neighbour's slice, so it travels with that letter.
+- Rotate and scale turn each slice about its own centre: at a joint the stroke steps, as it does with ZWJ boxes, and a straight clip edge can show a small notch. At rest there is no seam.
+- Text effects on the letter (`text-shadow`, strokes) are clipped at the slice edge.
+- `splitArabic()` in @harakah/remotion-arabic returns strings, so it can't clip: use `<ArabicText>` (it clips in Safari after mount) or a font that maps U+200D. `harakah-fix doctor` lists the project's Arabic fonts that don't.
+
+`npm run qa:shim` checks this in Chrome and WebKit with six fonts (ink overlap with plain text ≥ 0.97 at rest, and a translateY/opacity stagger); `npm run qa:player` checks `<ArabicText>` in the Remotion Player.
+
 ### Join audit (render verification)
 `compare` (and the tests) find per-letter split titles in the **live DOM** after scripts run. Each title is rendered three ways: before, after, and a plain running-text reference with the same font. For each render it counts connected ink components and measures ink width. A title counts as "joined" when the component count is within ±10% of the reference and the width is within 4%. Isolated letter forms add pieces and width.
 

@@ -1,6 +1,6 @@
 {
   "name": "@harakah/remotion-arabic",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Joining-aware Arabic text animation for Remotion: <ArabicText>, splitArabic(), formatDigits(), isolateLatin()",
   "keywords": [
     "arabic",
