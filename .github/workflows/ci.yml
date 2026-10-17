@@ -62,6 +62,10 @@ jobs:
         run: npx playwright-core install --with-deps webkit
       - name: Site visual guards
         run: npm run qa:visual
+      # the runtime shim in Chrome and WebKit with six bundled Arabic fonts (four lack U+200D): ink overlap with plain
+      # text at rest and mid-stagger (scripts/qa-shim.mjs)
+      - name: Runtime shim ink matrix
+        run: npm run qa:shim
 
       - name: Upload compare artifacts on failure
         if: failure()
