@@ -22,10 +22,19 @@ test("static site: landing ar + en, absolute OG with SITE_ORIGIN, /tool/ page, O
   assert.match(ar, /<meta property="og:image" content="https:\/\/harakah\.example\/assets\/og-ar\.png">/);
   assert.match(en, /<link rel="canonical" href="https:\/\/harakah\.example\/en\/">/);
   assert.match(en, /\.get\("lang"\) \|\| "en"/);
-  assert.match(ar, /class="btn p" href="\/tool\/"/);
+  assert.match(ar, /class="btn p" href="\/tool\/\?lang=ar"/);
+  assert.match(en, /class="btn p" href="\/tool\/\?lang=en"/, "/tool/ opens in the language of the page it was opened from");
   assert.doesNotMatch(ar, /href="\/landing"|href="\/"[^>]*>[^<]*<span lang="ar">افتح الأداة/);
-  // no hosted tool: the buttons say "Run the tool" and /tool/ is the run-it-locally page, English unless Arabic was picked
-  assert.match(ar, /<span lang="ar">شغّل الأداة<\/span><span lang="en">Run the tool<\/span>/);
+  // no hosted tool: the buttons say it runs on your computer and /tool/ is the run-it-locally page, English unless Arabic was picked
+  assert.match(ar, /<span lang="ar">شغّلها على جهازك<\/span><span lang="en">Install &amp; run<\/span>/);
+  // open source is visible: GitHub + X in the header and footer, the copy-able npx command (no global install assumed)
+  for (const page of [ar, en]) {
+    assert.match(page, /<a class="ico" href="https:\/\/github\.com\/harakah-si\/harakah"/);
+    assert.match(page, /<a class="ico" href="https:\/\/x\.com\/HarakahSi"/);
+    assert.match(page, /<span class="flinks"><a href="https:\/\/github\.com\/harakah-si\/harakah"/);
+    assert.match(page, /<code>npx -y -p harakah-fixer harakah-fix check <b>\.\/my-remotion-app<\/b><\/code><button class="copy" type="button" data-copy>/);
+    assert.doesNotMatch(page, /<span class="cmd">harakah-fix /, "a bare harakah-fix command needs a global install");
+  }
   assert.doesNotMatch(ar, /Open the tool/);
   const tool = fs.readFileSync(path.join(out, "tool/index.html"), "utf8");
   assert.match(tool, /<html lang="en" dir="ltr" data-lang="en"/);
@@ -33,6 +42,11 @@ test("static site: landing ar + en, absolute OG with SITE_ORIGIN, /tool/ page, O
   assert.match(tool, /<code>npx -y -p harakah-fixer harakah-fix serve<\/code>/);
   assert.doesNotMatch(tool, /npm run (build|serve)/, "repo-only steps don't work for visitors");
   assert.match(tool, /<button type="button" data-v="ar"/);
+  // /tool/ gets its own share card (absolute with SITE_ORIGIN) and tells phone visitors it needs a computer
+  assert.match(tool, /<meta property="og:image" content="https:\/\/harakah\.example\/assets\/og-ar\.png">/);
+  assert.match(tool, /<meta name="twitter:card" content="summary_large_image">/);
+  assert.doesNotMatch(tool, /\{\{\w+\}\}/);
+  assert.match(tool, /<p class="note" lang="ar" dir="rtl">حركة تعمل على الكمبيوتر/);
   for (const f of tool.match(/\/fonts\/[\w.-]+/g)!) assert.ok(fs.existsSync(path.join(out, f)), f);
   for (const f of ["favicon.ico", "site.webmanifest", "assets/og-en.png", "demo/harakah-demo.mp4", "demo/remotion/before.png", "demo/remotion/after.png", "tool/index.html", "_headers", "_redirects", "robots.txt"]) assert.ok(fs.existsSync(path.join(out, f)), f);
   // every image the npm README links at https://harakah.si/media/… is published
@@ -64,7 +78,7 @@ test("static site: the logo links home and the canonical is the page itself, wit
     assert.match(en, /class="logo" href="\/en\/"/);
     assert.match(ar, new RegExp(`<link rel="canonical" href="${origin}/">`));
     assert.match(ar, new RegExp(`<link rel="alternate" hreflang="ar" href="${origin}/">`));
-    assert.match(ar, /class="btn p" href="\/tool\/"/);
+    assert.match(ar, /class="btn p" href="\/tool\/\?lang=ar"/);
     fs.rmSync(out, { recursive: true, force: true });
   }
 });
@@ -80,7 +94,10 @@ test("static site: a real 404 page, and a CSP that allows exactly the pages' inl
   assert.match(nf, /@media \(prefers-color-scheme:dark\)\{:root\{color-scheme:dark;--bg:#[0-9a-f]{6}/);
   const csp = /Content-Security-Policy: (.*)/.exec(fs.readFileSync(path.join(out, "_headers"), "utf8"))![1];
   const directive = (name: string) => csp.split("; ").find((d) => d.startsWith(name + " "))!;
-  assert.doesNotMatch(directive("script-src"), /unsafe-inline|unsafe-eval|https?:/);
+  assert.doesNotMatch(directive("script-src"), /unsafe-inline|unsafe-eval/);
+  // the only outside sources: Cloudflare Web Analytics (beacon script + its report endpoint), nothing else
+  assert.deepEqual(directive("script-src").split(" ").filter((x) => /^https?:/.test(x)), ["https://static.cloudflareinsights.com"]);
+  assert.equal(directive("connect-src"), "connect-src 'self' https://cloudflareinsights.com");
   for (const d of ["default-src 'self'", "connect-src 'self'", "object-src 'none'", "base-uri 'self'", "frame-ancestors 'none'"]) assert.ok(csp.includes(d), d);
   const pages = ["index.html", "en/index.html", "tool/index.html", "404.html"];
   for (const f of pages) for (const m of fs.readFileSync(path.join(out, f), "utf8").matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {

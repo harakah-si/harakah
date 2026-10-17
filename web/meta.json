@@ -2,17 +2,17 @@
   "landing.html": {
     "ar": {
       "title": "حركة · الموشن العربي بحروف متصلة",
-      "desc": "تكشف وتصلح النص العربي في كود الموشن جرافيك (HTML وGSAP وHyperFrames وRemotion) قبل الرندر، وتثبت النتيجة برندر حقيقي. مجانية وتعمل محلياً."
+      "desc": "حركة تفحص كود الموشن (Remotion وGSAP وHyperFrames وHTML) وتصلّح الحروف العربية المقطّعة قبل الرندر، ثم تتأكد من النتيجة برندر حقيقي. مجانية وأوبن سورس."
     },
     "en": {
       "title": "Harakah · Arabic motion with joined letters",
-      "desc": "Finds and fixes Arabic text in motion-graphics code (HTML, GSAP, HyperFrames, Remotion) before you render, then proves it with a real render. Free and local."
+      "desc": "Harakah checks motion code (Remotion, GSAP, HyperFrames, HTML) and fixes broken Arabic letters before you render, then proves it with a real render. Free and open source."
     }
   },
   "index.html": {
     "ar": {
       "title": "حركة · الأداة: افحص وأصلح النص العربي في الموشن",
-      "desc": "الصق مشهد HTML أو مكوّن Remotion، وحركة تصلح الحروف المتقطعة والاتجاه والأرقام والخطوط، مع مقارنة قبل وبعد برندر حقيقي."
+      "desc": "الصق مشهد HTML أو مكوّن Remotion، وحركة تصلّح الحروف المقطّعة والاتجاه والأرقام والخطوط، مع مقارنة قبل وبعد برندر حقيقي."
     },
     "en": {
       "title": "Harakah · Tool: check & fix Arabic in motion code",

@@ -34,10 +34,13 @@ const emit = (k) => listeners[k].forEach((f) => f());
 const applyTheme = (p) => { root.dataset.theme = p === "system" ? (mq.matches ? "dark" : "light") : p; root.dataset.themePref = p; emit("theme"); };
 seg("#theme", root.dataset.themePref || "system", (v) => { v === "system" ? localStorage.removeItem("hz-theme") : localStorage.setItem("hz-theme", v); applyTheme(v); });
 mq.addEventListener("change", () => { if (!localStorage.getItem("hz-theme")) applyTheme("system"); });
+// links to the run-it-locally page (/tool/) open it in the language the visitor is reading
+function toolLang() { $$('a[href^="/tool/"]').forEach((a) => a.setAttribute("href", `/tool/?lang=${root.dataset.lang}`)); }
+toolLang();
 seg("#lang", root.dataset.lang, (v) => {
   localStorage.setItem("hz-lang", v); root.dataset.lang = v; root.lang = v; root.dir = v === "en" ? "ltr" : "rtl";
   document.title = v === "en" ? "Harakah · Arabic motion with joined letters" : "حركة · الموشن العربي بحروف متصلة";
-  paintNumbers(); emit("lang");
+  paintNumbers(); toolLang(); emit("lang");
 });
 seg("#digits", root.dataset.digits, (v) => { localStorage.setItem("hz-digits", v); root.dataset.digits = v; paintNumbers(); emit("lang"); });
 const setPalette = (v) => { localStorage.setItem("hz-palette", v); root.dataset.palette = v; segSync("[data-pal]", v); emit("palette"); };
@@ -348,7 +351,7 @@ addEventListener("resize", () => requestAnimationFrame(runScroll));
     }
     state.className = "vt-state " + (fixed ? "ok" : "bad"); state.textContent = fixed ? "joined ✓" : "split ✗";
     flip.setAttribute("aria-pressed", String(fixed));
-    $("[lang=ar]", flip).textContent = fixed ? "أرجع الخطأ" : "أصلح الكلمة";
+    $("[lang=ar]", flip).textContent = fixed ? "اعرض الخطأ" : "أصلح الكلمة";
     $("[lang=en]", flip).textContent = fixed ? "Show the bug" : "Fix the word";
   }
   const go = (fn) => (document.startViewTransition && !still() ? document.startViewTransition(() => { fn(); render(); }) : (fn(), render()));
@@ -424,6 +427,16 @@ fetch("/api/meta").then((r) => (r.ok ? r.json() : null)).then((m) => { if (m && 
     btn.removeAttribute("aria-disabled");
     if (ok) { form.classList.add("done"); say("ok", "✓ أنت في القائمة. سنراسلك مرة واحدة عند إطلاق حركة برو.", "✓ You're on the list. We'll email you once, when Harakah Pro opens."); return; }
     if (status === 400) { input.setAttribute("aria-invalid", "true"); say("err", "اكتب بريداً إلكترونياً صحيحاً، مثل you@studio.com", "Enter a valid email, like you@studio.com"); input.focus(); return; }
-    say("err", `تعذّر الحفظ الآن. <a href="${MAIL}">راسلنا بدلاً من ذلك</a>.`, `Couldn't save it right now. <a href="${MAIL}">Email us instead</a>.`);
+    say("err", `لم نتمكن من حفظ بريدك. <a href="${MAIL}">راسلنا مباشرة</a>.`, `Couldn't save it right now. <a href="${MAIL}">Email us instead</a>.`);
   });
 })();
+
+// copy buttons next to the commands (hero, final CTA)
+$$("[data-copy]").forEach((b) => b.addEventListener("click", () => {
+  const text = b.parentNode.querySelector("code").textContent, keep = b.innerHTML;
+  const done = () => {
+    b.classList.add("done"); b.innerHTML = '<span lang="ar">نُسخ</span><span lang="en">Copied</span>';
+    setTimeout(() => { b.classList.remove("done"); b.innerHTML = keep; }, 1600);
+  };
+  if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, () => {});
+}));

@@ -3,18 +3,39 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Run Harakah · حركة</title>
-<meta name="description" content="Run the Harakah web tool on your machine: one npx command, then open 127.0.0.1:4747.">
+<title>Run Harakah on your computer · شغّل حركة على جهازك</title>
+<meta name="description" content="Harakah runs on your computer: one npx command checks your motion code and fixes broken Arabic letters before you render. Free and open source. · حركة تعمل على جهازك: أمر npx واحد يفحص كود الموشن ويصلّح الحروف العربية المقطّعة قبل الرندر. مجانية وأوبن سورس.">
+<link rel="canonical" href="{{ORIGIN}}/tool/">
 <link rel="icon" href="/favicon.ico">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="حركة · Harakah">
+<meta property="og:title" content="شغّل حركة على جهازك · Run Harakah on your computer">
+<meta property="og:description" content="أمر npx واحد يفحص كود الموشن ويصلّح الحروف العربية المقطّعة قبل الرندر. مجانية وأوبن سورس. · One npx command checks your motion code and fixes broken Arabic letters. Free and open source.">
+<meta property="og:url" content="{{ORIGIN}}/tool/">
+<meta property="og:image" content="{{ORIGIN}}/assets/og-ar.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="حركة: حرّك العنوان، والحروف تبقى متصلة. · Harakah: Keep the letters joined.">
+<meta property="og:locale" content="ar_AR">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="شغّل حركة على جهازك · Run Harakah on your computer">
+<meta name="twitter:description" content="أمر npx واحد يفحص كود الموشن ويصلّح الحروف العربية المقطّعة قبل الرندر. مجانية وأوبن سورس. · One npx command checks your motion code and fixes broken Arabic letters. Free and open source.">
+<meta name="twitter:image" content="{{ORIGIN}}/assets/og-ar.png">
+<meta name="twitter:image:alt" content="حركة: حرّك العنوان، والحروف تبقى متصلة. · Harakah: Keep the letters joined.">
 <link rel="preload" href="/fonts/IBMPlexSansArabic-Regular.ttf" as="font" type="font/ttf" crossorigin>
 <script>
-// English unless the visitor picked a language on this site (shared with the landing); theme as on the landing.
+// Language: ?lang= (the landing links here with the language it shows), else the one picked on this site (shared
+// with the landing), else the page the visitor came from (harakah.si/ is Arabic, /en/ English), else English.
 (function () {
-  var d = document.documentElement, q = new URLSearchParams(location.search), s;
+  var d = document.documentElement, q = new URLSearchParams(location.search), s, ref = "";
   try { s = localStorage; } catch (e) { s = null; }
+  try { var r = new URL(document.referrer); if (r.host === location.host) ref = /^\/en\//.test(r.pathname) ? "en" : r.pathname === "/" ? "ar" : ""; } catch (e) {}
   var ql = q.get("lang"); if ((ql === "en" || ql === "ar") && s) s.setItem("hz-lang", ql);
-  var l = ql === "ar" || ql === "en" ? ql : (s && s.getItem("hz-lang") === "ar" ? "ar" : "en");
+  var picked = s && s.getItem("hz-lang");
+  var l = ql === "ar" || ql === "en" ? ql : picked ? (s.getItem("hz-lang") === "ar" ? "ar" : "en") : ref || "en";
   d.dataset.lang = l; d.lang = l; d.dir = l === "ar" ? "rtl" : "ltr";
+  document.title = l === "ar" ? "شغّل حركة على جهازك · Harakah" : "Run Harakah on your computer · حركة";
   var t = s && s.getItem("hz-theme");
   d.dataset.theme = t === "light" || t === "dark" ? t : (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
 })();
@@ -51,6 +72,7 @@ ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(
 li{counter-increment:s;border:1px solid var(--line);border-radius:20px;background:var(--card);padding:24px 26px}
 li h2{display:flex;align-items:baseline;gap:12px;font:600 20px/1.4 var(--display);margin:0 0 10px}
 li h2:before{content:counter(s,decimal-leading-zero);font:500 13px/1 var(--mono);color:var(--acc)}
+[data-lang=ar] li h2:before{content:"٠" counter(s,arabic-indic);font:500 15px/1 var(--text)}
 li p{margin:10px 0 0;color:var(--mute)}
 .cmd{display:flex;align-items:center;gap:10px;direction:ltr;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:6px 6px 6px 16px;margin-top:10px}
 .cmd code{flex:1;min-width:0;overflow-wrap:anywhere;font:500 14px/1.6 var(--mono);padding:6px 0}
@@ -58,6 +80,8 @@ li p{margin:10px 0 0;color:var(--mute)}
 .cmd button.done{background:var(--ok)}
 code.i{white-space:nowrap;font:500 .88em var(--mono);background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;direction:ltr;unicode-bidi:isolate}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.note{border:1px solid var(--line);border-inline-start:3px solid var(--acc);border-radius:14px;background:var(--bg2);padding:14px 18px;margin:-16px 0 32px;color:var(--ink);font-size:16px}
+.note a{color:var(--acc)}
 .foot{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:36px;color:var(--mute);font-size:15px}
 @media (max-width:560px){li{padding:20px}.cmd{flex-wrap:wrap;padding:10px 12px}.cmd button{box-sizing:border-box;width:100%;text-align:center}}
 </style>
@@ -68,21 +92,23 @@ code.i{white-space:nowrap;font:500 .88em var(--mono);background:var(--bg2);borde
   <div class="seg" id="lang" role="group" aria-label="Language · اللغة"><button type="button" data-v="en" lang="en" class="keep">EN</button><button type="button" data-v="ar" lang="ar" dir="rtl" class="keep">ع</button></div>
 </header>
 <main>
-  <p class="kicker"><span lang="en">Runs on your machine</span><span lang="ar" dir="rtl">يعمل على جهازك</span></p>
+  <p class="kicker"><span lang="en">Runs on your machine</span><span lang="ar" dir="rtl">تعمل على جهازك</span></p>
   <h1><span lang="en">Run Harakah locally</span><span lang="ar" dir="rtl">شغّل حركة على جهازك</span></h1>
-  <p class="lead" lang="en">The tool checks your composition in a real browser, so it runs on your computer and nothing is uploaded. Paste HTML, GSAP, HyperFrames or a Remotion file, see what breaks, fix it, and compare real before and after renders.</p>
-  <p class="lead" lang="ar" dir="rtl">تفحص الأداة عملك في متصفح حقيقي، لذلك تعمل على جهازك ولا يُرفع أي شيء. الصق كود <bdi dir="ltr">HTML</bdi> أو <bdi dir="ltr">GSAP</bdi> أو <bdi dir="ltr">HyperFrames</bdi> أو ملف <bdi dir="ltr">Remotion</bdi>، وشاهد ما ينكسر، وأصلحه، وقارن رندراً حقيقياً قبل الإصلاح وبعده.</p>
+  <p class="lead" lang="en">Harakah checks your animation in a real browser, so it runs on your computer and nothing is uploaded. Paste HTML, GSAP, HyperFrames or a Remotion file, see what breaks, fix it, and compare real before and after renders.</p>
+  <p class="lead" lang="ar" dir="rtl">حركة تفحص المشهد في متصفح حقيقي، ولهذا تعمل على جهازك ولا ترفع أي ملف. الصق كود <bdi dir="ltr">HTML</bdi> أو <bdi dir="ltr">GSAP</bdi> أو <bdi dir="ltr">HyperFrames</bdi> أو ملف <bdi dir="ltr">Remotion</bdi>، وشاهد أين تتقطّع الحروف، ثم أصلحها وقارن رندراً حقيقياً قبل الإصلاح وبعده.</p>
+  <p class="note" lang="en">Harakah runs on a computer with Node.js and Chrome. On your phone? Save this link for later, or watch the <a href="/en/#demo" data-demo>before/after demo</a>. The code is on <a href="https://github.com/harakah-si/harakah" rel="noopener">GitHub</a>.</p>
+  <p class="note" lang="ar" dir="rtl">حركة تعمل على الكمبيوتر، وتحتاج <bdi dir="ltr">Node.js</bdi> و<bdi dir="ltr">Chrome</bdi>. إذا كنت على الموبايل، احفظ الرابط لوقت لاحق، أو شاهد <a href="/#demo" data-demo>العرض قبل وبعد</a>. والكود متاح على <a href="https://github.com/harakah-si/harakah" rel="noopener" dir="ltr">GitHub</a>.</p>
   <ol>
     <li>
-      <h2><span lang="en">What you need</span><span lang="ar" dir="rtl">ما تحتاجه</span></h2>
+      <h2><span lang="en">Before you start</span><span lang="ar" dir="rtl">قبل أن تبدأ</span></h2>
       <p lang="en"><b>Node.js 22.12</b> or newer and <b>Google Chrome</b> (or Chromium). <code class="i">ffmpeg</code> is only needed for MP4 comparisons.</p>
-      <p lang="ar" dir="rtl"><bdi dir="ltr"><b>Node.js 22.12</b></bdi> أو أحدث، و<bdi dir="ltr"><b>Google Chrome</b></bdi> أو <bdi dir="ltr">Chromium</bdi>. أما <bdi dir="ltr">ffmpeg</bdi> فمطلوب فقط لمقارنات <bdi dir="ltr">MP4</bdi>.</p>
+      <p lang="ar" dir="rtl"><bdi dir="ltr"><b>Node.js 22.12</b></bdi> أو أحدث، و<bdi dir="ltr"><b>Google Chrome</b></bdi> أو <bdi dir="ltr">Chromium</bdi>. وتحتاج <bdi dir="ltr">ffmpeg</bdi> فقط إذا أردت مقارنة فيديو <bdi dir="ltr">MP4</bdi>.</p>
       <div class="cmd"><code>npx -y -p harakah-fixer harakah-fix doctor</code><button type="button" data-copy><span lang="en">Copy</span><span lang="ar" dir="rtl">نسخ</span></button></div>
-      <p lang="en"><code class="i">doctor</code> checks all of this on your computer (it starts Chrome and renders Arabic text) and prints the fix for anything missing.</p>
-      <p lang="ar" dir="rtl"><code class="i">doctor</code> يفحص هذا كله على جهازك (يشغّل <bdi dir="ltr">Chrome</bdi> ويرسم نصاً عربياً) ويكتب طريقة إصلاح أي شيء ناقص.</p>
+      <p lang="en"><code class="i">doctor</code> checks all of this on your computer (it starts Chrome and renders Arabic text) and tells you how to fix anything missing.</p>
+      <p lang="ar" dir="rtl">أمر <code class="i">doctor</code> يتأكد من كل هذا على جهازك (يشغّل <bdi dir="ltr">Chrome</bdi> ويرسم نصاً عربياً)، ويخبرك بما ينقصك وكيف تضيفه.</p>
     </li>
     <li>
-      <h2><span lang="en">Start the tool</span><span lang="ar" dir="rtl">شغّل الأداة</span></h2>
+      <h2><span lang="en">Start Harakah</span><span lang="ar" dir="rtl">شغّل حركة</span></h2>
       <div class="cmd"><code>npx -y -p harakah-fixer harakah-fix serve</code><button type="button" data-copy><span lang="en">Copy</span><span lang="ar" dir="rtl">نسخ</span></button></div>
       <p lang="en">Then open <a href="http://127.0.0.1:4747">127.0.0.1:4747</a> in your browser. Everything stays on your computer.</p>
       <p lang="ar" dir="rtl">ثم افتح <a href="http://127.0.0.1:4747" dir="ltr">127.0.0.1:4747</a> في متصفحك. كل شيء يبقى على جهازك.</p>
@@ -92,16 +118,21 @@ code.i{white-space:nowrap;font:500 .88em var(--mono);background:var(--bg2);borde
       <div class="cmd"><code>npm install -D harakah-fixer</code><button type="button" data-copy><span lang="en">Copy</span><span lang="ar" dir="rtl">نسخ</span></button></div>
       <div class="cmd"><code>npx harakah-fix check ./my-remotion-app</code><button type="button" data-copy><span lang="en">Copy</span><span lang="ar" dir="rtl">نسخ</span></button></div>
       <p lang="en"><code class="i">check</code> reports what's broken, <code class="i">fix --write</code> repairs it, and <code class="i">gate</code> stops a broken render in CI.</p>
-      <p lang="ar" dir="rtl"><code class="i">check</code> يكتب تقريراً بما انكسر، و<code class="i">fix --write</code> يصلحه، و<code class="i">gate</code> يوقف الرندر المكسور في <bdi dir="ltr">CI</bdi>.</p>
+      <p lang="ar" dir="rtl">أمر <code class="i">check</code> يكتب تقريراً بكل ما انكسر، و<code class="i">fix --write</code> يصلّحه، و<code class="i">gate</code> يمنع الرندر المكسور في <bdi dir="ltr">CI</bdi>.</p>
     </li>
   </ol>
-  <p class="foot"><a href="/en/" data-home><span lang="en">Harakah home</span><span lang="ar" dir="rtl">الصفحة الرئيسية</span></a><span lang="en">Questions? <a href="mailto:hello@harakah.si">hello@harakah.si</a></span><span lang="ar" dir="rtl">أسئلة؟ <a href="mailto:hello@harakah.si" dir="ltr">hello@harakah.si</a></span></p>
+  <p class="foot"><a href="/en/" data-home><span lang="en">Harakah home</span><span lang="ar" dir="rtl">الصفحة الرئيسية</span></a><a href="https://github.com/harakah-si/harakah" rel="noopener">GitHub</a><a href="https://x.com/HarakahSi" rel="noopener">X · @HarakahSi</a><span lang="en">Questions? <a href="mailto:hello@harakah.si">hello@harakah.si</a></span><span lang="ar" dir="rtl">أسئلة؟ <a href="mailto:hello@harakah.si" dir="ltr">hello@harakah.si</a></span></p>
   <p class="vh" id="copied" role="status" aria-live="polite"></p>
 </main>
 <script>
 (function () {
   var d = document.documentElement;
-  var home = function () { document.querySelectorAll("[data-home]").forEach(function (a) { a.href = d.dataset.lang === "ar" ? "/" : "/en/"; }); };
+  var home = function () {
+    var ar = d.dataset.lang === "ar";
+    document.querySelectorAll("[data-home]").forEach(function (a) { a.href = ar ? "/" : "/en/"; });
+    document.querySelectorAll("[data-demo]").forEach(function (a) { a.href = ar ? "/#demo" : "/en/#demo"; });
+    document.title = ar ? "شغّل حركة على جهازك · Harakah" : "Run Harakah on your computer · حركة";
+  };
   var sync = function () { document.querySelectorAll("#lang button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.v === d.dataset.lang)); }); home(); };
   document.querySelectorAll("#lang button").forEach(function (b) {
     b.addEventListener("click", function () {
@@ -118,7 +149,7 @@ code.i{white-space:nowrap;font:500 .88em var(--mono);background:var(--bg2);borde
       var done = function () {
         var keep = b.innerHTML; b.classList.add("done");
         b.innerHTML = '<span lang="en">Copied</span><span lang="ar" dir="rtl">نُسخ</span>';
-        live.textContent = d.dataset.lang === "ar" ? "تم نسخ الأمر" : "Command copied";
+        live.textContent = d.dataset.lang === "ar" ? "نُسخ الأمر" : "Command copied";
         setTimeout(function () { b.classList.remove("done"); b.innerHTML = keep; }, 1600);
       };
       if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, function () {});

@@ -242,3 +242,21 @@ footer .wrap{align-items:center}
 .wl-msg button:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:4px}
 .wl.done .wl-row{display:none}
 @media (max-width:480px){.wl .btn{flex:1 1 100%}}
+
+/* ---------- open source links + copy-able commands ---------- */
+.ico{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);color:var(--mute);transition:color .2s,border-color .2s}
+.ico:hover{color:var(--ink);border-color:var(--mute)}.ico:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.btn.gh svg{flex:0 0 auto}
+.cta .cmd{display:flex;align-items:center;gap:10px;flex:0 1 auto;max-width:100%;padding:6px 6px 6px 16px;border-radius:14px;white-space:normal;overflow:visible}
+.cmd code{font:inherit;color:var(--mute);overflow-wrap:anywhere;padding:7px 0;text-align:left}
+.cmd .copy{all:unset;cursor:pointer;flex:0 0 auto;font:600 13px/1 var(--text);padding:10px 14px;border-radius:10px;border:1px solid var(--line);color:var(--ink);background:var(--bg2)}
+.cmd .copy:hover{border-color:var(--mute)}.cmd .copy:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.cmd .copy.done{background:var(--ok);border-color:var(--ok);color:var(--on-acc)}
+.flinks{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+.flinks a:hover{color:var(--ink)}
+.hstep .k [lang=ar],.pv-meter small [lang=ar]{font-family:var(--text);letter-spacing:0;text-transform:none;font-size:13px}
+@media (pointer:coarse){.ico{width:40px;height:40px}.cmd .copy{padding:13px 16px}}
+@media (max-width:640px){
+  .cta .cmd{width:100%;padding:6px 6px 6px 12px}
+  .ctrls .ico{width:38px;height:38px}
+}

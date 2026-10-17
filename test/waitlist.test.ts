@@ -107,7 +107,7 @@ test("waitlist form: inline success, typo hint, and the mailto fallback when the
     await page.type("#wl-email", "studio@example.com");
     await press("#waitlist button[type=submit]");
     await page.waitForFunction(() => document.querySelector("#wl-msg")!.classList.contains("err"));
-    assert.match((await status()).text, /تعذّر الحفظ/);
+    assert.match((await status()).text, /لم نتمكن من حفظ بريدك/);
     assert.match(await page.$eval("#wl-msg a", (a) => a.getAttribute("href")!), /^mailto:hello@harakah\.si/);
     assert.equal(got.at(-1).lang, "ar");
   } finally { await browser.close(); server.close(); }

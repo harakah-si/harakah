@@ -39,12 +39,12 @@ function landing(lang) {
   // "/" in the tool's landing is the tool itself: rewrite those links first, before any link to the site's own home
   // ("/landing", canonical "{{ORIGIN}}/" without an origin) becomes href="/" and would be caught too
   let t = src
-    .replace(/href="\/"/g, `href="${TOOL || "/tool/"}"`)
+    .replace(/href="\/"/g, `href="${TOOL || `/tool/?lang=${lang}`}"`)
     .replace('href="{{ORIGIN}}/landing?lang=en"', `href="${en}"`)
     .replace('href="{{ORIGIN}}/landing"', `href="${home}"`)
     .replace(/\{\{(\w+)\}\}/g, (all, k) => vars[k] ?? all)
     .replace(/href="\/landing"/g, `href="${lang === "en" ? "/en/" : "/"}"`)
-    .replace(/<span lang="ar">افتح الأداة<\/span><span lang="en">Open the tool<\/span>/g, TOOL ? "$&" : '<span lang="ar">شغّل الأداة</span><span lang="en">Run the tool</span>');
+    .replace(/<span lang="ar">افتح الأداة<\/span><span lang="en">Open the tool<\/span>/g, TOOL ? "$&" : '<span lang="ar">شغّلها على جهازك</span><span lang="en">Install &amp; run</span>');
   // /en/ opens in English unless the visitor picks Arabic in the page
   if (lang === "en") t = t.replace('.get("lang");', '.get("lang") || "en";');
   const left = t.match(/\{\{\w+\}\}/g);
@@ -75,10 +75,11 @@ for (const f of fs.readdirSync(path.join(ROOT, "docs", "media"))) copy(path.join
 
 // /tool/: the web tool needs a server (Chrome renders). With HARAKAH_TOOL_URL it forwards there; otherwise it's the
 // "run it locally" page (site-src/tool.html: English by default, Arabic one click away).
+const toolPage = TOOL_PAGE.replace(/\{\{ORIGIN\}\}/g, ORIGIN);
 write("tool/index.html", TOOL ? `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Harakah tool · أداة حركة</title><link rel="icon" href="/favicon.ico"><meta http-equiv="refresh" content="0;url=${escAttr(TOOL)}"></head>
 <body><p><a href="${escAttr(TOOL)}">Open the tool</a> · <a href="${escAttr(TOOL)}" lang="ar" dir="rtl">افتح الأداة</a></p></body></html>
-` : TOOL_PAGE);
+` : toolPage);
 
 // a real 404 (Cloudflare Pages serves 404.html with status 404; without it, unknown paths got the home page with 200).
 // Colours are /tool/'s palette, read from its source so the brand stays in one place; the theme follows the system.
@@ -100,8 +101,11 @@ const pages = [];
 (function walk(d) { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const f = path.join(d, e.name); if (e.isDirectory()) walk(f); else if (f.endsWith(".html")) pages.push(f); } })(OUT);
 const hashes = [...new Set(pages.flatMap((f) => [...fs.readFileSync(f, "utf8").matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)]
   .map((m) => `'sha256-${crypto.createHash("sha256").update(m[1], "utf8").digest("base64")}'`)))].sort();
-const CSP = ["default-src 'self'", `script-src 'self' ${hashes.join(" ")}`, "style-src 'self' 'unsafe-inline'", "img-src 'self' data:", "font-src 'self'",
-  "media-src 'self'", "connect-src 'self'", "object-src 'none'", "base-uri 'self'", "form-action 'self'", "frame-ancestors 'none'"].join("; ");
+// Cloudflare Web Analytics: the beacon script Pages injects comes from static.cloudflareinsights.com and reports to
+// cloudflareinsights.com; without these two sources the CSP blocks it and no visit is counted.
+const CF_BEACON = "https://static.cloudflareinsights.com", CF_REPORT = "https://cloudflareinsights.com";
+const CSP = ["default-src 'self'", `script-src 'self' ${CF_BEACON} ${hashes.join(" ")}`, "style-src 'self' 'unsafe-inline'", "img-src 'self' data:", "font-src 'self'",
+  "media-src 'self'", `connect-src 'self' ${CF_REPORT}`, "object-src 'none'", "base-uri 'self'", "form-action 'self'", "frame-ancestors 'none'"].join("; ");
 
 // Cloudflare Pages / Netlify config
 write("_headers", `/*
