@@ -83,7 +83,7 @@ pre,code,kbd,.mono,.cmd,.code,.term-out,.vt-code{font-variant-ligatures:none;fon
 .wrap{max-width:1320px;margin:0 auto;padding:0 clamp(20px,4vw,56px)}
 
 /* nav */
-nav{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+nav{position:sticky;top:0;z-index:40;background:var(--bg);border-bottom:1px solid var(--line)} /* opaque: a translucent bar let buttons and text show through it while scrolling */
 nav .wrap{display:flex;align-items:center;justify-content:space-between;height:76px;gap:24px}
 .logo{font:800 28px/1 var(--display);display:flex;align-items:center;gap:10px}
 .logo i{width:10px;height:10px;border-radius:50%;background:var(--acc);display:inline-block;transform:translateY(-6px)}
