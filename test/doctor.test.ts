@@ -52,3 +52,26 @@ test("doctor: a Remotion project without the bundler and renderer gets a warning
     assert.equal(doctor({}, os.tmpdir()).by("remotion"), undefined, "no Remotion project: no Remotion line");
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 });
+
+test("doctor: Arabic font files in the project without U+200D/U+200C get a Safari warning; fonts that map them pass", { timeout: 60_000 }, () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "hz-doctor-fonts-"));
+  try {
+    fs.mkdirSync(path.join(dir, "public/fonts"), { recursive: true });
+    fs.mkdirSync(path.join(dir, "node_modules/x"), { recursive: true });
+    fs.copyFileSync(path.join(ROOT, "assets/fonts/NotoNaskhArabic.ttf"), path.join(dir, "public/fonts/Naskh.ttf"));
+    fs.copyFileSync(path.join(ROOT, "assets/fonts/Cairo.ttf"), path.join(dir, "node_modules/x/Cairo.ttf")); // dependencies are not the project's
+    const ok = doctor({}, dir);
+    assert.equal(ok.by("font-joiners").ok, true, ok.by("font-joiners").en);
+    fs.copyFileSync(path.join(ROOT, "assets/fonts/Alexandria.ttf"), path.join(dir, "public/fonts/Alexandria.ttf"));
+    const r = doctor({}, dir);
+    assert.equal(r.code, 0, "a warning, not a failure");
+    const c = r.by("font-joiners");
+    assert.equal(c.ok, false);
+    assert.equal(c.required, false);
+    assert.match(c.en, /1 Arabic font file\(s\) have no U\+200D\/U\+200C: public\/fonts\/Alexandria\.ttf\. In Safari/);
+    assert.doesNotMatch(c.en, /Cairo|Naskh/);
+    assert.match(c.fix, /ArabicText/);
+    fs.mkdirSync(path.join(dir, "empty"));
+    assert.equal(doctor({}, path.join(dir, "empty")).by("font-joiners"), undefined, "no Arabic font files: no line");
+  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+});
