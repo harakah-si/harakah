@@ -90,6 +90,7 @@
     "prepack": "npm run build",
     "pack:check": "node scripts/pack-check.mjs",
     "smoke": "node scripts/smoke.mjs",
+    "qa:visual": "node scripts/qa-visual.mjs",
     "test:vscode": "npm run build && node integrations/vscode/test/run.mjs"
   },
   "dependencies": {
