@@ -55,8 +55,11 @@ jobs:
       - name: Pack check (npm pack, install in a temp project, smoke-test every bin; publishes nothing)
         run: npm run pack:check
 
-      # the site in a real Chrome: code samples read left to right, demo words match their code, nothing floats over
-      # demo text on a phone, no sideways scroll at 360px (scripts/qa-visual.mjs)
+      # the site in a real Chrome and in WebKit with iPhone emulation (Safari's engine): code samples read left to right
+      # and fit on phones, demo words match their code, nothing floats over demo text, no sideways scroll
+      # (scripts/qa-visual.mjs)
+      - name: Install WebKit for the site guards
+        run: npx playwright-core install --with-deps webkit
       - name: Site visual guards
         run: npm run qa:visual
 
