@@ -21,7 +21,7 @@ const head = rd("head-meta.html")
   .replace('<meta name="theme-color" content="#0b0b0d" media="(prefers-color-scheme: dark)">', '<meta name="theme-color" content="#0a1411" media="(prefers-color-scheme: dark)">')
   .replace('<meta name="theme-color" content="#f3efe7" media="(prefers-color-scheme: light)">', '<meta name="theme-color" content="#f3efe6" media="(prefers-color-scheme: light)">');
 const html = `${head}
-<link rel="preload" href="/fonts/Alexandria.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="/fonts/Alexandria-zwj.64fc7b84.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="preload" href="/fonts/IBMPlexSansArabic-Regular.ttf" as="font" type="font/ttf" crossorigin>
 <script>
 ${rd("init.js").trim()}

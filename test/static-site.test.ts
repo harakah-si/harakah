@@ -106,3 +106,30 @@ test("static site: a real 404 page, and a CSP that allows exactly the pages' inl
   }
   fs.rmSync(out, { recursive: true, force: true });
 });
+
+// Safari draws a ZWJ-padded letter box in a fallback font when the box's font has no cmap entry for U+200D (WebKit
+// picks one font for a letter + its joiner): the per-letter stack (--split) may only name served fonts that map
+// U+200D and U+200C, then a generic family. The shipped package font stays as it was.
+test("static site: per-letter Arabic fonts map U+200D/U+200C, cache-busted file names", async () => {
+  const { mapsJoiners } = await import("../scripts/font-cmap.mjs");
+  const out = build({ SITE_ORIGIN: "" });
+  const ar = fs.readFileSync(path.join(out, "index.html"), "utf8");
+  const stack = ar.match(/--split:([^;]+);/)?.[1];
+  assert.ok(stack, "--split font stack is defined");
+  const fams = stack!.split(",").map((f) => f.trim().replace(/^["']|["']$/g, ""));
+  const named = fams.slice(0, fams.findIndex((f) => /^(serif|sans-serif|system-ui)$/.test(f)));
+  assert.ok(named.length && fams.length > named.length, `--split ends in a generic family: ${stack}`);
+  for (const sel of [".vt-word{", ".pv-word{", ".rj-box{"]) assert.match(ar.slice(ar.indexOf(sel), ar.indexOf("}", ar.indexOf(sel))), /var\(--split\)/, `${sel} uses --split`);
+  for (const fam of named) {
+    const srcs = [...ar.matchAll(/@font-face\{font-family:"([^"]+)";src:url\("([^"]+)"\)/g)].filter((m) => m[1] === fam).map((m) => m[2]);
+    assert.ok(srcs.length, `${fam} is served`);
+    for (const s of srcs) {
+      assert.match(s, /\.[0-9a-f]{8}\.ttf$/, `${s}: content-hashed name (the fonts are cached immutably for a year)`);
+      const buf = fs.readFileSync(path.join(out, s));
+      assert.ok(mapsJoiners(buf), `${s} maps U+200D and U+200C`);
+      assert.equal(crypto.createHash("sha256").update(buf).digest("hex").slice(0, 8), s.match(/\.([0-9a-f]{8})\.ttf$/)![1], `${s}: hash matches its contents`);
+    }
+  }
+  assert.ok(!mapsJoiners(fs.readFileSync("assets/fonts/Alexandria.ttf")), "the check tells the unpatched Alexandria apart");
+  fs.rmSync(out, { recursive: true, force: true });
+});

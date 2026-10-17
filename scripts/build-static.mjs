@@ -61,8 +61,10 @@ copy(path.join(WEB, "site.webmanifest"), "site.webmanifest");
 const FONTS = path.join(ROOT, "assets", "fonts");
 const fonts = [...new Set([...(src + TOOL_PAGE).matchAll(/\/fonts\/([\w.-]+\.(?:ttf|woff2?))/g)].map((m) => m[1]))];
 const licenses = new Set();
+// site-only fonts (site-src/fonts: Alexandria with U+200C/U+200D mapped, see scripts/font-zwj.py) come first
+const SITE_FONTS = path.join(ROOT, "site-src", "fonts");
 for (const f of fonts) {
-  copy(path.join(FONTS, f), `fonts/${f}`);
+  copy(fs.existsSync(path.join(SITE_FONTS, f)) ? path.join(SITE_FONTS, f) : path.join(FONTS, f), `fonts/${f}`);
   const fam = f.toLowerCase().startsWith("ibmplex") ? "ibmplexsansarabic" : f.toLowerCase().split(/[-.]/)[0];
   licenses.add(`OFL-${fam}.txt`);
 }
