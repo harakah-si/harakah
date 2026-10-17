@@ -384,11 +384,11 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .pv-word.fixed{color:var(--acc)}
 .pv-word.fixed span{animation:rise .6s var(--ease) both;animation-delay:calc(var(--i)*40ms)}
 @keyframes rise{from{opacity:0;transform:translateY(.3em)}}
-.pv-meter{display:flex;gap:28px;direction:ltr;border-top:1px solid var(--line);padding-top:12px}
+.pv-meter{display:flex;gap:28px;border-top:1px solid var(--line);padding-top:12px} /* reads in the page's direction: قبل first on the right in Arabic */
 .pv-meter div{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
 .pv-meter small{font:500 10.5px/1 var(--mono);color:var(--mute);letter-spacing:.08em;text-transform:uppercase}
 .pv-meter b{font:700 34px/1 var(--display);font-variant-numeric:tabular-nums}
-.pv-meter em{font:500 11px/1 var(--mono);font-style:normal;color:var(--mute)}
+.pv-meter em{font:500 11px/1 var(--mono);font-style:normal;color:var(--mute);direction:ltr;unicode-bidi:isolate}
 .pv-meter .bad{color:var(--err)}.pv-meter .good{color:var(--ok)}
 .pv-key{margin:-4px 0 0;font:400 12px/1.6 var(--text);color:var(--faint)}
 
@@ -410,6 +410,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .vt-state.bad{color:var(--err)}.vt-state.ok{color:var(--ok)}
 .vt-code{margin:0;border:0;border-radius:0;background:var(--bg2);padding:26px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere;view-transition-name:vt-code}
 .vt-flip{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:999px;background:var(--acc);color:var(--on-acc);font:600 15px/1 var(--text)}
+.vt-flip .arr{display:inline-block}[dir=ltr] .vt-flip .arr{transform:scaleX(-1)} /* points forward in either language */
 .vt-note{color:var(--mute);font-size:14px;margin:14px 0 0}
 ::view-transition-group(*){animation-duration:.5s;animation-timing-function:cubic-bezier(.16,1,.3,1)}
 ::view-transition-old(vt-code){animation:.22s ease both vtout}::view-transition-new(vt-code){animation:.4s .08s cubic-bezier(.16,1,.3,1) both vtin}
@@ -419,6 +420,10 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
    isolated RTL run (isoAr in app.js wraps each run in <bdi dir=rtl>) */
 pre,code,.code,.term-out,.rj-code,.vt-code{direction:ltr;text-align:left;unicode-bidi:isolate}
 pre bdi[dir=rtl],code bdi[dir=rtl],.code bdi[dir=rtl]{unicode-bidi:isolate}
+/* no programming ligatures in code (JetBrains Mono, Cascadia, Fira Code draw an arrow for -- and > and flip the
+   comment closer): base.css turns them off, but every later `font:` shorthand resets them, so this outranks those */
+
+html body :is(pre,code,kbd,.mono,.cmd,.cmd code,.row code,.code,.term-out,.rj-code,.vt-code),html body :is(pre,code,.code,.term-out,.rj-code,.vt-code) *{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
 
 /* footer settings */
 footer .wrap{align-items:center}
@@ -527,7 +532,7 @@ footer .wrap{align-items:center}
 .flinks{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
 .flinks a:hover{color:var(--ink)}
 .hstep .k [lang=ar],.pv-meter small [lang=ar]{font-family:var(--text);letter-spacing:0;text-transform:none;font-size:13px}
-@media (pointer:coarse){.ico{width:40px;height:40px}.cmd .copy{padding:13px 16px}}
+@media (pointer:coarse){.ico{width:40px;height:40px}.cmd .copy{padding:13px 16px}.flinks a{display:inline-block;padding:10px 4px;min-width:28px;text-align:center}} /* footer links: the X link was a 9×21px target */
 @media (max-width:640px){
   .cta .cmd{width:100%;padding:6px 6px 6px 12px}
   .ctrls .ico{width:38px;height:38px}
@@ -676,7 +681,7 @@ footer .wrap{align-items:center}
     <div data-reveal>
       <div class="vt-top">
         <div class="tabs" role="tablist" aria-label="Stack" id="vt-tabs"></div>
-        <button class="vt-flip" id="vt-flip" aria-pressed="false"><span lang="ar">أصلح الكلمة</span><span lang="en">Fix the word</span><span aria-hidden="true">←</span></button>
+        <button class="vt-flip" id="vt-flip" aria-pressed="false"><span lang="ar">أصلح الكلمة</span><span lang="en">Fix the word</span><span class="arr" aria-hidden="true">←</span></button>
       </div>
       <div class="vt-card" role="tabpanel" id="vt-panel">
         <div class="vt-stage"><span class="vt-state bad" id="vt-state"></span><div id="vt-view"></div></div>
@@ -1141,7 +1146,7 @@ addEventListener("resize", () => requestAnimationFrame(runScroll));
   const SHIM = '\n\n<span class="c">// + harakah-fix fix --write injects its runtime shim:</span>\n<span class="a">&lt;script&gt;/* ZWJ-pads each letter box, keeps لا */&lt;/script&gt;</span>\n<span class="c">// same elements, same timeline</span>';
   const TOOLS = {
     HTML: { bad: '<span class="c">// before</span>\n<span class="k">const</span> text = "الحكايات";\nel.innerHTML = [...text]\n  .map((ch) =&gt; `&lt;span class="ch"&gt;${ch}&lt;/span&gt;`)\n  .join("")', good: '<span class="c">// after: your code is unchanged</span>\n<span class="k">const</span> text = "الحكايات";\nel.innerHTML = [...text]\n  .map((ch) =&gt; `&lt;span class="ch"&gt;${ch}&lt;/span&gt;`)\n  .join("")' + SHIM },
-    GSAP: { bad: '<span class="c">// before · &lt;h1 id="title"&gt;الحكايات&lt;/h1&gt;</span>\n<span class="k">const</span> split = <span class="d">SplitText.create</span>("#title",\n  { type: "words,chars" });\ngsap.from(split.chars, { y: 80, stagger: 0.04 });', good: '<span class="c">// after: your code is unchanged · &lt;h1 id="title"&gt;الحكايات&lt;/h1&gt;</span>\n<span class="k">const</span> split = SplitText.create("#title",\n  { type: "words,chars" });\ngsap.from(split.chars, { y: 80, stagger: 0.04 });' + SHIM + '\n\n<span class="c">// compare: "الحكايات" ink pieces 11 → 8 (reference 8) ✓</span>' },
+    GSAP: { bad: '<span class="c">// before\n// page: &lt;h1 id="title"&gt;الحكايات&lt;/h1&gt;</span>\n<span class="k">const</span> split = <span class="d">SplitText.create</span>("#title",\n  { type: "words,chars" });\ngsap.from(split.chars, { y: 80, stagger: 0.04 });', good: '<span class="c">// after: your code is unchanged\n// page: &lt;h1 id="title"&gt;الحكايات&lt;/h1&gt;</span>\n<span class="k">const</span> split = SplitText.create("#title",\n  { type: "words,chars" });\ngsap.from(split.chars, { y: 80, stagger: 0.04 });' + SHIM + '\n\n<span class="c">// compare: "الحكايات" ink pieces 11 → 8 (reference 8) ✓</span>' },
     HyperFrames: { bad: '<span class="c">&lt;!-- before --&gt;</span>\n&lt;div id="root" dir="rtl" data-composition-id="main"&gt;\n  &lt;h1 id="title"&gt;الحكايات&lt;/h1&gt;\n&lt;/div&gt;\n&lt;script&gt;\n  tl.from(<span class="d">split.chars</span>, …);\n  window.__timelines["main"] = tl;\n&lt;/script&gt;', good: '<span class="c">&lt;!-- after: same composition --&gt;</span>\n&lt;div id="root" dir="rtl" data-composition-id="main"&gt;\n  &lt;h1 id="title"&gt;الحكايات&lt;/h1&gt;\n&lt;/div&gt;\n&lt;script&gt;\n  tl.from(split.chars, …);\n  window.__timelines["main"] = tl;\n&lt;/script&gt;' + SHIM },
     Remotion: { bad: '<span class="c">// before · YearInReview.tsx</span>\n<span class="k">const</span> title = "سنة من الحكايات";\n{title.<span class="d">split("")</span>.map((ch, i) =&gt; {\n  <span class="k">const</span> s = spring({ frame: frame - 24 - i * 2, fps });', good: '<span class="c">// after · harakah-fix codemod (real diff)</span>\n<span class="k">import</span> { formatDigits, splitArabic, withArabicSeparators } <span class="k">from</span> "../harakah-arabic";\n<span class="k">const</span> title = "سنة من الحكايات";\n{<span class="c">/* harakah: was title.split("") */</span> <span class="a">splitArabic(title)</span>.map((ch, i) =&gt; {\n  <span class="k">const</span> s = spring({ frame: frame - 24 - i * 2, fps });\n\n<span class="c">// or the component:</span>\n&lt;ArabicText text="سنة من الحكايات" preset="rise" stagger={2} /&gt;' },
   };
