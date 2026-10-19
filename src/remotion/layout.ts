@@ -15,6 +15,7 @@ import { auditLayoutPage, layoutIssues, allFramesCount, type LayoutFinding, type
 import type { Issue } from "../engine.js";
 import { entryPoint, loadRemotion, scaffold, compositionsFor, confineImports, FALLBACK_MODULES } from "./compare.js";
 import { findRemotionRoot } from "./project.js";
+import { propTimeWindows, windowSampleTimes } from "./prop-times.js";
 
 export interface RemotionLayoutOptions {
   /** Composition ids (default: all, or those using the file for a single-file target). */
@@ -34,6 +35,8 @@ export interface RemotionLayoutOptions {
 export interface RemotionLayoutComp {
   id: string; width: number; height: number; fps: number; durationInFrames: number;
   frames: number; findings: LayoutFinding[]; issues: Issue[];
+  /** extra frames seeked inside timed windows from the props (caption words, scenes), on top of the even sample */
+  timedFrames?: number;
   timeline?: TimelineFrame[];
 }
 export interface RemotionLayoutResult { root: string; compositions: RemotionLayoutComp[] }
@@ -133,12 +136,14 @@ export async function auditRemotionBundle(root: string, bundleDir: string, o: Re
       log(`${comp.id}: layout audit (${comp.durationInFrames} frames @ ${comp.fps} fps)`);
       const page = await openComposition(browser, srv.url, comp, serializeProps(root, inputProps), serializeProps(root, comp.props));
       const duration = (comp.durationInFrames - 1) / comp.fps;
+      const maxFrames = o.maxFrames ?? 120;
+      const extraTimes = o.allFrames ? [] : windowSampleTimes([...propTimeWindows(comp.props, comp.fps), ...propTimeWindows(inputProps, comp.fps)], duration, comp.fps, maxFrames);
       const r = await auditLayoutPage(page, duration, {
-        ...(o.allFrames ? { fps: comp.fps, maxFrames: allFramesCount((comp.durationInFrames - 1) / comp.fps, comp.fps) } : { fps: o.fps ?? 4, maxFrames: o.maxFrames ?? 120 }), capture: o.capture,
+        ...(o.allFrames ? { fps: comp.fps, maxFrames: allFramesCount((comp.durationInFrames - 1) / comp.fps, comp.fps) } : { fps: o.fps ?? 4, maxFrames, extraTimes }), capture: o.capture,
         seekTo: (t) => seekComposition(page, comp.id, Math.min(comp.durationInFrames - 1, Math.round(t * comp.fps))),
       });
       await page.close();
-      out.push({ id: comp.id, width: comp.width, height: comp.height, fps: comp.fps, durationInFrames: comp.durationInFrames, frames: r.frames, findings: r.findings, issues: layoutIssues(r.findings, { jsx: true }).map((i, k) => ({ ...i, where: `${comp.id}: ${i.where}`, frames: r.findings[k].frames.map((t) => Math.round(t * comp.fps)) })), timeline: r.timeline });
+      out.push({ id: comp.id, width: comp.width, height: comp.height, fps: comp.fps, durationInFrames: comp.durationInFrames, frames: r.frames, ...(r.timed ? { timedFrames: r.timed } : {}), findings: r.findings, issues: layoutIssues(r.findings, { jsx: true }).map((i, k) => ({ ...i, where: `${comp.id}: ${i.where}`, frames: r.findings[k].frames.map((t) => Math.round(t * comp.fps)) })), timeline: r.timeline });
     }
   } finally {
     await browser?.close();
