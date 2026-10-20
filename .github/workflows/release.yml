@@ -1,7 +1,7 @@
 name: Release
 
-# Publishes to npm. Nothing runs on its own: a version tag or a manual run starts it, and it needs the NPM_TOKEN secret
-# (an npm "automation" or granular token with publish rights) in the repository secrets.
+# Publishes to npm. Nothing runs on its own: a version tag or a manual run starts it. Authentication is npm Trusted
+# Publishing (OIDC): both packages trust harakah-si/harakah, workflow release.yml, no environment. No npm token is stored.
 #   git tag v0.3.0 && git push origin v0.3.0                   → harakah-fixer (tag must equal package.json version)
 #   git tag remotion-arabic-v0.1.0 && git push origin …       → @harakah/remotion-arabic
 #   Actions → Release → Run workflow (dry run on by default)  → everything up to `npm publish --dry-run`
@@ -26,7 +26,7 @@ on:
 permissions:
   contents: read
   checks: read     # verify CI passed on the commit being released
-  id-token: write  # npm provenance (public repos only)
+  id-token: write  # npm trusted publishing (OIDC) and provenance
 
 concurrency:
   group: release
@@ -44,11 +44,15 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
-          registry-url: https://registry.npmjs.org
           cache: npm
           cache-dependency-path: |
             package-lock.json
             fixtures/remotion/package-lock.json
+
+      - name: npm CLI with trusted publishing (>= 11.5.1)
+        run: |
+          npm install -g npm@11
+          npm --version
 
       - name: Which package and version
         id: pkg
@@ -107,7 +111,6 @@ jobs:
       - name: Publish
         working-directory: ${{ steps.pkg.outputs.dir }}
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           DRY: ${{ steps.pkg.outputs.dry }}
           PRIVATE: ${{ steps.pkg.outputs.private }}
           # provenance links the package to this workflow run; npm only supports it for public repositories,
@@ -122,5 +125,4 @@ jobs:
           args=(--access public)
           [ "$DRY" = "true" ] && args+=(--dry-run)
           [ "$PROVENANCE" = "true" ] && args+=(--provenance)
-          if [ "$DRY" != "true" ] && [ -z "$NODE_AUTH_TOKEN" ]; then echo "::error::NPM_TOKEN secret is not set"; exit 1; fi
           npm publish "${args[@]}"
