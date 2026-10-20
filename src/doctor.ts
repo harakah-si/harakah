@@ -1,7 +1,8 @@
 /**
  * `harakah-fix doctor`: is this machine ready? Node, Chrome (found, starts, and really joins Arabic letters with a
  * bundled font), the Chrome mode Remotion will get, ffmpeg, the temp folder, the bundled fonts, and Remotion in the
- * project. Every problem comes with the one thing to do about it.
+ * project, and the project's own Arabic font files (do they map U+200D for Safari?). Every problem comes with the one
+ * thing to do about it.
  * فحص الجهاز: نود وكروم (ويربط الحروف العربية فعلاً) وffmpeg والخطوط وRemotion، مع الحل لكل مشكلة.
  */
 import fs from "node:fs";
@@ -13,6 +14,7 @@ import { pathToFileURL } from "node:url";
 import { CHROME, FFMPEG, launch, openPage, inkComponents, remotionChromeMode } from "./render.js";
 import { ASSET_FONT_DIR } from "./fonts.js";
 import { normalizeDigits } from "./arabic.js";
+import { fileCoverage, type Coverage } from "./glyphs.js";
 
 /** Counts in Arabic copy: Eastern digits, after a colon so no number–noun agreement is needed. */
 const ar = (n: number) => normalizeDigits(String(n), "eastern", "ar");
@@ -55,6 +57,40 @@ p{margin:0;padding:12px 24px;display:inline-block} #s span{display:inline-block}
     await browser.close();
     fs.rmSync(dir, { recursive: true, force: true });
   }
+}
+
+const SKIP_DIRS = new Set(["node_modules", ".git", ".next", ".cache", ".turbo", ".vercel", "out", "coverage"]);
+/** The project's own font files (not node_modules), breadth-first, depth ≤ 6, at most 4000 entries and 60 fonts. */
+export function projectFonts(root: string): string[] {
+  const fonts: string[] = [], queue: [string, number][] = [[root, 0]];
+  let seen = 0;
+  while (queue.length && seen < 4000 && fonts.length < 60) {
+    const [dir, depth] = queue.shift()!;
+    let ents: fs.Dirent[] = [];
+    try { ents = fs.readdirSync(dir, { withFileTypes: true }); } catch { continue; }
+    for (const e of ents) {
+      if (++seen > 4000) break;
+      const p = path.join(dir, e.name);
+      if (e.isDirectory()) { if (depth < 6 && !SKIP_DIRS.has(e.name) && !e.name.startsWith(".")) queue.push([p, depth + 1]); }
+      else if (e.isFile() && /\.(?:ttf|otf|woff2?)$/i.test(e.name)) fonts.push(p);
+    }
+  }
+  return fonts;
+}
+
+/** Arabic fonts in the project with no cmap entry for U+200D / U+200C, the case where Safari breaks ZWJ-padded letters. */
+export function joinerCheck(root: string): DoctorCheck | null {
+  const arabic = projectFonts(root).map((f) => fileCoverage(f)).filter((c): c is Coverage => !!c && c.arabic);
+  if (!arabic.length) return null;
+  const bad = arabic.filter((c) => !c.joiners), rel = (c: Coverage) => path.relative(root, c.file) || c.file;
+  if (!bad.length) return { id: "font-joiners", ok: true, required: false, en: `${arabic.length} Arabic font file(s) in this project map U+200D/U+200C (ZWJ-padded letters stay in the font in Safari)`, ar: `ملفات الخطوط العربية في المشروع تحتوي الواصل الصفري U+200D: ${ar(arabic.length)}` };
+  const list = bad.slice(0, 5).map(rel).join(", ") + (bad.length > 5 ? ` (+${bad.length - 5} more)` : "");
+  return {
+    id: "font-joiners", ok: false, required: false,
+    en: `${bad.length} Arabic font file(s) have no U+200D/U+200C: ${list}. In Safari/iOS, a letter padded with ZWJ is drawn in a fallback font (mixed fonts, broken joins). Harakah's runtime shim and <ArabicText> switch to the clip method there; splitArabic() strings, older shims and your own ZWJ code don't`,
+    ar: `ملفات خطوط عربية بلا الواصل الصفري U+200D: ${ar(bad.length)}. في Safari يُرسم الحرف المقسوم مع الواصل بخط بديل فتنكسر الكلمة`,
+    fix: "Use <ArabicText> or the harakah-fix runtime shim (0.5+) for per-letter motion, or animate per word in Safari; or add the joiners to the font's cmap (OFL allows it; rename the family if the license reserves its name), e.g. fontTools: map U+200D and U+200C to an empty zero-width glyph.",
+  };
 }
 
 export async function doctor(o: { cwd?: string } = {}): Promise<DoctorCheck[]> {
@@ -107,6 +143,8 @@ export async function doctor(o: { cwd?: string } = {}): Promise<DoctorCheck[]> {
   const pkg = path.join(cwd, "package.json");
   let usesRemotion = false;
   try { const j = JSON.parse(fs.readFileSync(pkg, "utf8")); usesRemotion = !!({ ...j.dependencies, ...j.devDependencies }.remotion); } catch { /* no project here */ }
+  const joiners = joinerCheck(cwd);
+  if (joiners) out.push(joiners);
   if (usesRemotion) {
     const req = createRequire(pkg);
     const missing = ["remotion", "@remotion/bundler", "@remotion/renderer"].filter((m) => { try { req.resolve(m); return false; } catch { return true; } });

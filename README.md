@@ -130,7 +130,7 @@ More: [integrations/remotion](integrations/remotion/README.md).
 ### 5. GitHub Actions
 
 ```yaml
-- run: npx -y -p harakah-fixer@0.4 harakah-fix gate . --github
+- run: npx -y -p harakah-fixer@0.5 harakah-fix gate . --github
 ```
 
 The check fails when Arabic would render broken. Each problem is annotated on its line in the pull request, and the job summary lists what blocks the merge, with the fix command. Copy the workflow from `integrations/github-actions/harakah.yml` (in the package): [integrations/github-actions](integrations/github-actions/README.md).

@@ -25,6 +25,8 @@ export interface Coverage {
   /** how the letters join: OpenType init/medi/fina for the arab script, legacy presentation forms, or not at all */
   joins: "gsub" | "presentation-forms" | "none";
   missing: string[];
+  /** has cmap entries for U+200D ZWJ and U+200C ZWNJ (Safari draws a letter + joiner in a fallback font otherwise) */
+  joiners: boolean;
 }
 
 const cache = new Map<string, Coverage | null>();
@@ -52,7 +54,8 @@ function measure(font: any, file: string): Coverage {
     : PRES_FORMS.filter((c) => f.hasGlyphForCodePoint(c)).length >= 4 ? "presentation-forms" : "none";
   let family = "";
   try { family = String(f.familyName ?? ""); } catch {}
-  return { family, file, letters, total: CORE_ARABIC.length, arabic: letters >= CORE_ARABIC.length - 2, joins: letters ? joins : "none", missing };
+  const joiners = f.hasGlyphForCodePoint(0x200d) && f.hasGlyphForCodePoint(0x200c);
+  return { family, file, letters, total: CORE_ARABIC.length, arabic: letters >= CORE_ARABIC.length - 2, joins: letters ? joins : "none", missing, joiners };
 }
 
 /** Coverage of a font file on disk (cached by path, size and mtime). null when it isn't a readable font. */
