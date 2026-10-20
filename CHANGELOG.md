@@ -2,12 +2,13 @@
 
 Released to npm as [`harakah-fixer`](https://www.npmjs.com/package/harakah-fixer). Full options and behaviour: [docs/REFERENCE.md](docs/REFERENCE.md).
 
-## v0.5.0 · unreleased (pending approval)
+## v0.5.0 · 2026-10-20
 
 - **Per-letter animation joins in Safari and on iPhone with any font.** Safari draws a letter padded with ZWJ in a fallback font when the font has no U+200D: Alexandria, IBM Plex Sans Arabic, Cairo and Tajawal do not have it. In WebKit the runtime shim now uses the clip method instead. Each letter element (the same element your timeline targets) shows the whole word, clipped to its letter's slice, with one copy for screen readers. Chrome, Firefox and renders keep ZWJ padding, unchanged. `window.__harakahSplit = "clip" | "zwj"` forces either method. See REFERENCE, "The runtime shim in Safari / WebKit".
 - **@harakah/remotion-arabic 0.2.0:** `<ArabicText>` does the same in the Remotion Player in Safari, after mount. Renders and server output keep the ZWJ boxes (Chromium frames byte-identical). New `joinMode` prop and `needsClipJoin()`.
 - **`doctor` warns about the project's Arabic font files without U+200D/U+200C**, for `splitArabic()` strings, older shims and hand-written ZWJ code in Safari.
 - Harakat in their own boxes (a split by code point) fold into the letter before them, so the word keeps its joins in every browser.
+- **`gate --layout` no longer skips short captions in long compositions.** It sampled 2 frames a second, capped at 60, so a 5-minute composition was checked every 5 s and a 3 s caption could fall between samples and pass. The layout check (gate and `audit --layout`) now also seeks the middle of every timed window it finds in the props (`startMs`/`endMs`, `start`/`end`, `startFrame`/`endFrame`, `from` + `durationInFrames`, …), e.g. each caption word.
 - **One-line per-letter maps in JSX are flagged and fixed.** `text.split("").map((ch) => <span>{ch}</span>)` (also `split('')`, `[...text]`, `Array.from(text)`) went unflagged when the spans had no transform, because plain inline spans still join in Chrome's render. They are now rewritten to `splitArabic()` as a warning: other browsers' previews can shape each span alone, and the first transform, inline-block or padding breaks the word in Chrome too.
 
 ## v0.4.2 · 2026-10-15

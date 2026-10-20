@@ -267,8 +267,11 @@ export function frameBoxes(frames: FrameObs[], findings: LayoutFinding[]): Timel
 
 /** Probe a page at sampled frames and fold the observations. `seekTo` defaults to the shared seek (timelines, GSAP, CSS, window.seek, rAF clock).
  *  With `capture`, every sampled frame is also screenshotted (JPEG) for a scrubber, with the flagged boxes per frame. */
-export async function auditLayoutPage(page: Page, duration: number, o: { fps?: number; maxFrames?: number; seekTo?: (t: number) => Promise<void>; capture?: CaptureOptions; verify?: boolean } = {}): Promise<{ findings: LayoutFinding[]; frames: number; timeline?: TimelineFrame[]; viewport?: { width: number; height: number } }> {
-  const times = duration > 0 ? sampleTimes(duration, o.fps ?? 10, o.maxFrames ?? 300) : [0];
+export async function auditLayoutPage(page: Page, duration: number, o: { fps?: number; maxFrames?: number; extraTimes?: number[]; seekTo?: (t: number) => Promise<void>; capture?: CaptureOptions; verify?: boolean } = {}): Promise<{ findings: LayoutFinding[]; frames: number; timed: number; timeline?: TimelineFrame[]; viewport?: { width: number; height: number } }> {
+  const even = duration > 0 ? sampleTimes(duration, o.fps ?? 10, o.maxFrames ?? 300) : [0];
+  // extra seeks inside timed windows (captions, scenes) that the even grid can step over
+  const extra = (o.extraTimes ?? []).filter((t) => t >= 0 && t <= duration && !even.some((e) => Math.abs(e - t) < 1e-3));
+  const times = [...even, ...extra].sort((a, b) => a - b);
   const frames: FrameObs[] = [];
   const imgs: string[] = [];
   const vp = page.viewport() ?? { width: 1280, height: 720 };
@@ -283,9 +286,9 @@ export async function auditLayoutPage(page: Page, duration: number, o: { fps?: n
   }
   const findings = foldFrames(frames);
   if (o.verify !== false) await verifySuggestions(page, findings, o.seekTo ?? ((t) => seek(page, t)));
-  if (!o.capture) return { findings, frames: times.length };
+  if (!o.capture) return { findings, frames: even.length, timed: extra.length };
   const timeline = frameBoxes(frames, findings).map((f, i) => ({ ...f, img: imgs[i] }));
-  return { findings, frames: times.length, timeline, viewport: { width: vp.width, height: vp.height } };
+  return { findings, frames: even.length, timed: extra.length, timeline, viewport: { width: vp.width, height: vp.height } };
 }
 
 /**
