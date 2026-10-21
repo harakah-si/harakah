@@ -96,6 +96,25 @@ main{padding:24px;max-width:34rem;text-align:center}h1{font-size:28px;margin:0 0
 <nav><a href="/">الصفحة الرئيسية</a><a href="/en/" lang="en" dir="ltr">Home (English)</a><a href="/tool/" lang="en" dir="ltr">Run Harakah locally</a></nav></main></body></html>
 `);
 
+// /privacy/, /terms/, /support/ (site-src/legal.mjs): Arabic then English on one page, same palette as /tool/ and the 404,
+// no scripts. Linked from plugin listings and package metadata, so their URLs stay fixed.
+const { PAGES } = await import(new URL("../site-src/legal.mjs", import.meta.url).href);
+for (const [slug, pg] of Object.entries(PAGES)) write(`${slug}/index.html`, `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${pg.title} · Harakah</title><meta name="description" content="${escAttr(pg.desc)}"><link rel="canonical" href="${ORIGIN}/${slug}/"><link rel="icon" href="/favicon.ico">
+<style>@font-face{font-family:"IBM Plex Sans Arabic";src:url("/fonts/IBMPlexSansArabic-Regular.ttf");font-weight:400;font-display:swap}
+@font-face{font-family:"IBM Plex Sans Arabic";src:url("/fonts/IBMPlexSansArabic-SemiBold.ttf");font-weight:600;font-display:swap}
+:root{${theme("light")}}@media (prefers-color-scheme:dark){:root{${theme("dark")}}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.8 "IBM Plex Sans Arabic",system-ui,sans-serif}
+header,main,footer{max-width:46rem;margin:0 auto;padding:0 20px}header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-top:22px;padding-bottom:8px}
+.logo{font:600 22px/1 "IBM Plex Sans Arabic",sans-serif;text-decoration:none;color:var(--ink)}nav{display:flex;gap:16px;flex-wrap:wrap}
+a{color:var(--acc);text-underline-offset:3px}h1{font-size:30px;line-height:1.3;margin:28px 0 4px}h2{font-size:20px;margin:26px 0 6px}
+section+section{border-top:1px solid var(--line);margin-top:40px}.upd{color:var(--mute);margin:0}code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.9em;background:var(--card);padding:1px 5px;border-radius:5px;direction:ltr;unicode-bidi:isolate}
+footer{color:var(--mute);padding-top:32px;padding-bottom:40px}</style></head>
+<body><header><a class="logo" href="/">حركة · Harakah</a><nav><a href="/privacy/">الخصوصية · Privacy</a><a href="/terms/">الشروط · Terms</a><a href="/support/">الدعم · Support</a></nav></header>
+<main>${pg.body}</main>
+<footer><a href="/">الصفحة الرئيسية</a> · <a href="/en/" lang="en" dir="ltr">Home (English)</a> · <a href="https://github.com/harakah-si/harakah" lang="en" dir="ltr">GitHub</a></footer></body></html>
+`);
+
 // Content-Security-Policy: everything is served from this origin. Inline scripts are allowed by their sha256 (computed
 // from the pages just written, so it can't drift); inline styles and style="" attributes stay allowed; data: images for the
 // landing's CSS noise texture.
@@ -134,6 +153,7 @@ write("robots.txt", `User-agent: *\nAllow: /\n${ORIGIN ? `Sitemap: ${ORIGIN}/sit
 if (ORIGIN) write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${[`${ORIGIN}/`, `${ORIGIN}/en/`].map((u) => `  <url><loc>${u}</loc><xhtml:link rel="alternate" hreflang="ar" href="${ORIGIN}/"/><xhtml:link rel="alternate" hreflang="en" href="${ORIGIN}/en/"/></url>`).join("\n")}
+${Object.keys(PAGES).map((k) => `  <url><loc>${ORIGIN}/${k}/</loc></url>`).join("\n")}
 </urlset>
 `);
 
