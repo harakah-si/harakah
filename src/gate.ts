@@ -133,7 +133,7 @@ export async function gate(target: string, o: GateOptions = {}): Promise<GateRes
   const lines = blocking.slice(0, 12).map((b) => `  - ${b.file}${b.line ? `:${b.line}` : ""} ${b.code} ${b.title}${b.fixable ? " (auto-fixable)" : " (manual)"}`);
   const unchecked = inconclusive.map((x) => `  - ${x.file}: ${x.reason}`);
   const message = ok
-    ? [`Harakah: Arabic text is safe to render (${files.length} file(s) with Arabic checked; ${summary.warnings} warning(s), ${summary.info} note(s)). · النص العربي جاهز للرندر.`,
+    ? [`Harakah: Arabic text is safe to render (${files.length ? `${summary.warnings} warning(s), ${summary.info} note(s) in ${files.length} file(s)` : "no Arabic problems found"}). · النص العربي جاهز للرندر.`,
        ...(unchecked.length ? ["Not checked (HARAKAH_GATE=lenient):", ...unchecked] : [])].join("\n")
     : !blocking.length
     ? [`Harakah could not finish checking the Arabic, so the render is blocked until it can. · تعذّر إكمال فحص النص العربي، فأُوقف الرندر حتى يكتمل.`,
@@ -143,7 +143,7 @@ export async function gate(target: string, o: GateOptions = {}): Promise<GateRes
         ? `Harakah found ${blocking.length} Arabic problem(s) that will render as broken letters/direction. Fix them before rendering. · وجدت حركة مشاكل ستُظهر النص العربي مكسوراً؛ أصلحها قبل الرندر.`
         : `Harakah blocked the render: ${blocking.length} Arabic problem(s) would ship broken letters/direction. · أوقفت حركة الرندر: النص العربي سيظهر مكسوراً.`,
        ...lines, blocking.length > 12 ? `  … ${blocking.length - 12} more` : "",
-       `Fix: ${fixCommand}  (then re-run the check; use harakah_compare to verify with a real render)`].filter(Boolean).join("\n");
+       `Fix: ${fixCommand}  (then re-run the check; "harakah-fix compare" renders before/after to verify)`].filter(Boolean).join("\n");
   return { ok, target, files, blocking, summary, inconclusive, message, fixCommand };
 }
 

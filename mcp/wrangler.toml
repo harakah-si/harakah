@@ -1,0 +1,15 @@
+name = "harakah-mcp"
+main = "dist/worker.js"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+no_bundle = true
+# Custom domain (DNS record is created by Cloudflare): mcp.harakah.si
+routes = [{ pattern = "mcp.harakah.si", custom_domain = true }]
+
+[observability]
+enabled = false
+
+[[rules]]
+type = "ESModule"
+globs = ["**/*.js"]

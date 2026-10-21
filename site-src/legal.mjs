@@ -1,6 +1,7 @@
 // harakah.si /privacy/, /terms/ and /support/: static pages, Arabic and English on one page, no scripts, no cookies.
 // scripts/build-static.mjs writes them with /tool/'s palette (same shell as the 404 page). Keep them true to the code:
-// the site has no accounts or forms, the CLI sends nothing to Harakah, and the only collectors are npm and Cloudflare.
+// the site has no accounts or forms, the CLI sends nothing to Harakah, the hosted tool at mcp.harakah.si (mcp/) processes the
+// code it's sent in memory and stores nothing, and the only collectors are npm and Cloudflare.
 export const UPDATED = "2026-10-21";
 
 const ar = (s) => `<section lang="ar" dir="rtl">${s}</section>`;
@@ -9,19 +10,27 @@ const en = (s) => `<section lang="en" dir="ltr">${s}</section>`;
 export const PAGES = {
   privacy: {
     title: "Privacy · الخصوصية",
-    desc: "What harakah.si and the harakah-fixer tool collect: no accounts, no cookies, and the tool runs on your computer.",
+    desc: "What harakah.si, the harakah-fixer tool and the hosted Harakah tool collect: no accounts, no cookies, and code sent to the hosted tool is not stored.",
     body: ar(`<h1>سياسة الخصوصية</h1>
 <p class="upd">آخر تحديث: ${UPDATED}</p>
 <h2>باختصار</h2>
 <ul><li>الموقع ما فيه حسابات ولا نماذج تسجيل ولا كوكيز.</li>
 <li>أداة harakah-fixer ومهارة حركة تشتغل على جهازك، وما ترسل ملفاتك ولا أي بيانات لحركة.</li>
-<li>الجهات الوحيدة اللي توصلها بيانات تقنية هم Cloudflare (استضافة الموقع) وnpm (تنزيل الحزمة).</li></ul>
+<li>الأداة المستضافة (mcp.harakah.si) تستقبل الكود اللي يرسله لها مساعد الذكاء الاصطناعي، تفحصه أو تصلّحه في الذاكرة، وترجّع النتيجة. ما نخزّن الكود ولا النتيجة ولا نسجّلهم.</li>
+<li>الجهات الوحيدة اللي توصلها بيانات تقنية هم Cloudflare (استضافة الموقع والأداة المستضافة) وnpm (تنزيل الحزمة).</li></ul>
 <h2>الموقع harakah.si</h2>
 <p>الموقع مستضاف على Cloudflare Pages ويستخدم Cloudflare Web Analytics. هذي الإحصائيات ما تستخدم كوكيز، وتحسب زيارات الصفحات بمعلومات مثل الصفحة، والموقع اللي جيت منه، ونوع المتصفح والجهاز، والدولة التقريبية. Cloudflare تعالج عنوان IP وبيانات الطلب عشان تقدّم الموقع وتحميه، حسب <a href="https://www.cloudflare.com/privacypolicy/">سياسة خصوصية Cloudflare</a>.</p>
 <p>اختياراتك في الموقع (اللغة، والوضع الفاتح أو الداكن، وشكل الأرقام، والألوان) تنحفظ في متصفحك فقط (localStorage)، وما توصلنا.</p>
 <h2>الأداة والمهارة</h2>
 <p>أوامر <code>npx -y -p harakah-fixer harakah-fix</code> تفحص وتصلّح الملفات على جهازك. الأداة ما فيها تتبّع ولا إحصائيات استخدام، وما ترسل كودك لأي مكان. أول مرة تشغّلها، npx ينزّل الحزمة من سجل npm، وهذا الطلب يوصل لـ npm (التابعة لـ GitHub) بعنوان IP ومعلومات مثل إصدار npm وNode ونظام التشغيل، حسب <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement">بيان خصوصية GitHub</a>.</p>
 <p>لما تستخدم المهارة داخل مساعد ذكاء اصطناعي، المحادثة نفسها ومخرجات الأوامر يعالجها مزوّد المساعد حسب سياسته هو، مو حركة.</p>
+<h2>الأداة المستضافة (mcp.harakah.si)</h2>
+<p>إضافة حركة في مساعدات الذكاء الاصطناعي تقدر تستدعي أداتين مستضافتين: <code>check_arabic</code> و<code>fix_arabic</code>. ما تحتاج حساب ولا تسجيل دخول.</p>
+<ul><li><strong>اللي يوصلنا:</strong> كود ملف واحد (صفحة HTML أو مكوّن Remotion) يرسله المساعد مع خيارات بسيطة مثل نوع الأرقام. هذا الكود ممكن يحتوي أي نص موجود في ملفك، فلا ترسل ملفات فيها معلومات شخصية أو سرية. ومع كل طلب تشوف Cloudflare بيانات تقنية مثل عنوان IP ووقت الطلب.</li>
+<li><strong>الغرض:</strong> فحص النص العربي في الكود وإصلاحه وإرجاع النتيجة للمساعد، بس.</li>
+<li><strong>مدة الاحتفاظ:</strong> الكود ينعالج في الذاكرة ويختفي أول ما ترجع النتيجة. ما نخزّنه في قاعدة بيانات أو ملف، وما نسجّله، وسجلات Workers مطفّية. Cloudflare تحتفظ ببيانات الطلب التقنية (مو محتوى الكود) لفترة محدودة عشان الأمان ومنع الإساءة، حسب <a href="https://www.cloudflare.com/privacypolicy/">سياسة خصوصية Cloudflare</a>.</li>
+<li><strong>الجهات المستلمة:</strong> Cloudflare فقط، كمعالج يشغّل الأداة على Cloudflare Workers. ما نبيع البيانات ولا نشاركها مع أحد ولا نستخدمها لتدريب نماذج.</li>
+<li><strong>تحكّمك:</strong> الأداة ما تشتغل إلا لما يستدعيها المساعد في محادثتك، وتقدر تعطّل الإضافة أو تشغّل أداة harakah-fixer على جهازك بدالها عشان ما يطلع كودك من جهازك. وبما إننا ما نخزّن شي، ما عندنا بيانات عنك نقدر نعرضها أو نحذفها.</li></ul>
 <h2>لما تراسلنا</h2>
 <p>إذا راسلتنا على <a href="mailto:hello@harakah.si">hello@harakah.si</a> أو فتحت بلاغ على GitHub، نستخدم اللي ترسله عشان نرد عليك فقط. البلاغات على GitHub عامة.</p>
 <h2>التغييرات والتواصل</h2>
@@ -31,13 +40,21 @@ export const PAGES = {
 <h2>In short</h2>
 <ul><li>The site has no accounts, no sign-up forms and no cookies.</li>
 <li>The harakah-fixer tool and the Harakah skill run on your computer. They don't send your files or any data to Harakah.</li>
-<li>The only parties that receive technical data are Cloudflare (which hosts the site) and npm (which serves the package).</li></ul>
+<li>The hosted tool (mcp.harakah.si) receives the code an AI assistant sends it, checks or fixes it in memory and returns the result. We don't store or log the code or the result.</li>
+<li>The only parties that receive technical data are Cloudflare (which hosts the site and the hosted tool) and npm (which serves the package).</li></ul>
 <h2>The harakah.si website</h2>
 <p>The site is hosted on Cloudflare Pages and uses Cloudflare Web Analytics. It sets no cookies and counts page views using details such as the page, the referring site, browser and device type, and approximate country. Cloudflare processes your IP address and request data to serve and protect the site, under <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare's privacy policy</a>.</p>
 <p>Your choices on the site (language, light or dark theme, digit style and palette) are saved only in your browser (localStorage) and never sent to us.</p>
 <h2>The tool and the skill</h2>
 <p><code>npx -y -p harakah-fixer harakah-fix</code> commands check and fix files on your computer. The tool has no tracking or usage analytics and doesn't upload your code anywhere. The first time you run it, npx downloads the package from the npm registry. That request reaches npm (part of GitHub) with your IP address and details such as your npm, Node.js and OS versions, under <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>.</p>
 <p>When you use the skill inside an AI assistant, the conversation and the command output are handled by that assistant's provider under its own policies, not by Harakah.</p>
+<h2>The hosted tool (mcp.harakah.si)</h2>
+<p>The Harakah plugin for AI assistants can call two hosted tools, <code>check_arabic</code> and <code>fix_arabic</code>. They need no account or sign-in.</p>
+<ul><li><strong>What we receive:</strong> the code of one file (an HTML page or a Remotion component) that the assistant sends, plus simple options such as the digit style. That code can contain any text that's in your file, so don't send files with personal or confidential information. With each request, Cloudflare also sees technical data such as your IP address and the time of the request.</li>
+<li><strong>Purpose:</strong> only to check and fix the Arabic text in that code and return the result to the assistant.</li>
+<li><strong>Retention:</strong> the code is processed in memory and discarded as soon as the result is returned. We don't save it to a database or file or log it, and Workers logging is turned off. Cloudflare keeps technical request data (not the code itself) for a limited time for security and abuse prevention, under <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare's privacy policy</a>.</li>
+<li><strong>Recipients:</strong> only Cloudflare, as the processor that runs the tool on Cloudflare Workers. We don't sell or share the data, and we don't use it to train models.</li>
+<li><strong>Your controls:</strong> the tool runs only when the assistant calls it in your conversation. You can turn the plugin off, or run harakah-fixer on your computer instead so your code never leaves it. Because we store nothing, we hold no data about you to show or delete.</li></ul>
 <h2>When you contact us</h2>
 <p>If you email <a href="mailto:hello@harakah.si">hello@harakah.si</a> or open a GitHub issue, we use what you send only to reply. GitHub issues are public.</p>
 <h2>Changes and contact</h2>
