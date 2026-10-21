@@ -23,7 +23,7 @@ export const TOOLS = [
   {
     name: "check_arabic",
     title: "Check Arabic in motion code",
-    description: "Find Arabic text problems in one motion-graphics source file (HTML/GSAP/HyperFrames, or a Remotion .tsx/.jsx component): letters split into per-letter boxes that break joining, missing right-to-left direction, Latin-only fonts, letter-spacing on Arabic, mixed digit styles, and canvas/3D text drawn letter by letter. Returns a summary and a list of issues with line numbers. Does not change anything and stores nothing.",
+    description: "Find Arabic text problems in one motion-graphics source file (HTML/GSAP/HyperFrames, or a Remotion .tsx/.jsx component): letters split into per-letter boxes that break joining, missing right-to-left direction, Latin-only fonts, letter-spacing on Arabic, mixed digit styles, and canvas/3D text drawn letter by letter. Returns ok (true when there are no errors or warnings), a summary and a list of issues with line numbers. Does not change anything and stores nothing.",
     inputSchema: { type: "object", properties: { ...common }, required: ["code"], additionalProperties: false },
     annotations: ann("Check Arabic in motion code"),
   },
@@ -59,7 +59,7 @@ export function checkArabic(args: any) {
             ...r.reports.map((c: any) => ({ code: c.code, severity: "warning", line: c.line, title: { en: c.en }, message: { en: c.en }, fixable: false }))];
   })();
   const summary = summarize(issues as any);
-  return { kind: k, ok: summary.errors === 0, summary, issues: brief(issues) };
+  return { kind: k, ok: summary.errors === 0 && summary.warnings === 0, summary, issues: brief(issues) };
 }
 
 export function fixArabic(args: any) {

@@ -35,7 +35,7 @@ test("tools/list has two read-only tools with explicit annotations", async () =>
 test("check_arabic finds split letters in HTML", async () => {
   const { body } = await call("check_arabic", { code: SPLIT_HTML });
   const codes = body.result.structuredContent.issues.map((i: any) => i.code);
-  assert.ok(codes.includes("HZ01")); assert.ok(codes.includes("HZ03"));
+  assert.ok(codes.includes("HZ01")); assert.ok(codes.includes("HZ03")); assert.equal(body.result.structuredContent.ok, false);
 });
 
 test("fix_arabic repairs Remotion and the fixed code checks clean", async () => {
@@ -45,7 +45,7 @@ test("fix_arabic repairs Remotion and the fixed code checks clean", async () => 
   assert.match(out.fixedCode, /splitArabic\("مرحبا"\)/); assert.match(out.fixedCode, /dir="rtl"/);
   assert.equal(body.result.content[1].text, out.fixedCode);
   const again = await call("check_arabic", { code: out.fixedCode });
-  assert.equal(again.body.result.structuredContent.summary.errors, 0);
+  assert.equal(again.body.result.structuredContent.ok, true);
 });
 
 test("fix_arabic repairs HTML", async () => {
