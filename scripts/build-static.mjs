@@ -70,7 +70,7 @@ for (const f of fonts) {
 }
 for (const l of licenses) { if (!fs.existsSync(path.join(FONTS, l))) throw new Error(`missing font license ${l}`); copy(path.join(FONTS, l), `fonts/${l}`); }
 // the Remotion tab builds its before/after image paths at runtime, so list those two explicitly
-const demo = [...new Set([...[...src.matchAll(/\/demo\/([\w./-]+\.(?:mp4|png))/g)].map((m) => m[1]), "remotion/before.png", "remotion/after.png"])];
+const demo = [...new Set([...[...src.matchAll(/\/demo\/([\w./-]+\.(?:mp4|png))/g)].map((m) => m[1]), "remotion/before.png", "remotion/after.png", "chatgpt-plugin.mp4"])];
 for (const d of demo) if (fs.existsSync(path.join(ROOT, "demo", d))) copy(path.join(ROOT, "demo", d), `demo/${d}`);
 // README images: the README links https://harakah.si/media/…, so they show on npmjs.com and anywhere the README is copied
 for (const f of fs.readdirSync(path.join(ROOT, "docs", "media"))) copy(path.join(ROOT, "docs", "media", f), `media/${f}`);
