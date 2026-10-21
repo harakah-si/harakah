@@ -43,6 +43,7 @@ export async function handleRequest(req: Request): Promise<Response> {
   const url = new URL(req.url);
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
   if (url.pathname === "/" && req.method === "GET") return new Response(`Harakah MCP server ${VERSION}. Connect an MCP client to ${url.origin}/mcp (Streamable HTTP, no sign-in). Privacy: https://harakah.si/privacy/\n`, { headers: { "content-type": "text/plain; charset=utf-8", ...CORS } });
+  if (url.pathname === "/.well-known/openai-apps-challenge") return new Response("gOMc_yiA5sDM9dLsd-K_DUa6ttb4hqJT-4vTICoGyu8", { headers: { "content-type": "text/plain; charset=utf-8" } });
   if (url.pathname === "/healthz") return json({ ok: true, version: VERSION });
   if (url.pathname !== "/mcp") return json({ error: "not found" }, 404);
   if (req.method === "GET") return json(rpcErr(null, -32000, "This server is stateless and does not offer an SSE stream; send JSON-RPC with POST."), 405, { allow: "POST" });
