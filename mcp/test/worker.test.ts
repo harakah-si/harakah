@@ -74,3 +74,26 @@ test("transport edges: bad JSON, GET, unknown path, oversized body", async () =>
   assert.equal((await handleRequest(new Request("https://mcp.harakah.si/mcp", { method: "POST", headers: { "content-length": "99999999" }, body: "{}" }))).status, 413);
   assert.equal((await rpc({ jsonrpc: "2.0", id: 4, method: "resources/read" })).body.error.code, -32601);
 });
+
+test("a bare JSX snippet with no imports is detected as Remotion, and => is never HTML-escaped", async () => {
+  const snippet = 'const A=()=>{const t="مرحبا بكم";return <div>{[...t].map((c,i)=><span key={i}>{c}</span>)}</div>}';
+  for (const name of ["check_arabic", "fix_arabic"]) {
+    const out = (await call(name, { code: snippet })).body.result.structuredContent;
+    assert.equal(out.kind, "remotion", name);
+  }
+  const fixed = (await call("fix_arabic", { code: snippet })).body.result.structuredContent;
+  assert.equal(fixed.changed, true); assert.ok(fixed.changes.length > 0);
+  assert.doesNotMatch(fixed.fixedCode, /&gt;|&lt;/);
+  // HTML fragments (start with a tag) still go to the HTML engine, even with => inside a script
+  const frag = '<div><span>م</span><span>ر</span></div><script>gsap.to("span",{y:()=>10})</script>';
+  assert.equal((await call("check_arabic", { code: frag })).body.result.structuredContent.kind, "html");
+});
+
+test("tool descriptions say when to use them and stay read-only", async () => {
+  const { body } = await rpc({ jsonrpc: "2.0", id: 1, method: "tools/list" });
+  for (const t of body.result.tools) {
+    assert.match(t.description, /Use when/); assert.match(t.description, /Persian/);
+    assert.ok(t.description.split(/\s+/).length <= 100, t.name);
+    assert.equal(t.annotations.readOnlyHint, true); assert.equal(t.annotations.idempotentHint, true);
+  }
+});

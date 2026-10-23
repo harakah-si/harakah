@@ -9,12 +9,15 @@ export { VERSION };
 type Kind = "html" | "remotion";
 const kindOf = (code: string, hint?: string): Kind =>
   hint === "html" || hint === "remotion" ? hint
-  : /<!doctype|<html[\s>]/i.test(code) || !/(^|\n)\s*(import|export)\s/.test(code) ? "html" : "remotion";
+  : /<!doctype|<html[\s>]/i.test(code) ? "html"
+  : /(^|\n)\s*(import|export)\s/.test(code) ? "remotion"
+  // a bare JS/JSX snippet (no imports) is a component, not an HTML page; an HTML fragment starts with a tag
+  : !/^\s*</.test(code) && /(^|\n)\s*(const|let|var|function|return)\b|=>/.test(code) ? "remotion" : "html";
 const brief = (issues: any[]) => issues.map((i) => ({ code: i.code, severity: i.severity, line: i.line ?? null, title: i.title?.en ?? null, message: i.message?.en ?? null, fixable: !!i.fixable }));
 
 const common = {
   code: { type: "string", minLength: 1, maxLength: MAX_CODE_CHARS, description: `Source code of one file (HTML/GSAP/HyperFrames page or Remotion .tsx/.jsx component), up to ${MAX_CODE_CHARS} characters. Send only the file being worked on.` },
-  kind: { type: "string", enum: ["html", "remotion"], description: "File type. Omit to auto-detect (import/export statements mean Remotion)." },
+  kind: { type: "string", enum: ["html", "remotion"], description: "File type. Omit to auto-detect (an HTML document or a fragment starting with a tag means html; import/export or a bare JS/JSX snippet means remotion)." },
   digits: { type: "string", enum: ["eastern", "western", "keep"], description: "Digit policy: eastern ١٢٣ (default), western 123, or keep as written." },
 };
 const ann = (title: string) => ({ title, readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false });
@@ -23,14 +26,14 @@ export const TOOLS = [
   {
     name: "check_arabic",
     title: "Check Arabic in motion code",
-    description: "Find Arabic text problems in one motion-graphics source file (HTML/GSAP/HyperFrames, or a Remotion .tsx/.jsx component): letters split into per-letter boxes that break joining, missing right-to-left direction, Latin-only fonts, letter-spacing on Arabic, mixed digit styles, and canvas/3D text drawn letter by letter. Returns ok (true when there are no errors or warnings), a summary and a list of issues with line numbers. Does not change anything and stores nothing.",
+    description: "Analyzes one HTML page or Remotion .tsx/.jsx component. Use when Arabic, Persian or Urdu text appears in animation code, or when the user asks to check Arabic rendering, letter splitting, RTL, shaping or disconnected letters. Detects per-letter splits breaking joining, missing dir=rtl/lang, Latin-only fonts, Arabic letter-spacing, mixed digit styles, tight line-height clipping diacritics, and canvas/3D per-letter drawing. Warns that letter-spacing breaks joins in AE/Lottie exports. Returns ok, summary and issues with line numbers. Max 200,000 chars; kind=html|remotion is auto-detected if omitted.",
     inputSchema: { type: "object", properties: { ...common }, required: ["code"], additionalProperties: false },
     annotations: ann("Check Arabic in motion code"),
   },
   {
     name: "fix_arabic",
     title: "Fix Arabic in motion code",
-    description: "Return a repaired copy of one motion-graphics source file with broken Arabic fixed (joined letters kept while preserving per-letter animation, right-to-left direction, an Arabic-capable font, no letter-spacing, consistent digits), plus a list of each change and any issues that could not be fixed safely. Every change is marked with a harakah: comment. Only returns text; it does not write files and stores nothing.",
+    description: "Returns repaired code for one HTML page or Remotion .tsx/.jsx component. Use when Arabic, Persian or Urdu text in animation code needs repair, or when the user asks to fix Arabic rendering, letter splitting, RTL, shaping or disconnected letters. Preserves per-letter animation using ZWJ; adds RTL, an Arabic-capable font and consistent digits; removes letter-spacing. Returns code, changes and remaining issues; marks edits with harakah: comments. Options: digits=eastern|western|keep; split=zwj|word. Max 200,000 chars; kind=html|remotion is auto-detected if omitted. Does not edit files.",
     inputSchema: { type: "object", properties: { ...common, split: { type: "string", enum: ["zwj", "word"], description: "Per-letter split repair: zwj keeps letter boxes joined (default), word animates whole words." } }, required: ["code"], additionalProperties: false },
     annotations: ann("Fix Arabic in motion code"),
   },
