@@ -110,7 +110,7 @@ header,main,footer{max-width:46rem;margin:0 auto;padding:0 20px}header{display:f
 a{color:var(--acc);text-underline-offset:3px}h1{font-size:30px;line-height:1.3;margin:28px 0 4px}h2{font-size:20px;margin:26px 0 6px}
 section+section{border-top:1px solid var(--line);margin-top:40px}.upd{color:var(--mute);margin:0}code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.9em;background:var(--card);padding:1px 5px;border-radius:5px;direction:ltr;unicode-bidi:isolate}
 footer{color:var(--mute);padding-top:32px;padding-bottom:40px}</style></head>
-<body><header><a class="logo" href="/">حركة · Harakah</a><nav><a href="/privacy/">الخصوصية · Privacy</a><a href="/terms/">الشروط · Terms</a><a href="/support/">الدعم · Support</a></nav></header>
+<body><header><a class="logo" href="/">حركة · Harakah</a><nav><a href="/privacy/">الخصوصية · Privacy</a><a href="/terms/">الشروط · Terms</a><a href="/support/">الدعم · Support</a><a href="/mcp/">الموصّل · Connector</a></nav></header>
 <main>${pg.body}</main>
 <footer><a href="/">الصفحة الرئيسية</a> · <a href="/en/" lang="en" dir="ltr">Home (English)</a> · <a href="https://github.com/harakah-si/harakah" lang="en" dir="ltr">GitHub</a></footer></body></html>
 `);
