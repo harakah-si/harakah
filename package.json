@@ -93,7 +93,8 @@
     "qa:visual": "node scripts/qa-visual.mjs",
     "qa:shim": "node scripts/qa-shim.mjs",
     "qa:player": "node scripts/qa-player.mjs",
-    "test:vscode": "npm run build && node integrations/vscode/test/run.mjs"
+    "test:vscode": "npm run build && node integrations/vscode/test/run.mjs",
+    "test:mcp": "node mcp/build.mjs && node --import tsx --test mcp/test/worker.test.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.1",
