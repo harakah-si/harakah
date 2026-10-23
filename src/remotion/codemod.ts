@@ -1069,12 +1069,21 @@ function pass(src: string, o: Required<CodemodOptions>): { edits: Edit[]; report
   }
 
   // ---- report-only patterns
+  // HZ19: canvas contexts that set direction = "rtl" anywhere in the file (by receiver text, e.g. ctx / this.ctx)
+  // keyed by receiver text + the enclosing function, so another component's `ctx` is not silenced
+  const fnOf = (x: Node) => x.getFirstAncestor((a) => Node.isFunctionLikeDeclaration(a)) ?? sf;
+  const rtlCanvas = new Map<string, Node[]>();
+  sf.forEachDescendant((n) => {
+    if (!Node.isBinaryExpression(n) || n.getOperatorToken().getText() !== "=") return;
+    const l = n.getLeft(), r = n.getRight();
+    if (Node.isPropertyAccessExpression(l) && l.getName() === "direction" && /^["'`]rtl["'`]$/.test(r.getText())) { const k = l.getExpression().getText(); rtlCanvas.set(k, [...(rtlCanvas.get(k) ?? []), fnOf(n)]); }
+  });
   sf.forEachDescendant((n) => {
     if (Node.isCallExpression(n) && /\.reverse$/.test(n.getExpression().getText())) {
       const p = n.getParent();
       if (p && Node.isPropertyAccessExpression(p) && p.getName() === "join") report(n, "HZ15", "String reversal (…reverse().join()) scrambles Arabic; remove it.", "عكس النص يفسد العربية؛ احذفه.");
     }
-    if (Node.isPropertyAccessExpression(n) && /^(fillText|strokeText|measureText)$/.test(n.getName())) report(n, "HZ19", `Canvas ${n.getName()}: set ctx.direction = "rtl" and avoid per-letter drawing.`, "Canvas: اضبط ctx.direction = \"rtl\".");
+    if (Node.isPropertyAccessExpression(n) && /^(fillText|strokeText|measureText)$/.test(n.getName()) && !(rtlCanvas.get(n.getExpression().getText()) ?? []).some((f) => f === sf || f === fnOf(n) || fnOf(n).getAncestors().includes(f))) report(n, "HZ19", `Canvas ${n.getName()}: set ctx.direction = "rtl" and avoid per-letter drawing.`, "Canvas: اضبط ctx.direction = \"rtl\".");
     if (Node.isJsxOpeningElement(n) && n.getTagNameNode().getText() === "tspan" && inArabic(n)) report(n, "HZ01", "SVG <tspan> per letter breaks Arabic joins; animate whole words.", "tspan لكل حرف يفكك العربية.");
   });
 

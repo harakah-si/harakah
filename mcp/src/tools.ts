@@ -1,6 +1,6 @@
 /** Pure tool logic for the hosted Harakah MCP server (no I/O, no storage). */
 import { analyze, fix } from "../../src/engine.js";
-import { transformSource } from "../../src/remotion/codemod.js";
+import { transformSource, toIssues } from "../../src/remotion/codemod.js";
 import { summarize, VERSION } from "../../src/report.js";
 
 export const MAX_CODE_CHARS = 200_000;
@@ -57,9 +57,8 @@ export function checkArabic(args: any) {
   const { code, kind, digits } = validate(args, false);
   const k = kindOf(code, kind);
   const issues: any[] = k === "html" ? analyze(code, { digits: digits ?? "eastern" } as any).issues : (() => {
-    const r = transformSource(code, { digits } as any);
-    return [...r.changes.map((c: any) => ({ code: c.code, severity: "error", line: c.line, title: { en: c.en }, message: { en: c.en }, fixable: true })),
-            ...r.reports.map((c: any) => ({ code: c.code, severity: "warning", line: c.line, title: { en: c.en }, message: { en: c.en }, fixable: false }))];
+    // severities come from RULES via toIssues, the same path the CLI uses (one source of truth)
+    return toIssues(transformSource(code, { digits } as any), false);
   })();
   const summary = summarize(issues as any);
   return { kind: k, ok: summary.errors === 0 && summary.warnings === 0, summary, issues: brief(issues) };

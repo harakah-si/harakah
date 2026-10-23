@@ -12,7 +12,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { analyze, fix } from "./engine.js";
-import { transformSource } from "./remotion/codemod.js";
+import { transformSource, toIssues } from "./remotion/codemod.js";
 import { fixRemotion } from "./remotion/project.js";
 import { compareRemotion } from "./remotion/compare.js";
 import { compareHtml, writeFixed } from "./pipeline.js";
@@ -40,7 +40,7 @@ server.registerTool("harakah_check", {
 }, async ({ path: p, code, kind, digits: d, assumeArabic, props, composition }) => {
   if (code) {
     const k = kindOf(code, kind);
-    const issues = k === "html" ? analyze(code, { digits: d ?? "eastern" } as any).issues : (() => { const r = transformSource(code, { digits: d, assumeArabic }); return [...r.changes.map((c) => ({ code: c.code, severity: "error", line: c.line, title: { en: c.en }, message: { en: c.en }, fixable: true })), ...r.reports.map((c) => ({ code: c.code, severity: "warning", line: c.line, title: { en: c.en }, message: { en: c.en }, fixable: false }))]; })();
+    const issues = k === "html" ? analyze(code, { digits: d ?? "eastern" } as any).issues : (() => { return toIssues(transformSource(code, { digits: d, assumeArabic }), false); })(); // severities from RULES, same as the CLI
     return { content: [json({ kind: k, summary: summarize(issues as any), issues: brief(issues) })] };
   }
   if (!p) throw new Error("Pass path or code.");
