@@ -18,6 +18,7 @@ export const RULES: Record<string, RuleMeta> = {
     title: { en: "Script splits text into characters at runtime", ar: "سكربت يقسّم النص إلى حروف أثناء التشغيل" },
     why: { en: "SplitText({type:'chars'}), Motion's splitText().chars, [...str], str.split('') or letter-wrapping regexes create one box per letter; on Arabic this disconnects letters.",
            ar: "أدوات مثل SplitText أو splitText من Motion أو [...str] أو split('') تنشئ صندوقاً لكل حرف، فتنقطع الحروف العربية عن بعضها." } },
+  // HZ03 is a warning everywhere (CLI, MCP, web): letters still join without dir=rtl; only punctuation, digits and Latin runs land on the wrong side. Splitting (HZ01/HZ02) is the error.
   HZ03: { code: "HZ03", name: "arabic-not-rtl", severity: "warning", fix: "auto",
     title: { en: "Arabic text is not in a right-to-left context", ar: "النص العربي ليس في سياق من اليمين إلى اليسار" },
     why: { en: "Without dir=rtl the base direction is LTR: punctuation, numbers and English words land on the wrong side.",
