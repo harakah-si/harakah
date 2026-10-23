@@ -13,3 +13,7 @@ enabled = false
 [[rules]]
 type = "ESModule"
 globs = ["**/*.js"]
+
+# Workers Paid: Remotion parsing needs ~300 ms CPU per call (free plan: 10 ms -> error 1102)
+[limits]
+cpu_ms = 30000
