@@ -2,7 +2,7 @@
 // scripts/build-static.mjs writes them with /tool/'s palette (same shell as the 404 page). Keep them true to the code:
 // the site has no accounts or forms, the CLI sends nothing to Harakah, the hosted tool at mcp.harakah.si (mcp/) processes the
 // code it's sent in memory and stores nothing, and the only collectors are npm and Cloudflare.
-export const UPDATED = "2026-10-21";
+export const UPDATED = "2026-10-22";
 
 const ar = (s) => `<section lang="ar" dir="rtl">${s}</section>`;
 const en = (s) => `<section lang="en" dir="ltr">${s}</section>`;
@@ -13,30 +13,36 @@ export const PAGES = {
     desc: "What harakah.si, the harakah-fixer tool and the hosted Harakah tool collect: no accounts, no cookies, and code sent to the hosted tool is not stored.",
     body: ar(`<h1>سياسة الخصوصية</h1>
 <p class="upd">آخر تحديث: ${UPDATED}</p>
+<p>أنا عمرو الإمام، أطوّر حركة وأشغّلها بنفسي. هذي الصفحة تشرح بالضبط وش يوصلني ووش ما يوصلني.</p>
 <h2>باختصار</h2>
 <ul><li>الموقع ما فيه حسابات ولا نماذج تسجيل ولا كوكيز.</li>
-<li>أداة harakah-fixer ومهارة حركة تشتغل على جهازك، وما ترسل ملفاتك ولا أي بيانات لحركة.</li>
-<li>الأداة المستضافة (mcp.harakah.si) تستقبل الكود اللي يرسله لها مساعد الذكاء الاصطناعي، تفحصه أو تصلّحه في الذاكرة، وترجّع النتيجة. ما نخزّن الكود ولا النتيجة ولا نسجّلهم.</li>
+<li>أداة harakah-fixer ومهارة حركة تشتغل على جهازك، وما ترسل ملفاتك ولا أي بيانات لي.</li>
+<li>الأداة المستضافة (mcp.harakah.si) تستقبل الكود اللي يرسله لها مساعد الذكاء الاصطناعي، تفحصه أو تصلّحه في الذاكرة، وترجّع النتيجة. ما أخزّن الكود ولا النتيجة ولا أسجّلهم.</li>
 <li>الجهات الوحيدة اللي توصلها بيانات تقنية هم Cloudflare (استضافة الموقع والأداة المستضافة) وnpm (تنزيل الحزمة).</li></ul>
 <h2>الموقع harakah.si</h2>
 <p>الموقع مستضاف على Cloudflare Pages ويستخدم Cloudflare Web Analytics. هذي الإحصائيات ما تستخدم كوكيز، وتحسب زيارات الصفحات بمعلومات مثل الصفحة، والموقع اللي جيت منه، ونوع المتصفح والجهاز، والدولة التقريبية. Cloudflare تعالج عنوان IP وبيانات الطلب عشان تقدّم الموقع وتحميه، حسب <a href="https://www.cloudflare.com/privacypolicy/">سياسة خصوصية Cloudflare</a>.</p>
-<p>اختياراتك في الموقع (اللغة، والوضع الفاتح أو الداكن، وشكل الأرقام، والألوان) تنحفظ في متصفحك فقط (localStorage)، وما توصلنا.</p>
+<p>اختياراتك في الموقع (اللغة، والوضع الفاتح أو الداكن، وشكل الأرقام، والألوان) تنحفظ في متصفحك فقط (localStorage)، وما توصلني.</p>
 <h2>الأداة والمهارة</h2>
 <p>أوامر <code>npx -y -p harakah-fixer harakah-fix</code> تفحص وتصلّح الملفات على جهازك. الأداة ما فيها تتبّع ولا إحصائيات استخدام، وما ترسل كودك لأي مكان. أول مرة تشغّلها، npx ينزّل الحزمة من سجل npm، وهذا الطلب يوصل لـ npm (التابعة لـ GitHub) بعنوان IP ومعلومات مثل إصدار npm وNode ونظام التشغيل، حسب <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement">بيان خصوصية GitHub</a>.</p>
 <p>لما تستخدم المهارة داخل مساعد ذكاء اصطناعي، المحادثة نفسها ومخرجات الأوامر يعالجها مزوّد المساعد حسب سياسته هو، مو حركة.</p>
 <h2>الأداة المستضافة (mcp.harakah.si)</h2>
-<p>إضافة حركة في مساعدات الذكاء الاصطناعي تقدر تستدعي أداتين مستضافتين: <code>check_arabic</code> و<code>fix_arabic</code>. ما تحتاج حساب ولا تسجيل دخول.</p>
-<ul><li><strong>اللي يوصلنا:</strong> كود ملف واحد (صفحة HTML أو مكوّن Remotion) يرسله المساعد مع خيارات بسيطة مثل نوع الأرقام. هذا الكود ممكن يحتوي أي نص موجود في ملفك، فلا ترسل ملفات فيها معلومات شخصية أو سرية. ومع كل طلب تشوف Cloudflare بيانات تقنية مثل عنوان IP ووقت الطلب.</li>
+<p>إضافة حركة في ChatGPT وموصّل حركة في Claude (وأي مساعد يدعم MCP) يقدرون يستدعون أداتين مستضافتين: <code>check_arabic</code> و<code>fix_arabic</code>. ما تحتاج حساب ولا تسجيل دخول.</p>
+<ul><li><strong>اللي يوصلني:</strong> كود ملف واحد (صفحة HTML أو مكوّن Remotion) يرسله المساعد مع خيارات بسيطة مثل نوع الأرقام. هذا الكود ممكن يحتوي أي نص موجود في ملفك، فلا ترسل ملفات فيها معلومات شخصية أو سرية. ومع كل طلب تشوف Cloudflare بيانات تقنية مثل عنوان IP ووقت الطلب.</li>
 <li><strong>الغرض:</strong> فحص النص العربي في الكود وإصلاحه وإرجاع النتيجة للمساعد، بس.</li>
-<li><strong>مدة الاحتفاظ:</strong> الكود ينعالج في الذاكرة ويختفي أول ما ترجع النتيجة. ما نخزّنه في قاعدة بيانات أو ملف، وما نسجّله، وسجلات Workers مطفّية. Cloudflare تحتفظ ببيانات الطلب التقنية (مو محتوى الكود) لفترة محدودة عشان الأمان ومنع الإساءة، حسب <a href="https://www.cloudflare.com/privacypolicy/">سياسة خصوصية Cloudflare</a>.</li>
-<li><strong>الجهات المستلمة:</strong> Cloudflare فقط، كمعالج يشغّل الأداة على Cloudflare Workers. ما نبيع البيانات ولا نشاركها مع أحد ولا نستخدمها لتدريب نماذج.</li>
-<li><strong>تحكّمك:</strong> الأداة ما تشتغل إلا لما يستدعيها المساعد في محادثتك، وتقدر تعطّل الإضافة أو تشغّل أداة harakah-fixer على جهازك بدالها عشان ما يطلع كودك من جهازك. وبما إننا ما نخزّن شي، ما عندنا بيانات عنك نقدر نعرضها أو نحذفها.</li></ul>
-<h2>لما تراسلنا</h2>
-<p>إذا راسلتنا على <a href="mailto:hello@harakah.si">hello@harakah.si</a> أو فتحت بلاغ على GitHub، نستخدم اللي ترسله عشان نرد عليك فقط. البلاغات على GitHub عامة.</p>
+<li><strong>مدة الاحتفاظ:</strong> الكود ينعالج في الذاكرة ويختفي أول ما ترجع النتيجة. ما أخزّنه في قاعدة بيانات أو ملف، وما أسجّله، وسجلات Workers مطفّية. Cloudflare تحتفظ ببيانات الطلب التقنية (مو محتوى الكود) لفترة محدودة عشان الأمان ومنع الإساءة، حسب <a href="https://www.cloudflare.com/privacypolicy/">سياسة خصوصية Cloudflare</a>.</li>
+<li><strong>الجهات المستلمة:</strong> Cloudflare فقط، كمعالج يشغّل الأداة على Cloudflare Workers. ما أبيع البيانات ولا أشاركها مع أحد ولا أستخدمها لتدريب نماذج.</li>
+<li><strong>تحكّمك:</strong> الأداة ما تشتغل إلا لما يستدعيها المساعد في محادثتك، وتقدر تعطّل الإضافة أو تشغّل أداة harakah-fixer على جهازك بدالها عشان ما يطلع كودك من جهازك. وبما إني ما أخزّن شي، ما عندي بيانات عنك أقدر أعرضها أو أحذفها.</li></ul>
+<h2>الأمان</h2>
+<p>كل الاتصالات بالموقع والأداة المستضافة مشفّرة بـ HTTPS. الأداة ما تفتح روابط ولا تتصل بأي خدمة ثانية، وما عندها وصول لحساباتك أو ملفاتك، تشوف بس الكود اللي ينرسل لها.</p>
+<h2>الأطفال</h2>
+<p>حركة أداة للمطوّرين والمصمّمين، وما أجمع بيانات شخصية من أي أحد، ومنهم الأطفال.</p>
+<h2>لما تراسلني</h2>
+<p>إذا راسلتني على <a href="mailto:hello@harakah.si">hello@harakah.si</a> أو فتحت بلاغ على GitHub، أستخدم اللي ترسله عشان أرد عليك فقط، وما أشاركه مع أحد. البلاغات على GitHub عامة.</p>
 <h2>التغييرات والتواصل</h2>
-<p>إذا تغيّرت هذي السياسة نحدّث التاريخ فوق. لأي سؤال: <a href="mailto:hello@harakah.si">hello@harakah.si</a>.</p>`) +
+<p>إذا تغيّرت هذي السياسة أحدّث التاريخ فوق. لأي سؤال: <a href="mailto:hello@harakah.si">hello@harakah.si</a>.</p>`) +
     en(`<h1>Privacy policy</h1>
 <p class="upd">Last updated: ${UPDATED}</p>
+<p>Harakah is built and run by me, Amro Alemam. This page explains exactly what reaches me and what doesn't.</p>
 <h2>In short</h2>
 <ul><li>The site has no accounts, no sign-up forms and no cookies.</li>
 <li>The harakah-fixer tool and the Harakah skill run on your computer. They don't send your files or any data to Harakah.</li>
@@ -49,16 +55,84 @@ export const PAGES = {
 <p><code>npx -y -p harakah-fixer harakah-fix</code> commands check and fix files on your computer. The tool has no tracking or usage analytics and doesn't upload your code anywhere. The first time you run it, npx downloads the package from the npm registry. That request reaches npm (part of GitHub) with your IP address and details such as your npm, Node.js and OS versions, under <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement">GitHub's privacy statement</a>.</p>
 <p>When you use the skill inside an AI assistant, the conversation and the command output are handled by that assistant's provider under its own policies, not by Harakah.</p>
 <h2>The hosted tool (mcp.harakah.si)</h2>
-<p>The Harakah plugin for AI assistants can call two hosted tools, <code>check_arabic</code> and <code>fix_arabic</code>. They need no account or sign-in.</p>
+<p>The Harakah plugin for ChatGPT, the Harakah connector for Claude and any other MCP client can call two hosted tools, <code>check_arabic</code> and <code>fix_arabic</code>. They need no account or sign-in.</p>
 <ul><li><strong>What we receive:</strong> the code of one file (an HTML page or a Remotion component) that the assistant sends, plus simple options such as the digit style. That code can contain any text that's in your file, so don't send files with personal or confidential information. With each request, Cloudflare also sees technical data such as your IP address and the time of the request.</li>
 <li><strong>Purpose:</strong> only to check and fix the Arabic text in that code and return the result to the assistant.</li>
 <li><strong>Retention:</strong> the code is processed in memory and discarded as soon as the result is returned. We don't save it to a database or file or log it, and Workers logging is turned off. Cloudflare keeps technical request data (not the code itself) for a limited time for security and abuse prevention, under <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare's privacy policy</a>.</li>
 <li><strong>Recipients:</strong> only Cloudflare, as the processor that runs the tool on Cloudflare Workers. We don't sell or share the data, and we don't use it to train models.</li>
 <li><strong>Your controls:</strong> the tool runs only when the assistant calls it in your conversation. You can turn the plugin off, or run harakah-fixer on your computer instead so your code never leaves it. Because we store nothing, we hold no data about you to show or delete.</li></ul>
+<h2>Security</h2>
+<p>All connections to the site and the hosted tool are encrypted with HTTPS. The hosted tool doesn't fetch URLs or call any other service, and it has no access to your accounts or files; it only sees the code sent to it.</p>
+<h2>Children</h2>
+<p>Harakah is a tool for developers and designers. It collects no personal data from anyone, children included.</p>
 <h2>When you contact us</h2>
-<p>If you email <a href="mailto:hello@harakah.si">hello@harakah.si</a> or open a GitHub issue, we use what you send only to reply. GitHub issues are public.</p>
+<p>If you email <a href="mailto:hello@harakah.si">hello@harakah.si</a> or open a GitHub issue, we use what you send only to reply, and we don't share it. GitHub issues are public.</p>
 <h2>Changes and contact</h2>
 <p>If this policy changes, the date above changes with it. Questions: <a href="mailto:hello@harakah.si">hello@harakah.si</a>.</p>`),
+  },
+  mcp: {
+    title: "Connector (MCP) · الموصّل",
+    desc: "Use Harakah inside Claude, ChatGPT or any MCP client: one URL, no sign-in, two read-only tools that check and fix Arabic text in Remotion, GSAP and HTML code.",
+    body: ar(`<h1>موصّل حركة (MCP)</h1>
+<p class="upd">آخر تحديث: ${UPDATED}</p>
+<p>تقدر تضيف حركة لـ Claude أو ChatGPT أو أي مساعد يدعم MCP، والمساعد يفحص النص العربي في كودك ويصلّحه قبل ما ترندر. الموصّل مجاني، وما يحتاج حساب ولا تسجيل دخول.</p>
+<h2>العنوان</h2>
+<p><code>https://mcp.harakah.si/mcp</code></p>
+<ul><li><b>Claude:</b> من الإعدادات ← Connectors ← Add custom connector، الصق العنوان، واترك إعدادات OAuth فاضية.</li>
+<li><b>ChatGPT:</b> ثبّت إضافة Harakah Arabic Motion، أو أضف العنوان كتطبيق مخصّص في وضع المطوّر.</li>
+<li><b>Claude Code:</b> <code>claude mcp add --transport http harakah https://mcp.harakah.si/mcp</code></li>
+<li><b>غيرها:</b> أي عميل يدعم Streamable HTTP. ما يحتاج مفاتيح ولا ترويسات خاصة.</li></ul>
+<h2>الأداتين</h2>
+<ul><li><code>check_arabic</code>: تفحص ملف واحد (صفحة HTML أو GSAP أو HyperFrames، أو مكوّن Remotion) وترجّع كل مشكلة برقم السطر: حروف مفصولة بسبب التقسيم حرف حرف، اتجاه ناقص من اليمين لليسار، خطوط ما فيها عربي، تباعد حروف على نص عربي، أرقام مخلوطة، ارتفاع سطر يقصّ التشكيل، ونص مرسوم حرف حرف على canvas أو 3D.</li>
+<li><code>fix_arabic</code>: ترجّع نسخة مصلّحة من نفس الملف. تحافظ على حركة الحروف وحدة وحدة والحروف تبقى متصلة، وتعلّم كل تغيير بتعليق <code>harakah:</code>.</li></ul>
+<p>الأداتين للقراءة فقط: ما تعدّل ملفاتك، ترجّع نص بس، والمساعد أو أنت تقرّرون وش تستخدمون منه. خيارات اختيارية: <code>kind</code> (html أو remotion، والافتراضي تحديد تلقائي)، و<code>digits</code> (eastern أو western أو keep)، و<code>split</code> لـ fix_arabic (zwj أو word).</p>
+<h2>أمثلة تكتبها للمساعد</h2>
+<ul><li>«افحص مكوّن Remotion هذا من مشاكل العربي قبل ما أرندره» والصق المكوّن.</li>
+<li>«صلّح العربي في هيرو GSAP SplitText هذا عشان الحروف تبقى متصلة وتتحرك وحدة وحدة.»</li>
+<li>«خلّ كل الأرقام في بطاقة العنوان هذي أرقام عربية (١٢٣) واضبط الاتجاه من اليمين لليسار.»</li>
+<li>«ليش عنواني العربي يطلع مقطّع في مشهد three.js هذا؟»</li></ul>
+<h2>الحدود</h2>
+<ul><li>ملف واحد في كل استدعاء، والكود لحد ٢٠٠٬٠٠٠ حرف.</li>
+<li>الأداة ما تفتح روابط ولا تقرأ مشروعك، تشوف بس الكود اللي يرسله المساعد. لمشروع كامل أو رندر فعلي، استخدم <a href="/tool/">حركة على جهازك</a>.</li>
+<li>لما يستخدم الكود المصلّح مكوّن Remotion المساعد، تحتاج الملف <code>./harakah-arabic</code> من حزمة <code>@harakah/remotion-arabic</code> على npm، أو شغّل <code>npx harakah-fixer fix --write</code> محلياً.</li></ul>
+<h2>إذا واجهتك مشكلة</h2>
+<ul><li><b>الموصّل ما يتصل:</b> تأكد إن العنوان ينتهي بـ <code>/mcp</code> وإنه https، واترك حقول OAuth فاضية.</li>
+<li><b>الأدوات ما تظهر:</b> شغّل الموصّل للمحادثة من قائمة الأدوات، أو افصله ووصّله من جديد.</li>
+<li><b>«code must be a non-empty string»:</b> المساعد ما أرسل الكود. الصق الملف نفسه في المحادثة.</li>
+<li><b>التحديد التلقائي غلط:</b> اطلب من المساعد يحدّد <code>kind</code> بنفسه (remotion أو html).</li>
+<li><b>خطأ 503 أو انقطاع:</b> جرّب بعد شوي، أو استخدم الأداة على جهازك.</li></ul>
+<h2>الخصوصية والدعم</h2>
+<p>الكود ينعالج في الذاكرة وما أخزّنه ولا أسجّله، والتفاصيل في <a href="/privacy/">سياسة الخصوصية</a>. لأي سؤال راسلني على <a href="mailto:hello@harakah.si">hello@harakah.si</a> أو افتح <a href="https://github.com/harakah-si/harakah/issues">بلاغ على GitHub</a>.</p>`) +
+    en(`<h1>Harakah connector (MCP)</h1>
+<p class="upd">Last updated: ${UPDATED}</p>
+<p>Add Harakah to Claude, ChatGPT or any MCP client, and your assistant can check and fix the Arabic text in your code before you render. It's free, with no account and no sign-in.</p>
+<h2>Server URL</h2>
+<p><code>https://mcp.harakah.si/mcp</code></p>
+<ul><li><b>Claude:</b> Settings → Connectors → Add custom connector, paste the URL, and leave the OAuth fields empty.</li>
+<li><b>ChatGPT:</b> install the Harakah Arabic Motion plugin, or add the URL as a custom app in developer mode.</li>
+<li><b>Claude Code:</b> <code>claude mcp add --transport http harakah https://mcp.harakah.si/mcp</code></li>
+<li><b>Others:</b> any client that supports Streamable HTTP. No keys or special headers needed.</li></ul>
+<h2>The two tools</h2>
+<ul><li><code>check_arabic</code>: checks one file (an HTML, GSAP or HyperFrames page, or a Remotion component) and reports each problem with its line number: letters split apart by per-letter animation, missing right-to-left direction, Latin-only fonts, letter-spacing on Arabic, mixed digit styles, tight line-height that clips diacritics, and canvas or 3D text drawn letter by letter.</li>
+<li><code>fix_arabic</code>: returns a repaired copy of the same file. It keeps your per-letter animation while the letters stay joined, and marks every change with a <code>harakah:</code> comment.</li></ul>
+<p>Both tools are read-only: they never change your files and only return text. Optional arguments: <code>kind</code> (html or remotion; auto-detected by default), <code>digits</code> (eastern, western or keep), and for fix_arabic, <code>split</code> (zwj or word).</p>
+<h2>Example prompts</h2>
+<ul><li>"Check this Remotion component for Arabic problems before I render it:" followed by the component.</li>
+<li>"Fix the Arabic in this GSAP SplitText hero so the letters stay connected but still animate one by one."</li>
+<li>"Make all the numbers in this HTML title card Eastern Arabic (١٢٣) and set it right-to-left."</li>
+<li>"Why does my Arabic title look disconnected in this three.js scene?"</li></ul>
+<h2>Limits</h2>
+<ul><li>One file per call, up to 200,000 characters of code.</li>
+<li>The tool doesn't fetch URLs or read your project; it only sees the code the assistant sends. For a whole project or a real render, use <a href="/tool/">Harakah on your computer</a>.</li>
+<li>When fixed Remotion code uses the helper component, you need <code>./harakah-arabic</code> from the <code>@harakah/remotion-arabic</code> npm package, or run <code>npx harakah-fixer fix --write</code> locally.</li></ul>
+<h2>Troubleshooting</h2>
+<ul><li><b>The connector won't connect:</b> check that the URL is https and ends in <code>/mcp</code>, and leave the OAuth fields empty.</li>
+<li><b>The tools don't appear:</b> enable the connector for the chat from the tools menu, or disconnect and reconnect it.</li>
+<li><b>"code must be a non-empty string":</b> the assistant didn't send the code. Paste the file itself into the chat.</li>
+<li><b>Wrong file type detected:</b> ask the assistant to set <code>kind</code> (remotion or html).</li>
+<li><b>503 errors or timeouts:</b> try again shortly, or use the local tool.</li></ul>
+<h2>Privacy and support</h2>
+<p>Code is processed in memory and never stored or logged; see the <a href="/privacy/">privacy policy</a>. Questions: <a href="mailto:hello@harakah.si">hello@harakah.si</a> or a <a href="https://github.com/harakah-si/harakah/issues">GitHub issue</a>.</p>`),
   },
   terms: {
     title: "Terms · الشروط",
@@ -92,11 +166,11 @@ export const PAGES = {
     title: "Support · الدعم",
     desc: "Get help with harakah-fixer and the Harakah skill: email hello@harakah.si or open an issue on GitHub.",
     body: ar(`<h1>الدعم</h1>
-<h2>كيف توصلنا</h2>
+<h2>كيف توصلني</h2>
 <ul><li>إيميل: <a href="mailto:hello@harakah.si">hello@harakah.si</a> (عربي أو إنجليزي).</li>
 <li>مشكلة أو اقتراح: <a href="https://github.com/harakah-si/harakah/issues">افتح بلاغ على GitHub</a>. البلاغات عامة، فلا تحط فيها شي خاص.</li>
 <li>ثغرة أمنية: لا تفتح بلاغ عام، راسل <a href="mailto:security@harakah.si">security@harakah.si</a> (<a href="https://github.com/harakah-si/harakah/blob/main/SECURITY.md">سياسة الأمان</a>).</li></ul>
-<h2>عشان نساعدك أسرع</h2>
+<h2>عشان أساعدك أسرع</h2>
 <ul><li>إصدار الأداة (<code>npx -y -p harakah-fixer harakah-fix --version</code>) وإصدار Node.js.</li>
 <li>الأمر اللي شغّلته والمخرج كامل.</li>
 <li>أصغر مثال يعيد المشكلة: ملف أو مكوّن فيه النص العربي.</li></ul>
