@@ -11,7 +11,7 @@ export interface Report {
   fixed?: { applied: Issue[]; remaining: Issue[]; shimInjected: boolean };
 }
 // single source of truth: package.json (dist/report.js → ../package.json)
-export const VERSION: string = (() => { try { return JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8")).version; } catch { return "0.0.0"; } })();
+export const VERSION: string = (() => { const g = (globalThis as any).__HARAKAH_VERSION__; if (typeof g === "string") return g; try { return JSON.parse(fs.readFileSync(new URL("../package.json", import.meta.url), "utf8")).version; } catch { return "0.0.0"; } })();
 
 export function summarize(issues: Issue[]) {
   return {

@@ -15,7 +15,7 @@ function handle(msg: any): any | undefined {
   switch (method) {
     case "initialize": {
       const v = PROTOCOLS.includes(params?.protocolVersion) ? params.protocolVersion : PROTOCOLS[0];
-      return { jsonrpc: "2.0", id, result: { protocolVersion: v, capabilities: { tools: { listChanged: false } }, serverInfo: { name: "harakah", title: "Harakah Arabic Motion", version: VERSION, websiteUrl: "https://harakah.si" }, instructions: INSTRUCTIONS } };
+      return { jsonrpc: "2.0", id, result: { protocolVersion: v, capabilities: { tools: { listChanged: false } }, serverInfo: { name: "harakah", title: "Harakah Arabic Motion", version: VERSION, websiteUrl: "https://harakah.si", icons: [{ src: "https://harakah.si/assets/icon-512.png", mimeType: "image/png", sizes: ["512x512"] }] }, instructions: INSTRUCTIONS } };
     }
     case "ping": return { jsonrpc: "2.0", id, result: {} };
     case "tools/list": return { jsonrpc: "2.0", id, result: { tools: TOOLS } };
@@ -25,7 +25,7 @@ function handle(msg: any): any | undefined {
       try {
         const out: any = fn(params?.arguments ?? {});
         const { fixedCode, ...meta } = out;
-        const content: any[] = [{ type: "text", text: JSON.stringify(meta, null, 2) }];
+        const content: any[] = [{ type: "text", text: JSON.stringify(meta) }];
         if (fixedCode !== undefined) content.push({ type: "text", text: fixedCode });
         return { jsonrpc: "2.0", id, result: { content, structuredContent: out, isError: false } };
       } catch (e: any) {
