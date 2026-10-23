@@ -2,6 +2,11 @@
 
 Released to npm as [`harakah-fixer`](https://www.npmjs.com/package/harakah-fixer). Full options and behaviour: [docs/REFERENCE.md](docs/REFERENCE.md).
 
+## v0.5.1 · 2026-10-23
+
+- **HZ19 no longer fires when `ctx.direction = "rtl"` is set** in Remotion components. The check is scoped per function, so another component's `ctx` without a direction is still flagged.
+- **HZ03 (Arabic not in an RTL context) is a warning everywhere.** The hosted and local MCP `check_arabic` reported it as an error; they now take severities from the same rules as the CLI.
+
 ## v0.5.0 · 2026-10-20
 
 - **Per-letter animation joins in Safari and on iPhone with any font.** Safari draws a letter padded with ZWJ in a fallback font when the font has no U+200D: Alexandria, IBM Plex Sans Arabic, Cairo and Tajawal do not have it. In WebKit the runtime shim now uses the clip method instead. Each letter element (the same element your timeline targets) shows the whole word, clipped to its letter's slice, with one copy for screen readers. Chrome, Firefox and renders keep ZWJ padding, unchanged. `window.__harakahSplit = "clip" | "zwj"` forces either method. See REFERENCE, "The runtime shim in Safari / WebKit".
